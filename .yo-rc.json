@@ -1,0 +1,24 @@
+{
+  "generator-jhipster": {
+    "baseName": "credmgr",
+    "packageName": "org.gluu.credmgr",
+    "packageFolder": "org/gluu/credmgr",
+    "authenticationType": "session",
+    "hibernateCache": "ehcache",
+    "clusteredHttpSession": "no",
+    "websocket": "no",
+    "databaseType": "sql",
+    "devDatabaseType": "mysql",
+    "prodDatabaseType": "mysql",
+    "searchEngine": "no",
+    "useSass": false,
+    "buildTool": "maven",
+    "frontendBuilder": "gulp",
+    "enableTranslation": true,
+    "enableSocialSignIn": false,
+    "rememberMeKey": "193af46e740d6090a1f8c16e563d89ea9ecce9f5",
+    "testFrameworks": [
+      "gatling"
+    ]
+  }
+}
