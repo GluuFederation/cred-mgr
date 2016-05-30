@@ -1,0 +1,34 @@
+{
+  "relationships": [],
+  "fields": [
+    {
+      "fieldId": 1,
+      "fieldName": "host",
+      "fieldType": "String"
+    },
+    {
+      "fieldId": 2,
+      "fieldName": "clientId",
+      "fieldType": "String"
+    },
+    {
+      "fieldId": 3,
+      "fieldName": "clientSecret",
+      "fieldType": "String"
+    },
+    {
+      "fieldId": 4,
+      "fieldName": "loginRedirectUri",
+      "fieldType": "String"
+    },
+    {
+      "fieldId": 5,
+      "fieldName": "logoutRedirectUri",
+      "fieldType": "String"
+    }
+  ],
+  "changelogDate": "20160530143741",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no"
+}
