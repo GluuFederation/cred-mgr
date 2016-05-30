@@ -72,3 +72,6 @@ jhipster:
         contact:
         license:
         licenseUrl:
+gluu:
+    host: https://gluu.localhost.info
+    

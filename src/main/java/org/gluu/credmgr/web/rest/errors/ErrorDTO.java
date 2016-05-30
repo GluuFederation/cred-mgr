@@ -17,36 +17,36 @@ public class ErrorDTO implements Serializable {
     private List<FieldErrorDTO> fieldErrors;
 
     ErrorDTO(String message) {
-        this(message, null);
+	this(message, null);
     }
 
     ErrorDTO(String message, String description) {
-        this.message = message;
-        this.description = description;
+	this.message = message;
+	this.description = description;
     }
 
     ErrorDTO(String message, String description, List<FieldErrorDTO> fieldErrors) {
-        this.message = message;
-        this.description = description;
-        this.fieldErrors = fieldErrors;
+	this.message = message;
+	this.description = description;
+	this.fieldErrors = fieldErrors;
     }
 
     public void add(String objectName, String field, String message) {
-        if (fieldErrors == null) {
-            fieldErrors = new ArrayList<>();
-        }
-        fieldErrors.add(new FieldErrorDTO(objectName, field, message));
+	if (fieldErrors == null) {
+	    fieldErrors = new ArrayList<>();
+	}
+	fieldErrors.add(new FieldErrorDTO(objectName, field, message));
     }
 
     public String getMessage() {
-        return message;
+	return message;
     }
 
     public String getDescription() {
-        return description;
+	return description;
     }
 
     public List<FieldErrorDTO> getFieldErrors() {
-        return fieldErrors;
+	return fieldErrors;
     }
 }

@@ -1,10 +1,5 @@
 package org.gluu.credmgr.service;
 
-import java.util.Locale;
-
-import javax.inject.Inject;
-import javax.mail.internet.MimeMessage;
-
 import org.apache.commons.lang.CharEncoding;
 import org.gluu.credmgr.config.JHipsterProperties;
 import org.gluu.credmgr.domain.User;
@@ -17,6 +12,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
+
+import javax.inject.Inject;
+import javax.mail.internet.MimeMessage;
+import java.util.Locale;
 
 /**
  * Service for sending e-mails.
@@ -44,8 +43,8 @@ public class MailService {
 
     @Async
     public void sendEmail(String to, String subject, String content, boolean isMultipart, boolean isHtml) {
-        log.debug("Send e-mail[multipart '{}' and html '{}'] to '{}' with subject '{}' and content={}",
-            isMultipart, isHtml, to, subject, content);
+        log.debug("Send e-mail[multipart '{}' and html '{}'] to '{}' with subject '{}' and content={}", isMultipart,
+            isHtml, to, subject, content);
 
         // Prepare message using a Spring helper
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -97,5 +96,5 @@ public class MailService {
         String subject = messageSource.getMessage("email.reset.title", null, locale);
         sendEmail(user.getEmail(), subject, content, false, true);
     }
-    
+
 }

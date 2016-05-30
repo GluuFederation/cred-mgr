@@ -12,16 +12,16 @@ public class ParameterizedErrorDTO implements Serializable {
     private final String[] params;
 
     public ParameterizedErrorDTO(String message, String... params) {
-        this.message = message;
-        this.params = params;
+	this.message = message;
+	this.params = params;
     }
 
     public String getMessage() {
-        return message;
+	return message;
     }
 
     public String[] getParams() {
-        return params;
+	return params;
     }
 
 }

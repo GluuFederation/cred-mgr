@@ -20,24 +20,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class LogsResource {
 
-    @RequestMapping(value = "/logs",
-        method = RequestMethod.GET,
-        produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/logs", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     public List<LoggerDTO> getList() {
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        return context.getLoggerList()
-            .stream()
-            .map(LoggerDTO::new)
-            .collect(Collectors.toList());
+	LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+	return context.getLoggerList().stream().map(LoggerDTO::new).collect(Collectors.toList());
     }
 
-    @RequestMapping(value = "/logs",
-        method = RequestMethod.PUT)
+    @RequestMapping(value = "/logs", method = RequestMethod.PUT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Timed
     public void changeLevel(@RequestBody LoggerDTO jsonLogger) {
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        context.getLogger(jsonLogger.getName()).setLevel(Level.valueOf(jsonLogger.getLevel()));
+	LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+	context.getLogger(jsonLogger.getName()).setLevel(Level.valueOf(jsonLogger.getLevel()));
     }
 }

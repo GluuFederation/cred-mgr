@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.Email;
 import javax.validation.constraints.*;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 /**
  * A DTO representing a user, with his authorities.
  */
@@ -46,68 +47,59 @@ public class UserDTO {
     }
 
     public UserDTO(User user) {
-        this(user.getLogin(), null, user.getFirstName(), user.getLastName(),
-            user.getEmail(), user.getActivated(), user.getLangKey(),
-            user.getAuthorities().stream().map(Authority::getName)
-                .collect(Collectors.toSet()));
+	this(user.getLogin(), null, user.getFirstName(), user.getLastName(), user.getEmail(), user.getActivated(),
+		user.getLangKey(), user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet()));
     }
 
-    public UserDTO(String login, String password, String firstName, String lastName,
-        String email, boolean activated, String langKey, Set<String> authorities) {
+    public UserDTO(String login, String password, String firstName, String lastName, String email, boolean activated,
+	    String langKey, Set<String> authorities) {
 
-        this.login = login;
-        this.password = password;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.activated = activated;
-        this.langKey = langKey;
-        this.authorities = authorities;
+	this.login = login;
+	this.password = password;
+	this.firstName = firstName;
+	this.lastName = lastName;
+	this.email = email;
+	this.activated = activated;
+	this.langKey = langKey;
+	this.authorities = authorities;
     }
 
     public String getPassword() {
-        return password;
+	return password;
     }
 
     public String getLogin() {
-        return login;
+	return login;
     }
 
     public String getFirstName() {
-        return firstName;
+	return firstName;
     }
 
     public String getLastName() {
-        return lastName;
+	return lastName;
     }
 
     public String getEmail() {
-        return email;
+	return email;
     }
 
     public boolean isActivated() {
-        return activated;
+	return activated;
     }
 
     public String getLangKey() {
-        return langKey;
+	return langKey;
     }
 
     public Set<String> getAuthorities() {
-        return authorities;
+	return authorities;
     }
 
     @Override
     public String toString() {
-        return "UserDTO{" +
-            "login='" + login + '\'' +
-            ", password='" + password + '\'' +
-            ", firstName='" + firstName + '\'' +
-            ", lastName='" + lastName + '\'' +
-            ", email='" + email + '\'' +
-            ", activated=" + activated +
-            ", langKey='" + langKey + '\'' +
-            ", authorities=" + authorities +
-            "}";
+	return "UserDTO{" + "login='" + login + '\'' + ", password='" + password + '\'' + ", firstName='" + firstName
+		+ '\'' + ", lastName='" + lastName + '\'' + ", email='" + email + '\'' + ", activated=" + activated
+		+ ", langKey='" + langKey + '\'' + ", authorities=" + authorities + "}";
     }
 }

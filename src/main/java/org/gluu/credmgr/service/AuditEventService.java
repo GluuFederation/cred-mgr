@@ -16,7 +16,8 @@ import java.util.Optional;
  * Service for managing audit events.
  * <p/>
  * <p>
- * This is the default implementation to support SpringBoot Actuator AuditEventRepository
+ * This is the default implementation to support SpringBoot Actuator
+ * AuditEventRepository
  * </p>
  */
 @Service
@@ -28,27 +29,26 @@ public class AuditEventService {
     private AuditEventConverter auditEventConverter;
 
     @Inject
-    public AuditEventService(
-        PersistenceAuditEventRepository persistenceAuditEventRepository,
-        AuditEventConverter auditEventConverter) {
+    public AuditEventService(PersistenceAuditEventRepository persistenceAuditEventRepository,
+	    AuditEventConverter auditEventConverter) {
 
-        this.persistenceAuditEventRepository = persistenceAuditEventRepository;
-        this.auditEventConverter = auditEventConverter;
+	this.persistenceAuditEventRepository = persistenceAuditEventRepository;
+	this.auditEventConverter = auditEventConverter;
     }
 
     public List<AuditEvent> findAll() {
-        return auditEventConverter.convertToAuditEvent(persistenceAuditEventRepository.findAll());
+	return auditEventConverter.convertToAuditEvent(persistenceAuditEventRepository.findAll());
     }
 
     public List<AuditEvent> findByDates(LocalDateTime fromDate, LocalDateTime toDate) {
-        List<PersistentAuditEvent> persistentAuditEvents =
-            persistenceAuditEventRepository.findAllByAuditEventDateBetween(fromDate, toDate);
+	List<PersistentAuditEvent> persistentAuditEvents = persistenceAuditEventRepository
+		.findAllByAuditEventDateBetween(fromDate, toDate);
 
-        return auditEventConverter.convertToAuditEvent(persistentAuditEvents);
+	return auditEventConverter.convertToAuditEvent(persistentAuditEvents);
     }
 
     public Optional<AuditEvent> find(Long id) {
-        return Optional.ofNullable(persistenceAuditEventRepository.findOne(id)).map
-            (auditEventConverter::convertToAuditEvent);
+	return Optional.ofNullable(persistenceAuditEventRepository.findOne(id))
+		.map(auditEventConverter::convertToAuditEvent);
     }
 }

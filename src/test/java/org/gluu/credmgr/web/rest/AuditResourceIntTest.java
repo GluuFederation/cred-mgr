@@ -55,53 +55,48 @@ public class AuditResourceIntTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-        AuditEventService auditEventService =
-                new AuditEventService(auditEventRepository, auditEventConverter);
-        AuditResource auditResource = new AuditResource(auditEventService);
-        this.restAuditMockMvc = MockMvcBuilders.standaloneSetup(auditResource).build();
+	MockitoAnnotations.initMocks(this);
+	AuditEventService auditEventService = new AuditEventService(auditEventRepository, auditEventConverter);
+	AuditResource auditResource = new AuditResource(auditEventService);
+	this.restAuditMockMvc = MockMvcBuilders.standaloneSetup(auditResource).build();
     }
 
     @Before
     public void initTest() {
-        auditEventRepository.deleteAll();
-        auditEvent = new PersistentAuditEvent();
-        auditEvent.setAuditEventType(SAMPLE_TYPE);
-        auditEvent.setPrincipal(SAMPLE_PRINCIPAL);
-        auditEvent.setAuditEventDate(SAMPLE_TIMESTAMP);
+	auditEventRepository.deleteAll();
+	auditEvent = new PersistentAuditEvent();
+	auditEvent.setAuditEventType(SAMPLE_TYPE);
+	auditEvent.setPrincipal(SAMPLE_PRINCIPAL);
+	auditEvent.setAuditEventDate(SAMPLE_TIMESTAMP);
     }
-
 
     @Test
     public void getAllAudits() throws Exception {
-        // Initialize the database
-        auditEventRepository.save(auditEvent);
+	// Initialize the database
+	auditEventRepository.save(auditEvent);
 
-        // Get all the audits
-        restAuditMockMvc.perform(get("/api/audits"))
-                .andExpect(status().isOk())
-                // .andDo(print())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.[*].principal").value(hasItem(SAMPLE_PRINCIPAL)));
+	// Get all the audits
+	restAuditMockMvc.perform(get("/api/audits")).andExpect(status().isOk())
+		// .andDo(print())
+		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+		.andExpect(jsonPath("$.[*].principal").value(hasItem(SAMPLE_PRINCIPAL)));
     }
 
     @Test
     public void getAudit() throws Exception {
-        // Initialize the database
-        auditEventRepository.save(auditEvent);
+	// Initialize the database
+	auditEventRepository.save(auditEvent);
 
-        // Get the audit
-        restAuditMockMvc.perform(get("/api/audits/{id}", auditEvent.getId()))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.principal").value(SAMPLE_PRINCIPAL));
+	// Get the audit
+	restAuditMockMvc.perform(get("/api/audits/{id}", auditEvent.getId())).andExpect(status().isOk())
+		.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+		.andExpect(jsonPath("$.principal").value(SAMPLE_PRINCIPAL));
     }
 
     @Test
     public void getNonExistingAudit() throws Exception {
-        // Get the audit
-        restAuditMockMvc.perform(get("/api/audits/{id}", Long.MAX_VALUE))
-                .andExpect(status().isNotFound());
+	// Get the audit
+	restAuditMockMvc.perform(get("/api/audits/{id}", Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
 }

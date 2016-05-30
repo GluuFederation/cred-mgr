@@ -28,17 +28,17 @@ public class AsyncConfiguration implements AsyncConfigurer {
     @Override
     @Bean(name = "taskExecutor")
     public Executor getAsyncExecutor() {
-        log.debug("Creating Async Task Executor");
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(jHipsterProperties.getAsync().getCorePoolSize());
-        executor.setMaxPoolSize(jHipsterProperties.getAsync().getMaxPoolSize());
-        executor.setQueueCapacity(jHipsterProperties.getAsync().getQueueCapacity());
-        executor.setThreadNamePrefix("credmgr-Executor-");
-        return new ExceptionHandlingAsyncTaskExecutor(executor);
+	log.debug("Creating Async Task Executor");
+	ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+	executor.setCorePoolSize(jHipsterProperties.getAsync().getCorePoolSize());
+	executor.setMaxPoolSize(jHipsterProperties.getAsync().getMaxPoolSize());
+	executor.setQueueCapacity(jHipsterProperties.getAsync().getQueueCapacity());
+	executor.setThreadNamePrefix("credmgr-Executor-");
+	return new ExceptionHandlingAsyncTaskExecutor(executor);
     }
 
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-        return new SimpleAsyncUncaughtExceptionHandler();
+	return new SimpleAsyncUncaughtExceptionHandler();
     }
 }

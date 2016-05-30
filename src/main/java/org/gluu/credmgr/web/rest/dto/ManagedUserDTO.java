@@ -5,7 +5,8 @@ import java.time.ZonedDateTime;
 import org.gluu.credmgr.domain.User;
 
 /**
- * A DTO extending the UserDTO, which is meant to be used in the user management UI.
+ * A DTO extending the UserDTO, which is meant to be used in the user management
+ * UI.
  */
 public class ManagedUserDTO extends UserDTO {
 
@@ -21,52 +22,48 @@ public class ManagedUserDTO extends UserDTO {
     }
 
     public ManagedUserDTO(User user) {
-        super(user);
-        this.id = user.getId();
-        this.createdDate = user.getCreatedDate();
-        this.lastModifiedBy = user.getLastModifiedBy();
-        this.lastModifiedDate = user.getLastModifiedDate();
+	super(user);
+	this.id = user.getId();
+	this.createdDate = user.getCreatedDate();
+	this.lastModifiedBy = user.getLastModifiedBy();
+	this.lastModifiedDate = user.getLastModifiedDate();
     }
 
     public Long getId() {
-        return id;
+	return id;
     }
 
     public void setId(Long id) {
-        this.id = id;
+	this.id = id;
     }
 
     public ZonedDateTime getCreatedDate() {
-        return createdDate;
+	return createdDate;
     }
 
     public void setCreatedDate(ZonedDateTime createdDate) {
-        this.createdDate = createdDate;
+	this.createdDate = createdDate;
     }
 
     public String getLastModifiedBy() {
-        return lastModifiedBy;
+	return lastModifiedBy;
     }
 
     public void setLastModifiedBy(String lastModifiedBy) {
-        this.lastModifiedBy = lastModifiedBy;
+	this.lastModifiedBy = lastModifiedBy;
     }
 
     public ZonedDateTime getLastModifiedDate() {
-        return lastModifiedDate;
+	return lastModifiedDate;
     }
 
     public void setLastModifiedDate(ZonedDateTime lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+	this.lastModifiedDate = lastModifiedDate;
     }
 
     @Override
     public String toString() {
-        return "ManagedUserDTO{" +
-            "id=" + id +
-            ", createdDate=" + createdDate +
-            ", lastModifiedBy='" + lastModifiedBy + '\'' +
-            ", lastModifiedDate=" + lastModifiedDate +
-            "} " + super.toString();
+	return "ManagedUserDTO{" + "id=" + id + ", createdDate=" + createdDate + ", lastModifiedBy='" + lastModifiedBy
+		+ '\'' + ", lastModifiedDate=" + lastModifiedDate + "} " + super.toString();
     }
 }

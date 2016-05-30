@@ -8,7 +8,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 
 /**
- * This is a helper Java class that provides an alternative to creating a web.xml.
+ * This is a helper Java class that provides an alternative to creating a
+ * web.xml.
  */
 public class ApplicationWebXml extends SpringBootServletInitializer {
 
@@ -16,8 +17,7 @@ public class ApplicationWebXml extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.profiles(addDefaultProfile())
-            .sources(Application.class);
+	return application.profiles(addDefaultProfile()).sources(Application.class);
     }
 
     /**
@@ -27,13 +27,13 @@ public class ApplicationWebXml extends SpringBootServletInitializer {
      * </p>
      */
     private String addDefaultProfile() {
-        String profile = System.getProperty("spring.profiles.active");
-        if (profile != null) {
-            log.info("Running with Spring profile(s) : {}", profile);
-            return profile;
-        }
+	String profile = System.getProperty("spring.profiles.active");
+	if (profile != null) {
+	    log.info("Running with Spring profile(s) : {}", profile);
+	    return profile;
+	}
 
-        log.warn("No Spring profile configured, running with default configuration");
-        return Constants.SPRING_PROFILE_DEVELOPMENT;
+	log.warn("No Spring profile configured, running with default configuration");
+	return Constants.SPRING_PROFILE_DEVELOPMENT;
     }
 }

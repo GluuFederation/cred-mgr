@@ -22,13 +22,13 @@ public class CustomParameterizedException extends RuntimeException {
     private final String[] params;
 
     public CustomParameterizedException(String message, String... params) {
-        super(message);
-        this.message = message;
-        this.params = params;
+	super(message);
+	this.message = message;
+	this.params = params;
     }
 
     public ParameterizedErrorDTO getErrorDTO() {
-        return new ParameterizedErrorDTO(message, params);
+	return new ParameterizedErrorDTO(message, params);
     }
 
 }

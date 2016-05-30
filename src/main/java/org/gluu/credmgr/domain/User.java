@@ -48,8 +48,8 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     @JsonIgnore
     @NotNull
-    @Size(min = 60, max = 60) 
-    @Column(name = "password_hash",length = 60)
+    @Size(min = 60, max = 60)
+    @Column(name = "password_hash", length = 60)
     private String password;
 
     @Size(max = 50)
@@ -86,10 +86,9 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     @JsonIgnore
     @ManyToMany
-    @JoinTable(
-        name = "jhi_user_authority",
-        joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-        inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "name")})
+    @JoinTable(name = "jhi_user_authority", joinColumns = {
+	    @JoinColumn(name = "user_id", referencedColumnName = "id") }, inverseJoinColumns = {
+		    @JoinColumn(name = "authority_name", referencedColumnName = "name") })
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Set<Authority> authorities = new HashSet<>();
 
@@ -99,142 +98,136 @@ public class User extends AbstractAuditingEntity implements Serializable {
     private Set<PersistentToken> persistentTokens = new HashSet<>();
 
     public Long getId() {
-        return id;
+	return id;
     }
 
     public void setId(Long id) {
-        this.id = id;
+	this.id = id;
     }
 
     public String getLogin() {
-        return login;
+	return login;
     }
 
     public void setLogin(String login) {
-        this.login = login;
+	this.login = login;
     }
 
     public String getPassword() {
-        return password;
+	return password;
     }
 
     public void setPassword(String password) {
-        this.password = password;
+	this.password = password;
     }
 
     public String getFirstName() {
-        return firstName;
+	return firstName;
     }
 
     public void setFirstName(String firstName) {
-        this.firstName = firstName;
+	this.firstName = firstName;
     }
 
     public String getLastName() {
-        return lastName;
+	return lastName;
     }
 
     public void setLastName(String lastName) {
-        this.lastName = lastName;
+	this.lastName = lastName;
     }
 
     public String getEmail() {
-        return email;
+	return email;
     }
 
     public void setEmail(String email) {
-        this.email = email;
+	this.email = email;
     }
 
     public boolean getActivated() {
-        return activated;
+	return activated;
     }
 
     public void setActivated(boolean activated) {
-        this.activated = activated;
+	this.activated = activated;
     }
 
     public String getActivationKey() {
-        return activationKey;
+	return activationKey;
     }
 
     public void setActivationKey(String activationKey) {
-        this.activationKey = activationKey;
+	this.activationKey = activationKey;
     }
 
     public String getResetKey() {
-        return resetKey;
+	return resetKey;
     }
 
     public void setResetKey(String resetKey) {
-        this.resetKey = resetKey;
+	this.resetKey = resetKey;
     }
 
     public ZonedDateTime getResetDate() {
-       return resetDate;
+	return resetDate;
     }
 
     public void setResetDate(ZonedDateTime resetDate) {
-       this.resetDate = resetDate;
+	this.resetDate = resetDate;
     }
 
     public String getLangKey() {
-        return langKey;
+	return langKey;
     }
 
     public void setLangKey(String langKey) {
-        this.langKey = langKey;
+	this.langKey = langKey;
     }
 
     public Set<Authority> getAuthorities() {
-        return authorities;
+	return authorities;
     }
 
     public void setAuthorities(Set<Authority> authorities) {
-        this.authorities = authorities;
+	this.authorities = authorities;
     }
 
     public Set<PersistentToken> getPersistentTokens() {
-        return persistentTokens;
+	return persistentTokens;
     }
 
     public void setPersistentTokens(Set<PersistentToken> persistentTokens) {
-        this.persistentTokens = persistentTokens;
+	this.persistentTokens = persistentTokens;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+	if (this == o) {
+	    return true;
+	}
+	if (o == null || getClass() != o.getClass()) {
+	    return false;
+	}
 
-        User user = (User) o;
+	User user = (User) o;
 
-        if (!login.equals(user.login)) {
-            return false;
-        }
+	if (!login.equals(user.login)) {
+	    return false;
+	}
 
-        return true;
+	return true;
     }
 
     @Override
     public int hashCode() {
-        return login.hashCode();
+	return login.hashCode();
     }
 
     @Override
     public String toString() {
-        return "User{" +
-            "login='" + login + '\'' +
-            ", firstName='" + firstName + '\'' +
-            ", lastName='" + lastName + '\'' +
-            ", email='" + email + '\'' +
-            ", activated='" + activated + '\'' +
-            ", langKey='" + langKey + '\'' +
-            ", activationKey='" + activationKey + '\'' +
-            "}";
+	return "User{" + "login='" + login + '\'' + ", firstName='" + firstName + '\'' + ", lastName='" + lastName
+		+ '\'' + ", email='" + email + '\'' + ", activated='" + activated + '\'' + ", langKey='" + langKey
+		+ '\'' + ", activationKey='" + activationKey + '\'' + "}";
     }
 }

@@ -42,16 +42,17 @@ public class WebConfigurer implements ServletContextInitializer, EmbeddedServlet
 
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
-        log.info("Web application configuration, using profiles: {}", Arrays.toString(env.getActiveProfiles()));
-        EnumSet<DispatcherType> disps = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC);
-        if (!env.acceptsProfiles(Constants.SPRING_PROFILE_FAST)) {
-            initMetrics(servletContext, disps);
-        }
-        if (env.acceptsProfiles(Constants.SPRING_PROFILE_PRODUCTION)) {
-            initCachingHttpHeadersFilter(servletContext, disps);
-            initStaticResourcesProductionFilter(servletContext, disps);
-        }
-        log.info("Web application fully configured");
+	log.info("Web application configuration, using profiles: {}", Arrays.toString(env.getActiveProfiles()));
+	EnumSet<DispatcherType> disps = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD,
+		DispatcherType.ASYNC);
+	if (!env.acceptsProfiles(Constants.SPRING_PROFILE_FAST)) {
+	    initMetrics(servletContext, disps);
+	}
+	if (env.acceptsProfiles(Constants.SPRING_PROFILE_PRODUCTION)) {
+	    initCachingHttpHeadersFilter(servletContext, disps);
+	    initStaticResourcesProductionFilter(servletContext, disps);
+	}
+	log.info("Web application fully configured");
     }
 
     /**
@@ -59,82 +60,77 @@ public class WebConfigurer implements ServletContextInitializer, EmbeddedServlet
      */
     @Override
     public void customize(ConfigurableEmbeddedServletContainer container) {
-        MimeMappings mappings = new MimeMappings(MimeMappings.DEFAULT);
-        // IE issue, see https://github.com/jhipster/generator-jhipster/pull/711
-        mappings.add("html", "text/html;charset=utf-8");
-        // CloudFoundry issue, see https://github.com/cloudfoundry/gorouter/issues/64
-        mappings.add("json", "text/html;charset=utf-8");
-        container.setMimeMappings(mappings);
+	MimeMappings mappings = new MimeMappings(MimeMappings.DEFAULT);
+	// IE issue, see https://github.com/jhipster/generator-jhipster/pull/711
+	mappings.add("html", "text/html;charset=utf-8");
+	// CloudFoundry issue, see
+	// https://github.com/cloudfoundry/gorouter/issues/64
+	mappings.add("json", "text/html;charset=utf-8");
+	container.setMimeMappings(mappings);
     }
 
     /**
      * Initializes the static resources production Filter.
      */
-    private void initStaticResourcesProductionFilter(ServletContext servletContext,
-                                                     EnumSet<DispatcherType> disps) {
+    private void initStaticResourcesProductionFilter(ServletContext servletContext, EnumSet<DispatcherType> disps) {
 
-        log.debug("Registering static resources production Filter");
-        FilterRegistration.Dynamic staticResourcesProductionFilter =
-            servletContext.addFilter("staticResourcesProductionFilter",
-                new StaticResourcesProductionFilter());
+	log.debug("Registering static resources production Filter");
+	FilterRegistration.Dynamic staticResourcesProductionFilter = servletContext
+		.addFilter("staticResourcesProductionFilter", new StaticResourcesProductionFilter());
 
-        staticResourcesProductionFilter.addMappingForUrlPatterns(disps, true, "/");
-        staticResourcesProductionFilter.addMappingForUrlPatterns(disps, true, "/index.html");
-        staticResourcesProductionFilter.addMappingForUrlPatterns(disps, true, "/assets/*");
-        staticResourcesProductionFilter.addMappingForUrlPatterns(disps, true, "/scripts/*");
-        staticResourcesProductionFilter.setAsyncSupported(true);
+	staticResourcesProductionFilter.addMappingForUrlPatterns(disps, true, "/");
+	staticResourcesProductionFilter.addMappingForUrlPatterns(disps, true, "/index.html");
+	staticResourcesProductionFilter.addMappingForUrlPatterns(disps, true, "/assets/*");
+	staticResourcesProductionFilter.addMappingForUrlPatterns(disps, true, "/scripts/*");
+	staticResourcesProductionFilter.setAsyncSupported(true);
     }
 
     /**
      * Initializes the caching HTTP Headers Filter.
      */
-    private void initCachingHttpHeadersFilter(ServletContext servletContext,
-                                              EnumSet<DispatcherType> disps) {
-        log.debug("Registering Caching HTTP Headers Filter");
-        FilterRegistration.Dynamic cachingHttpHeadersFilter =
-            servletContext.addFilter("cachingHttpHeadersFilter",
-                new CachingHttpHeadersFilter(env));
+    private void initCachingHttpHeadersFilter(ServletContext servletContext, EnumSet<DispatcherType> disps) {
+	log.debug("Registering Caching HTTP Headers Filter");
+	FilterRegistration.Dynamic cachingHttpHeadersFilter = servletContext.addFilter("cachingHttpHeadersFilter",
+		new CachingHttpHeadersFilter(env));
 
-        cachingHttpHeadersFilter.addMappingForUrlPatterns(disps, true, "/dist/assets/*");
-        cachingHttpHeadersFilter.addMappingForUrlPatterns(disps, true, "/dist/scripts/*");
-        cachingHttpHeadersFilter.setAsyncSupported(true);
+	cachingHttpHeadersFilter.addMappingForUrlPatterns(disps, true, "/dist/assets/*");
+	cachingHttpHeadersFilter.addMappingForUrlPatterns(disps, true, "/dist/scripts/*");
+	cachingHttpHeadersFilter.setAsyncSupported(true);
     }
 
     /**
      * Initializes Metrics.
      */
     private void initMetrics(ServletContext servletContext, EnumSet<DispatcherType> disps) {
-        log.debug("Initializing Metrics registries");
-        servletContext.setAttribute(InstrumentedFilter.REGISTRY_ATTRIBUTE,
-            metricRegistry);
-        servletContext.setAttribute(MetricsServlet.METRICS_REGISTRY,
-            metricRegistry);
+	log.debug("Initializing Metrics registries");
+	servletContext.setAttribute(InstrumentedFilter.REGISTRY_ATTRIBUTE, metricRegistry);
+	servletContext.setAttribute(MetricsServlet.METRICS_REGISTRY, metricRegistry);
 
-        log.debug("Registering Metrics Filter");
-        FilterRegistration.Dynamic metricsFilter = servletContext.addFilter("webappMetricsFilter",
-            new InstrumentedFilter());
+	log.debug("Registering Metrics Filter");
+	FilterRegistration.Dynamic metricsFilter = servletContext.addFilter("webappMetricsFilter",
+		new InstrumentedFilter());
 
-        metricsFilter.addMappingForUrlPatterns(disps, true, "/*");
-        metricsFilter.setAsyncSupported(true);
+	metricsFilter.addMappingForUrlPatterns(disps, true, "/*");
+	metricsFilter.setAsyncSupported(true);
 
-        log.debug("Registering Metrics Servlet");
-        ServletRegistration.Dynamic metricsAdminServlet =
-            servletContext.addServlet("metricsServlet", new MetricsServlet());
+	log.debug("Registering Metrics Servlet");
+	ServletRegistration.Dynamic metricsAdminServlet = servletContext.addServlet("metricsServlet",
+		new MetricsServlet());
 
-        metricsAdminServlet.addMapping("/metrics/metrics/*");
-        metricsAdminServlet.setAsyncSupported(true);
-        metricsAdminServlet.setLoadOnStartup(2);
+	metricsAdminServlet.addMapping("/metrics/metrics/*");
+	metricsAdminServlet.setAsyncSupported(true);
+	metricsAdminServlet.setLoadOnStartup(2);
     }
 
     @Bean
     public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = props.getCors();
-        if (config.getAllowedOrigins() != null && !config.getAllowedOrigins().isEmpty()) {
-            source.registerCorsConfiguration("/api/**", config);
-            source.registerCorsConfiguration("/v2/api-docs", config);
-            source.registerCorsConfiguration("/oauth/**", config);
-        }
-        return new CorsFilter(source);
+	UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+	CorsConfiguration config = props.getCors();
+	if (config.getAllowedOrigins() != null && !config.getAllowedOrigins().isEmpty()) {
+	    source.registerCorsConfiguration("/api/**", config);
+	    source.registerCorsConfiguration("/v2/api-docs", config);
+	    source.registerCorsConfiguration("/oauth/**", config);
+	}
+	return new CorsFilter(source);
     }
 }

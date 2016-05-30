@@ -20,9 +20,10 @@ import static springfox.documentation.builders.PathSelectors.regex;
 /**
  * Springfox Swagger configuration.
  *
- * Warning! When having a lot of REST endpoints, Springfox can become a performance issue. In that
- * case, you can use a specific Spring profile for this class, so that only front-end developers
- * have access to the Swagger view.
+ * Warning! When having a lot of REST endpoints, Springfox can become a
+ * performance issue. In that case, you can use a specific Spring profile for
+ * this class, so that only front-end developers have access to the Swagger
+ * view.
  */
 @Configuration
 @EnableSwagger2
@@ -39,32 +40,23 @@ public class SwaggerConfiguration {
     @Bean
     @Profile("!" + Constants.SPRING_PROFILE_FAST)
     public Docket swaggerSpringfoxDocket(JHipsterProperties jHipsterProperties) {
-        log.debug("Starting Swagger");
-        StopWatch watch = new StopWatch();
-        watch.start();
-        ApiInfo apiInfo = new ApiInfo(
-            jHipsterProperties.getSwagger().getTitle(),
-            jHipsterProperties.getSwagger().getDescription(),
-            jHipsterProperties.getSwagger().getVersion(),
-            jHipsterProperties.getSwagger().getTermsOfServiceUrl(),
-            jHipsterProperties.getSwagger().getContact(),
-            jHipsterProperties.getSwagger().getLicense(),
-            jHipsterProperties.getSwagger().getLicenseUrl());
+	log.debug("Starting Swagger");
+	StopWatch watch = new StopWatch();
+	watch.start();
+	ApiInfo apiInfo = new ApiInfo(jHipsterProperties.getSwagger().getTitle(),
+		jHipsterProperties.getSwagger().getDescription(), jHipsterProperties.getSwagger().getVersion(),
+		jHipsterProperties.getSwagger().getTermsOfServiceUrl(), jHipsterProperties.getSwagger().getContact(),
+		jHipsterProperties.getSwagger().getLicense(), jHipsterProperties.getSwagger().getLicenseUrl());
 
-        Docket docket = new Docket(DocumentationType.SWAGGER_2)
-            .apiInfo(apiInfo)
-            .genericModelSubstitutes(ResponseEntity.class)
-            .forCodeGeneration(true)
-            .genericModelSubstitutes(ResponseEntity.class)
-            .ignoredParameterTypes(Pageable.class)
-            .directModelSubstitute(java.time.LocalDate.class, String.class)
-            .directModelSubstitute(java.time.ZonedDateTime.class, Date.class)
-            .directModelSubstitute(java.time.LocalDateTime.class, Date.class)
-            .select()
-            .paths(regex(DEFAULT_INCLUDE_PATTERN))
-            .build();
-        watch.stop();
-        log.debug("Started Swagger in {} ms", watch.getTotalTimeMillis());
-        return docket;
+	Docket docket = new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo)
+		.genericModelSubstitutes(ResponseEntity.class).forCodeGeneration(true)
+		.genericModelSubstitutes(ResponseEntity.class).ignoredParameterTypes(Pageable.class)
+		.directModelSubstitute(java.time.LocalDate.class, String.class)
+		.directModelSubstitute(java.time.ZonedDateTime.class, Date.class)
+		.directModelSubstitute(java.time.LocalDateTime.class, Date.class).select()
+		.paths(regex(DEFAULT_INCLUDE_PATTERN)).build();
+	watch.stop();
+	log.debug("Started Swagger in {} ms", watch.getTotalTimeMillis());
+	return docket;
     }
 }

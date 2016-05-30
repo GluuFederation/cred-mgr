@@ -10,8 +10,8 @@ public class LoggerDTO {
     private String level;
 
     public LoggerDTO(Logger logger) {
-        this.name = logger.getName();
-        this.level = logger.getEffectiveLevel().toString();
+	this.name = logger.getName();
+	this.level = logger.getEffectiveLevel().toString();
     }
 
     @JsonCreator
@@ -19,26 +19,23 @@ public class LoggerDTO {
     }
 
     public String getName() {
-        return name;
+	return name;
     }
 
     public void setName(String name) {
-        this.name = name;
+	this.name = name;
     }
 
     public String getLevel() {
-        return level;
+	return level;
     }
 
     public void setLevel(String level) {
-        this.level = level;
+	this.level = level;
     }
 
     @Override
     public String toString() {
-        return "LoggerDTO{" +
-            "name='" + name + '\'' +
-            ", level='" + level + '\'' +
-            '}';
+	return "LoggerDTO{" + "name='" + name + '\'' + ", level='" + level + '\'' + '}';
     }
 }

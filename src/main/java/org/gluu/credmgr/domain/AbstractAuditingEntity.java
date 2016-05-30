@@ -17,8 +17,8 @@ import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 
 /**
- * Base abstract class for entities which will hold definitions for created, last modified by and created,
- * last modified by date.
+ * Base abstract class for entities which will hold definitions for created,
+ * last modified by and created, last modified by date.
  */
 @MappedSuperclass
 @Audited
@@ -50,34 +50,34 @@ public abstract class AbstractAuditingEntity implements Serializable {
     private ZonedDateTime lastModifiedDate = ZonedDateTime.now();
 
     public String getCreatedBy() {
-        return createdBy;
+	return createdBy;
     }
 
     public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
+	this.createdBy = createdBy;
     }
 
     public ZonedDateTime getCreatedDate() {
-        return createdDate;
+	return createdDate;
     }
 
     public void setCreatedDate(ZonedDateTime createdDate) {
-        this.createdDate = createdDate;
+	this.createdDate = createdDate;
     }
 
     public String getLastModifiedBy() {
-        return lastModifiedBy;
+	return lastModifiedBy;
     }
 
     public void setLastModifiedBy(String lastModifiedBy) {
-        this.lastModifiedBy = lastModifiedBy;
+	this.lastModifiedBy = lastModifiedBy;
     }
 
     public ZonedDateTime getLastModifiedDate() {
-        return lastModifiedDate;
+	return lastModifiedDate;
     }
 
     public void setLastModifiedDate(ZonedDateTime lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
+	this.lastModifiedDate = lastModifiedDate;
     }
 }

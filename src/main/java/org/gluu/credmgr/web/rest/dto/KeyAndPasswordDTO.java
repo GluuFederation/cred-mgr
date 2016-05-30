@@ -9,18 +9,18 @@ public class KeyAndPasswordDTO {
     }
 
     public String getKey() {
-        return key;
+	return key;
     }
 
     public void setKey(String key) {
-        this.key = key;
+	this.key = key;
     }
 
     public String getNewPassword() {
-        return newPassword;
+	return newPassword;
     }
 
     public void setNewPassword(String newPassword) {
-        this.newPassword = newPassword;
+	this.newPassword = newPassword;
     }
 }

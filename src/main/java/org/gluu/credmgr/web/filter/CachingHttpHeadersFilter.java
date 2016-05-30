@@ -8,7 +8,8 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
- * This filter is used in production, to put HTTP cache headers with a long (1 month) expiration time.
+ * This filter is used in production, to put HTTP cache headers with a long (1
+ * month) expiration time.
  */
 public class CachingHttpHeadersFilter implements Filter {
 
@@ -20,35 +21,35 @@ public class CachingHttpHeadersFilter implements Filter {
     private Environment env;
 
     public CachingHttpHeadersFilter(Environment env) {
-        this.env = env;
+	this.env = env;
     }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        CACHE_TIME_TO_LIVE = TimeUnit.DAYS.toMillis(env.getProperty("jhipster.http.cache.timeToLiveInDays",
-            Long.class, 31L));
+	CACHE_TIME_TO_LIVE = TimeUnit.DAYS
+		.toMillis(env.getProperty("jhipster.http.cache.timeToLiveInDays", Long.class, 31L));
     }
 
     @Override
     public void destroy() {
-        // Nothing to destroy
+	// Nothing to destroy
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-        throws IOException, ServletException {
+	    throws IOException, ServletException {
 
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
+	HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        httpResponse.setHeader("Cache-Control", "max-age=" + CACHE_TIME_TO_LIVE + ", public");
-        httpResponse.setHeader("Pragma", "cache");
+	httpResponse.setHeader("Cache-Control", "max-age=" + CACHE_TIME_TO_LIVE + ", public");
+	httpResponse.setHeader("Pragma", "cache");
 
-        // Setting Expires header, for proxy caching
-        httpResponse.setDateHeader("Expires", CACHE_TIME_TO_LIVE + System.currentTimeMillis());
+	// Setting Expires header, for proxy caching
+	httpResponse.setDateHeader("Expires", CACHE_TIME_TO_LIVE + System.currentTimeMillis());
 
-        // Setting the Last-Modified header, for browser caching
-        httpResponse.setDateHeader("Last-Modified", LAST_MODIFIED);
+	// Setting the Last-Modified header, for browser caching
+	httpResponse.setDateHeader("Last-Modified", LAST_MODIFIED);
 
-        chain.doFilter(request, response);
+	chain.doFilter(request, response);
     }
 }

@@ -43,28 +43,29 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter {
     @Override
     @Bean
     public MetricRegistry getMetricRegistry() {
-        return metricRegistry;
+	return metricRegistry;
     }
 
     @Override
     @Bean
     public HealthCheckRegistry getHealthCheckRegistry() {
-        return healthCheckRegistry;
+	return healthCheckRegistry;
     }
 
     @PostConstruct
     public void init() {
-        log.debug("Registering JVM gauges");
-        metricRegistry.register(PROP_METRIC_REG_JVM_MEMORY, new MemoryUsageGaugeSet());
-        metricRegistry.register(PROP_METRIC_REG_JVM_GARBAGE, new GarbageCollectorMetricSet());
-        metricRegistry.register(PROP_METRIC_REG_JVM_THREADS, new ThreadStatesGaugeSet());
-        metricRegistry.register(PROP_METRIC_REG_JVM_FILES, new FileDescriptorRatioGauge());
-        metricRegistry.register(PROP_METRIC_REG_JVM_BUFFERS, new BufferPoolMetricSet(ManagementFactory.getPlatformMBeanServer()));
-        if (jHipsterProperties.getMetrics().getJmx().isEnabled()) {
-            log.debug("Initializing Metrics JMX reporting");
-            JmxReporter jmxReporter = JmxReporter.forRegistry(metricRegistry).build();
-            jmxReporter.start();
-        }
+	log.debug("Registering JVM gauges");
+	metricRegistry.register(PROP_METRIC_REG_JVM_MEMORY, new MemoryUsageGaugeSet());
+	metricRegistry.register(PROP_METRIC_REG_JVM_GARBAGE, new GarbageCollectorMetricSet());
+	metricRegistry.register(PROP_METRIC_REG_JVM_THREADS, new ThreadStatesGaugeSet());
+	metricRegistry.register(PROP_METRIC_REG_JVM_FILES, new FileDescriptorRatioGauge());
+	metricRegistry.register(PROP_METRIC_REG_JVM_BUFFERS,
+		new BufferPoolMetricSet(ManagementFactory.getPlatformMBeanServer()));
+	if (jHipsterProperties.getMetrics().getJmx().isEnabled()) {
+	    log.debug("Initializing Metrics JMX reporting");
+	    JmxReporter jmxReporter = JmxReporter.forRegistry(metricRegistry).build();
+	    jmxReporter.start();
+	}
     }
 
     @Configuration
@@ -72,30 +73,28 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter {
     @Profile("!" + Constants.SPRING_PROFILE_FAST)
     public static class GraphiteRegistry {
 
-        private final Logger log = LoggerFactory.getLogger(GraphiteRegistry.class);
+	private final Logger log = LoggerFactory.getLogger(GraphiteRegistry.class);
 
-        @Inject
-        private MetricRegistry metricRegistry;
+	@Inject
+	private MetricRegistry metricRegistry;
 
-        @Inject
-        private JHipsterProperties jHipsterProperties;
+	@Inject
+	private JHipsterProperties jHipsterProperties;
 
-        @PostConstruct
-        private void init() {
-            if (jHipsterProperties.getMetrics().getGraphite().isEnabled()) {
-                log.info("Initializing Metrics Graphite reporting");
-                String graphiteHost = jHipsterProperties.getMetrics().getGraphite().getHost();
-                Integer graphitePort = jHipsterProperties.getMetrics().getGraphite().getPort();
-                String graphitePrefix = jHipsterProperties.getMetrics().getGraphite().getPrefix();
-                Graphite graphite = new Graphite(new InetSocketAddress(graphiteHost, graphitePort));
-                GraphiteReporter graphiteReporter = GraphiteReporter.forRegistry(metricRegistry)
-                    .convertRatesTo(TimeUnit.SECONDS)
-                    .convertDurationsTo(TimeUnit.MILLISECONDS)
-                    .prefixedWith(graphitePrefix)
-                    .build(graphite);
-                graphiteReporter.start(1, TimeUnit.MINUTES);
-            }
-        }
+	@PostConstruct
+	private void init() {
+	    if (jHipsterProperties.getMetrics().getGraphite().isEnabled()) {
+		log.info("Initializing Metrics Graphite reporting");
+		String graphiteHost = jHipsterProperties.getMetrics().getGraphite().getHost();
+		Integer graphitePort = jHipsterProperties.getMetrics().getGraphite().getPort();
+		String graphitePrefix = jHipsterProperties.getMetrics().getGraphite().getPrefix();
+		Graphite graphite = new Graphite(new InetSocketAddress(graphiteHost, graphitePort));
+		GraphiteReporter graphiteReporter = GraphiteReporter.forRegistry(metricRegistry)
+			.convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS)
+			.prefixedWith(graphitePrefix).build(graphite);
+		graphiteReporter.start(1, TimeUnit.MINUTES);
+	    }
+	}
     }
 
     @Configuration
@@ -103,26 +102,24 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter {
     @Profile("!" + Constants.SPRING_PROFILE_FAST)
     public static class SparkRegistry {
 
-        private final Logger log = LoggerFactory.getLogger(SparkRegistry.class);
+	private final Logger log = LoggerFactory.getLogger(SparkRegistry.class);
 
-        @Inject
-        private MetricRegistry metricRegistry;
+	@Inject
+	private MetricRegistry metricRegistry;
 
-        @Inject
-        private JHipsterProperties jHipsterProperties;
+	@Inject
+	private JHipsterProperties jHipsterProperties;
 
-        @PostConstruct
-        private void init() {
-            if (jHipsterProperties.getMetrics().getSpark().isEnabled()) {
-                log.info("Initializing Metrics Spark reporting");
-                String sparkHost = jHipsterProperties.getMetrics().getSpark().getHost();
-                Integer sparkPort = jHipsterProperties.getMetrics().getSpark().getPort();
-                SparkReporter sparkReporter = SparkReporter.forRegistry(metricRegistry)
-                    .convertRatesTo(TimeUnit.SECONDS)
-                    .convertDurationsTo(TimeUnit.MILLISECONDS)
-                    .build(sparkHost, sparkPort);
-                sparkReporter.start(1, TimeUnit.MINUTES);
-            }
-        }
+	@PostConstruct
+	private void init() {
+	    if (jHipsterProperties.getMetrics().getSpark().isEnabled()) {
+		log.info("Initializing Metrics Spark reporting");
+		String sparkHost = jHipsterProperties.getMetrics().getSpark().getHost();
+		Integer sparkPort = jHipsterProperties.getMetrics().getSpark().getPort();
+		SparkReporter sparkReporter = SparkReporter.forRegistry(metricRegistry).convertRatesTo(TimeUnit.SECONDS)
+			.convertDurationsTo(TimeUnit.MILLISECONDS).build(sparkHost, sparkPort);
+		sparkReporter.start(1, TimeUnit.MINUTES);
+	    }
+	}
     }
 }
