@@ -1,4 +1,4 @@
-package org.gluu.credmgr.web.rest;
+package org.gluu.credmgr.service;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
