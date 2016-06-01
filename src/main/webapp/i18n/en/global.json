@@ -7,6 +7,7 @@
             "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",
             "entities": {
                 "main": "Entities",
+                "openidServerConfiguration": "Openid Server Configuration",
                 "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
             },
             "account": {
@@ -34,14 +35,20 @@
             "language": "Language"
         },
         "form": {
-            "username": "Username",
-            "username.placeholder": "Your username",
+            "firstname": "First name",
+            "firstname.placeholder": "Your first name",
+            "lastname": "Last name",
+            "lastname.placeholder": "Your last name",
             "newpassword": "New password",
             "newpassword.placeholder": "New password",
             "confirmpassword": "New password confirmation",
             "confirmpassword.placeholder": "Confirm the new password",
             "email": "E-mail",
-            "email.placeholder": "Your e-mail"
+            "email.placeholder": "Your e-mail",
+            "companyName": "Company name",
+            "companyName.placeholder": "Your company name",
+            "companyShortName": "Company short name",
+            "companyShortName.placeholder": "Your company short name"
         },
         "messages": {
             "info": {

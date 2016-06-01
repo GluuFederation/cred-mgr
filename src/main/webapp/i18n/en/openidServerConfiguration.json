@@ -1,0 +1,32 @@
+{
+    "credmgrApp": {
+        "openidServerConfiguration" : {
+            "home": {
+                "title": "Openid Server Configurations",
+                "createLabel": "Create a new Openid Server Configuration",
+                "createOrEditLabel": "Create or edit a Openid Server Configuration",
+                "search": "Search for Openid Server Configuration"
+            },
+            "created": "A new Openid Server Configuration is created with identifier {{ param }}",
+            "updated": "A Openid Server Configuration is updated with identifier {{ param }}",
+            "deleted": "A Openid Server Configuration is deleted with identifier {{ param }}",
+            "delete": {
+                "question": "Are you sure you want to delete Openid Server Configuration {{ id }}?"
+            },
+            "detail": {
+                "title": "Openid Server Configuration"
+            },
+            "host": "Host",
+            "clientId": "Client Id",
+            "clientJWKS": "Client JWKS",
+            "enableAdminPage": "Enable Admin Page",
+            "authenticationLevel": "Authentication Level",
+            "requiredOpenIdScope": "Required Open Id Scope",
+            "requiredClaim": "Required Claim",
+            "requiredClaimValue": "Required Claim Value",
+            "enablePasswordManagement": "Enable Password Management",
+            "enableEmailManagement": "Enable Email Management",
+            "user": "User"
+        }
+    }
+}

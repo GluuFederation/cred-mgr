@@ -6,11 +6,27 @@
         },
         "messages": {
             "validate": {
-                "login": {
-                    "required": "Your username is required.",
-                    "minlength": "Your username is required to be at least 1 character.",
-                    "maxlength": "Your username cannot be longer than 50 characters.",
-                    "pattern": "Your username can only contain lower-case letters and digits."
+                "firstname": {
+                    "required": "Your first name is required.",
+                    "minlength": "Your first name is required to be at least 1 character.",
+                    "maxlength": "Your first name cannot be longer than 50 characters.",
+                    "pattern": "Your first name can only contain lower-case letters and digits."
+                },
+                "lastname": {
+                    "required": "Your last name is required.",
+                    "minlength": "Your last name is required to be at least 1 character.",
+                    "maxlength": "Your last name cannot be longer than 50 characters.",
+                    "pattern": "Your last name can only contain lower-case letters and digits."
+                },
+                "companyName": {
+                    "required": "Your company name is required.",
+                    "minlength": "Your company name is required to be at least 1 character.",
+                    "maxlength": "Your company name cannot be longer than 50 characters."
+                },
+                "companyShortName": {
+                    "required": "Your company short name is required.",
+                    "minlength": "Your company short name is required to be at least 1 character.",
+                    "maxlength": "Your company short name cannot be longer than 50 characters."
                 }
             },
             "success": "<strong>Registration saved!</strong> Please check your email for confirmation.",

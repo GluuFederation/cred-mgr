@@ -32,10 +32,10 @@ spring:
             hibernate.generate_statistics: true
             hibernate.cache.region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
     mail:
-        host: localhost
+        host: mailtrap.io
         port: 25
-        username:
-        password:
+        username: 20458ad4e9e79d
+        password: d682e712c13411
     messages:
         cache-seconds: 1
     thymeleaf:
@@ -45,8 +45,12 @@ liquibase:
     contexts: dev
 
 server:
-    port: 8080
-
+    ssl:
+        key-store: classpath:server.p12
+        key-store-password: mypassword
+        key-store-type: PKCS12
+        key-alias: tomcat
+    port: 8443
 # ===================================================================
 # JHipster specific properties
 # ===================================================================
@@ -84,3 +88,12 @@ jhipster:
             queueSize: 512
     swagger: # swagger is enabled. It can be disabled by pasing 'no-swagger' profile at run time as well
         enabled: true
+
+# ===================================================================
+# cred-mgr specific properties
+# ===================================================================
+credmgr:
+    gluuIdpOrg:
+        host: https://gluu.localhost.info
+        umaAatClientId: '@!C0B0.0128.9A9D.9453!0001!EF7B.61C8!0008!1F9D.C1F5'
+        umaAatClientKeyId:

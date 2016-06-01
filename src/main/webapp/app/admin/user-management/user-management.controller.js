@@ -10,7 +10,7 @@
     function UserManagementController(Principal, User, ParseLinks, paginationConstants, JhiLanguageService) {
         var vm = this;
 
-        vm.authorities = ['ROLE_USER', 'ROLE_ADMIN'];
+        vm.authorities = ['ROLE_ADMIN', 'ROLE_GLUU_ADMIN'];
         vm.clear = clear;
         vm.currentAccount = null;
         vm.languages = null;
@@ -25,7 +25,7 @@
 
         vm.loadAll();
 
-        
+
         JhiLanguageService.getAll().then(function (languages) {
             vm.languages = languages;
         });

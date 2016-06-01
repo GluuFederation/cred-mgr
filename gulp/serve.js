@@ -50,6 +50,10 @@ module.exports = function () {
     browserSync({
         open: true,
         port: config.port,
+        https: {
+            key: "src/main/resources/server.key",
+            cert: "src/main/resources/server.crt"
+        },
         server: {
             baseDir: config.app,
             middleware: proxies

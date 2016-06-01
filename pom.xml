@@ -81,7 +81,7 @@
 
         <!-- Gluu properties -->
         <oxauth.version>2.4.3-SNAPSHOT</oxauth.version>
-        <scim.client>2.4.3-SNAPSHOT</scim.client>
+        <scim.client>2.4.3.FINAL</scim.client>
     </properties>
 
 
@@ -106,6 +106,10 @@
                 <exclusion>
                     <artifactId>javassist</artifactId>
                     <groupId>javassist</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>ehcache-core</artifactId>
+                    <groupId>net.sf.ehcache</groupId>
                 </exclusion>
             </exclusions>
         </dependency>

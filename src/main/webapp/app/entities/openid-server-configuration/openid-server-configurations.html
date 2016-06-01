@@ -1,0 +1,78 @@
+<div>
+    <h2 translate="credmgrApp.openidServerConfiguration.home.title">Openid Server Configurations</h2>
+    <jhi-alert></jhi-alert>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-4 no-padding-left">
+                <button class="btn btn-primary" ui-sref="openid-server-configuration.new" >
+                    <span class="glyphicon glyphicon-plus"></span>
+                    <span  translate="credmgrApp.openidServerConfiguration.home.createLabel">
+                        Create new Openid Server Configuration
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="table-responsive">
+        <table class="jh-table table table-striped">
+            <thead>
+                <tr>
+                    <th><span translate="global.field.id">ID</span></th>
+                    <th><span translate="credmgrApp.openidServerConfiguration.host">Host</span></th>
+                    <th><span translate="credmgrApp.openidServerConfiguration.clientId">Client Id</span></th>
+                    <th><span translate="credmgrApp.openidServerConfiguration.clientJWKS">Client JWKS</span></th>
+                    <th><span translate="credmgrApp.openidServerConfiguration.enableAdminPage">Enable Admin Page</span></th>
+                    <th><span translate="credmgrApp.openidServerConfiguration.authenticationLevel">Authentication Level</span></th>
+                    <th><span translate="credmgrApp.openidServerConfiguration.requiredOpenIdScope">Required Open Id Scope</span></th>
+                    <th><span translate="credmgrApp.openidServerConfiguration.requiredClaim">Required Claim</span></th>
+                    <th><span translate="credmgrApp.openidServerConfiguration.requiredClaimValue">Required Claim Value</span></th>
+                    <th><span translate="credmgrApp.openidServerConfiguration.enablePasswordManagement">Enable Password Management</span></th>
+                    <th><span translate="credmgrApp.openidServerConfiguration.enableEmailManagement">Enable Email Management</span></th>
+                    <th><span translate="credmgrApp.openidServerConfiguration.user">User</span></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="openidServerConfiguration in vm.openidServerConfigurations track by openidServerConfiguration.id">
+                    <td><a ui-sref="openid-server-configuration-detail({id:openidServerConfiguration.id})">{{openidServerConfiguration.id}}</a></td>
+                    <td>{{openidServerConfiguration.host}}</td>
+                    <td>{{openidServerConfiguration.clientId}}</td>
+                    <td>{{openidServerConfiguration.clientJWKS}}</td>
+                    <td>{{openidServerConfiguration.enableAdminPage}}</td>
+                    <td>{{openidServerConfiguration.authenticationLevel}}</td>
+                    <td>{{openidServerConfiguration.requiredOpenIdScope}}</td>
+                    <td>{{openidServerConfiguration.requiredClaim}}</td>
+                    <td>{{openidServerConfiguration.requiredClaimValue}}</td>
+                    <td>{{openidServerConfiguration.enablePasswordManagement}}</td>
+                    <td>{{openidServerConfiguration.enableEmailManagement}}</td>
+                    <td>
+                        {{openidServerConfiguration.user.id}}
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group flex-btn-group-container">
+                            <button type="submit"
+                                    ui-sref="openid-server-configuration-detail({id:openidServerConfiguration.id})"
+                                    class="btn btn-info btn-sm">
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                                <span class="hidden-xs hidden-sm" translate="entity.action.view"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="openid-server-configuration.edit({id:openidServerConfiguration.id})"
+                                    class="btn btn-primary btn-sm">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                                <span class="hidden-xs hidden-sm" translate="entity.action.edit"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="openid-server-configuration.delete({id:openidServerConfiguration.id})"
+                                    class="btn btn-danger btn-sm">
+                                <span class="glyphicon glyphicon-remove-circle"></span>
+                                <span class="hidden-xs hidden-sm" translate="entity.action.delete"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
