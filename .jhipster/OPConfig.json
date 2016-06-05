@@ -1,0 +1,96 @@
+{
+    "relationships": [],
+    "fields": [
+        {
+            "fieldId": 1,
+            "fieldName": "inum",
+            "fieldType": "String"
+        },
+        {
+            "fieldId": 2,
+            "fieldName": "companyName",
+            "fieldType": "String"
+        },
+        {
+            "fieldId": 3,
+            "fieldName": "companyShortName",
+            "fieldType": "String"
+        },
+        {
+            "fieldId": 4,
+            "fieldName": "host",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "pattern"
+            ],
+            "fieldValidateRulesPattern": "^https?:\/\/[^\/]*$"
+        },
+        {
+            "fieldId": 5,
+            "fieldName": "clientId",
+            "fieldType": "String"
+        },
+        {
+            "fieldId": 6,
+            "fieldName": "clientJWKS",
+            "fieldType": "String"
+        },
+        {
+            "fieldId": 7,
+            "fieldName": "authenticationLevel",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldId": 8,
+            "fieldName": "requiredOpenIdScope",
+            "fieldType": "String"
+        },
+        {
+            "fieldId": 9,
+            "fieldName": "requiredClaim",
+            "fieldType": "String"
+        },
+        {
+            "fieldId": 10,
+            "fieldName": "requiredClaimValue",
+            "fieldType": "String"
+        },
+        {
+            "fieldId": 11,
+            "fieldName": "enablePasswordManagement",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldId": 12,
+            "fieldName": "enableAdminPage",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldId": 13,
+            "fieldName": "enableEmailManagement",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldId": 14,
+            "fieldName": "activationKey",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "email",
+            "fieldType": "String",
+            "fieldValidateRules": []
+        },
+        {
+            "fieldName": "activated",
+            "fieldType": "Boolean",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "changelogDate": "20160603144012",
+    "dto": "no",
+    "service": "no",
+    "entityTableName": "op_config",
+    "pagination": "no"
+}

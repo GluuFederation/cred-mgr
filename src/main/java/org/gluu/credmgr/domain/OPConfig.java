@@ -4,17 +4,18 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * A OpenidServerConfiguration.
+ * A OPConfig.
  */
 @Entity
-@Table(name = "openid_server_configuration")
+@Table(name = "op_config")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class OpenidServerConfiguration implements Serializable {
+public class OPConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -22,46 +23,55 @@ public class OpenidServerConfiguration implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotNull
-    @Pattern(regexp = "^https?:.*$")
-    @Column(name = "host", nullable = false)
+    @Column(name = "inum")
+    private String inum;
+
+    @Column(name = "company_name")
+    private String companyName;
+
+    @Column(name = "company_short_name")
+    private String companyShortName;
+
+    @Pattern(regexp = "^https?:\\/\\/[^\\/]*$")
+    @Column(name = "host")
     private String host;
 
-    @NotNull
-    @Column(name = "client_id", nullable = false)
+    @Column(name = "client_id")
     private String clientId;
 
-    @NotNull
-    @Column(name = "client_jwks", nullable = false)
+    @Column(name = "client_jwks")
     private String clientJWKS;
-
-    @Column(name = "enable_admin_page")
-    private Boolean enableAdminPage;
 
     @Column(name = "authentication_level")
     private Integer authenticationLevel;
 
-    @NotNull
-    @Column(name = "required_open_id_scope", nullable = false)
+    @Column(name = "required_open_id_scope")
     private String requiredOpenIdScope;
 
-    @NotNull
-    @Column(name = "required_claim", nullable = false)
+    @Column(name = "required_claim")
     private String requiredClaim;
 
-    @NotNull
-    @Column(name = "required_claim_value", nullable = false)
+    @Column(name = "required_claim_value")
     private String requiredClaimValue;
 
     @Column(name = "enable_password_management")
     private Boolean enablePasswordManagement;
 
+    @Column(name = "enable_admin_page")
+    private Boolean enableAdminPage;
+
     @Column(name = "enable_email_management")
     private Boolean enableEmailManagement;
 
-    @OneToOne
-    @JoinColumn(unique = true)
-    private User user;
+    @Column(name = "activation_key")
+    private String activationKey;
+
+    @Column(name = "email")
+    private String email;
+
+    @NotNull
+    @Column(name = "activated", nullable = false)
+    private Boolean activated;
 
     public Long getId() {
         return id;
@@ -69,6 +79,30 @@ public class OpenidServerConfiguration implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getInum() {
+        return inum;
+    }
+
+    public void setInum(String inum) {
+        this.inum = inum;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public String getCompanyShortName() {
+        return companyShortName;
+    }
+
+    public void setCompanyShortName(String companyShortName) {
+        this.companyShortName = companyShortName;
     }
 
     public String getHost() {
@@ -93,14 +127,6 @@ public class OpenidServerConfiguration implements Serializable {
 
     public void setClientJWKS(String clientJWKS) {
         this.clientJWKS = clientJWKS;
-    }
-
-    public Boolean isEnableAdminPage() {
-        return enableAdminPage;
-    }
-
-    public void setEnableAdminPage(Boolean enableAdminPage) {
-        this.enableAdminPage = enableAdminPage;
     }
 
     public Integer getAuthenticationLevel() {
@@ -143,6 +169,14 @@ public class OpenidServerConfiguration implements Serializable {
         this.enablePasswordManagement = enablePasswordManagement;
     }
 
+    public Boolean isEnableAdminPage() {
+        return enableAdminPage;
+    }
+
+    public void setEnableAdminPage(Boolean enableAdminPage) {
+        this.enableAdminPage = enableAdminPage;
+    }
+
     public Boolean isEnableEmailManagement() {
         return enableEmailManagement;
     }
@@ -151,12 +185,28 @@ public class OpenidServerConfiguration implements Serializable {
         this.enableEmailManagement = enableEmailManagement;
     }
 
-    public User getUser() {
-        return user;
+    public String getActivationKey() {
+        return activationKey;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setActivationKey(String activationKey) {
+        this.activationKey = activationKey;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Boolean isActivated() {
+        return activated;
+    }
+
+    public void setActivated(Boolean activated) {
+        this.activated = activated;
     }
 
     @Override
@@ -167,11 +217,11 @@ public class OpenidServerConfiguration implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        OpenidServerConfiguration openidServerConfiguration = (OpenidServerConfiguration) o;
-        if(openidServerConfiguration.id == null || id == null) {
+        OPConfig oPConfig = (OPConfig) o;
+        if (oPConfig.id == null || id == null) {
             return false;
         }
-        return Objects.equals(id, openidServerConfiguration.id);
+        return Objects.equals(id, oPConfig.id);
     }
 
     @Override
@@ -181,18 +231,24 @@ public class OpenidServerConfiguration implements Serializable {
 
     @Override
     public String toString() {
-        return "OpenidServerConfiguration{" +
+        return "OPConfig{" +
             "id=" + id +
+            ", inum='" + inum + "'" +
+            ", companyName='" + companyName + "'" +
+            ", companyShortName='" + companyShortName + "'" +
             ", host='" + host + "'" +
             ", clientId='" + clientId + "'" +
             ", clientJWKS='" + clientJWKS + "'" +
-            ", enableAdminPage='" + enableAdminPage + "'" +
             ", authenticationLevel='" + authenticationLevel + "'" +
             ", requiredOpenIdScope='" + requiredOpenIdScope + "'" +
             ", requiredClaim='" + requiredClaim + "'" +
             ", requiredClaimValue='" + requiredClaimValue + "'" +
             ", enablePasswordManagement='" + enablePasswordManagement + "'" +
+            ", enableAdminPage='" + enableAdminPage + "'" +
             ", enableEmailManagement='" + enableEmailManagement + "'" +
+            ", activationKey='" + activationKey + "'" +
+            ", email='" + email + "'" +
+            ", activated='" + activated + "'" +
             '}';
     }
 }

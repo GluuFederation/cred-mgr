@@ -97,3 +97,8 @@ credmgr:
         host: https://gluu.localhost.info
         umaAatClientId: '@!C0B0.0128.9A9D.9453!0001!EF7B.61C8!0008!1F9D.C1F5'
         umaAatClientKeyId:
+        clientId: '@!C0B0.0128.9A9D.9453!0001!EF7B.61C8!0008!189A.3F4A'
+        requiredOpenIdScope: role_scopes
+        requiredClaim: role
+        requiredOPAdminClaimValue: IT Manager
+        requiredOPSuperAdminClaimValue: Gluu IT Manager

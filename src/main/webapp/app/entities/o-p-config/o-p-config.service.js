@@ -2,12 +2,12 @@
     'use strict';
     angular
         .module('credmgrApp')
-        .factory('OpenidServerConfiguration', OpenidServerConfiguration);
+        .factory('OPConfig', OPConfig);
 
-    OpenidServerConfiguration.$inject = ['$resource'];
+    OPConfig.$inject = ['$resource'];
 
-    function OpenidServerConfiguration ($resource) {
-        var resourceUrl =  'api/openid-server-configurations/:id';
+    function OPConfig ($resource) {
+        var resourceUrl =  'api/o-p-configs/:id';
 
         return $resource(resourceUrl, {}, {
             'query': { method: 'GET', isArray: true},

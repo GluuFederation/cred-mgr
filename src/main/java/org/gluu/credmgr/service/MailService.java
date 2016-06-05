@@ -1,9 +1,9 @@
 package org.gluu.credmgr.service;
 
-import org.gluu.credmgr.config.JHipsterProperties;
-import org.gluu.credmgr.domain.User;
-
 import org.apache.commons.lang.CharEncoding;
+import org.gluu.credmgr.config.JHipsterProperties;
+import org.gluu.credmgr.domain.OPConfig;
+import org.gluu.credmgr.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
@@ -13,8 +13,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
-
-
 
 import javax.inject.Inject;
 import javax.mail.internet.MimeMessage;
@@ -30,7 +28,8 @@ import java.util.Locale;
 public class MailService {
 
     private final Logger log = LoggerFactory.getLogger(MailService.class);
-    
+
+    private static final String OP_CONFIG = "opConfig";
     private static final String USER = "user";
     private static final String BASE_URL = "baseUrl";
 
@@ -64,6 +63,18 @@ public class MailService {
         } catch (Exception e) {
             log.warn("E-mail could not be sent to user '{}', exception is: {}", to, e.getMessage());
         }
+    }
+
+    @Async
+    public void sendOPActivationEmail(OPConfig opConfig, String baseUrl) {
+        log.debug("Sending activation e-mail to '{}'", opConfig.getEmail());
+        Locale locale = Locale.forLanguageTag("en");
+        Context context = new Context(locale);
+        context.setVariable(OP_CONFIG, opConfig);
+        context.setVariable(BASE_URL, baseUrl);
+        String content = templateEngine.process("opActivationEmail", context);
+        String subject = messageSource.getMessage("email.activation.title", null, locale);
+        sendEmail(opConfig.getEmail(), subject, content, false, true);
     }
 
     @Async
@@ -101,5 +112,5 @@ public class MailService {
         String subject = messageSource.getMessage("email.reset.title", null, locale);
         sendEmail(user.getEmail(), subject, content, false, true);
     }
-    
+
 }

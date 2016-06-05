@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory
 import scala.concurrent.duration._
 
 /**
- * Performance test for the OpenidServerConfiguration entity.
+ * Performance test for the OPConfig entity.
  */
-class OpenidServerConfigurationGatlingTest extends Simulation {
+class OPConfigGatlingTest extends Simulation {
 
     val context: LoggerContext = LoggerFactory.getILoggerFactory.asInstanceOf[LoggerContext]
     // Log all HTTP requests
@@ -37,7 +37,7 @@ class OpenidServerConfigurationGatlingTest extends Simulation {
         "X-CSRF-TOKEN" -> "${csrf_token}"
     )
 
-    val scn = scenario("Test the OpenidServerConfiguration entity")
+    val scn = scenario("Test the OPConfig entity")
         .exec(http("First unauthenticated request")
         .get("/api/account")
         .headers(headers_http)
@@ -59,26 +59,26 @@ class OpenidServerConfigurationGatlingTest extends Simulation {
         .check(headerRegex("Set-Cookie", "CSRF-TOKEN=(.*); [P,p]ath=/").saveAs("csrf_token")))
         .pause(10)
         .repeat(2) {
-            exec(http("Get all openidServerConfigurations")
-            .get("/api/openid-server-configurations")
+            exec(http("Get all oPConfigs")
+            .get("/api/o-p-configs")
             .headers(headers_http_authenticated)
             .check(status.is(200)))
             .pause(10 seconds, 20 seconds)
-            .exec(http("Create new openidServerConfiguration")
-            .post("/api/openid-server-configurations")
+            .exec(http("Create new oPConfig")
+            .post("/api/o-p-configs")
             .headers(headers_http_authenticated)
-            .body(StringBody("""{"id":null, "host":"SAMPLE_TEXT", "clientId":"SAMPLE_TEXT", "clientJWKS":"SAMPLE_TEXT", "enableAdminPage":null, "authenticationLevel":"0", "requiredOpenIdScope":"SAMPLE_TEXT", "requiredClaim":"SAMPLE_TEXT", "requiredClaimValue":"SAMPLE_TEXT", "enablePasswordManagement":null, "enableEmailManagement":null}""")).asJSON
+            .body(StringBody("""{"id":null, "inum":"SAMPLE_TEXT", "companyName":"SAMPLE_TEXT", "companyShortName":"SAMPLE_TEXT", "host":"SAMPLE_TEXT", "clientId":"SAMPLE_TEXT", "clientJWKS":"SAMPLE_TEXT", "authenticationLevel":"0", "requiredOpenIdScope":"SAMPLE_TEXT", "requiredClaim":"SAMPLE_TEXT", "requiredClaimValue":"SAMPLE_TEXT", "enablePasswordManagement":null, "enableAdminPage":null, "enableEmailManagement":null, "activationKey":"SAMPLE_TEXT", "email":"SAMPLE_TEXT", "activated":null}""")).asJSON
             .check(status.is(201))
-            .check(headerRegex("Location", "(.*)").saveAs("new_openidServerConfiguration_url"))).exitHereIfFailed
+            .check(headerRegex("Location", "(.*)").saveAs("new_oPConfig_url"))).exitHereIfFailed
             .pause(10)
             .repeat(5) {
-                exec(http("Get created openidServerConfiguration")
-                .get("${new_openidServerConfiguration_url}")
+                exec(http("Get created oPConfig")
+                .get("${new_oPConfig_url}")
                 .headers(headers_http_authenticated))
                 .pause(10)
             }
-            .exec(http("Delete created openidServerConfiguration")
-            .delete("${new_openidServerConfiguration_url}")
+            .exec(http("Delete created oPConfig")
+            .delete("${new_oPConfig_url}")
             .headers(headers_http_authenticated))
             .pause(10)
         }

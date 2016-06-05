@@ -1,0 +1,86 @@
+<div>
+    <h2 translate="credmgrApp.oPConfig.home.title">OP Configs</h2>
+    <jhi-alert></jhi-alert>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-4 no-padding-left">
+                <button class="btn btn-primary" ui-sref="o-p-config.new" >
+                    <span class="glyphicon glyphicon-plus"></span>
+                    <span  translate="credmgrApp.oPConfig.home.createLabel">
+                        Create new OP Config
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="table-responsive">
+        <table class="jh-table table table-striped">
+            <thead>
+                <tr>
+                    <th><span translate="global.field.id">ID</span></th>
+                    <th><span translate="credmgrApp.oPConfig.inum">Inum</span></th>
+                    <th><span translate="credmgrApp.oPConfig.companyName">Company Name</span></th>
+                    <th><span translate="credmgrApp.oPConfig.companyShortName">Company Short Name</span></th>
+                    <th><span translate="credmgrApp.oPConfig.host">Host</span></th>
+                    <th><span translate="credmgrApp.oPConfig.clientId">Client Id</span></th>
+                    <th><span translate="credmgrApp.oPConfig.clientJWKS">Client JWKS</span></th>
+                    <th><span translate="credmgrApp.oPConfig.authenticationLevel">Authentication Level</span></th>
+                    <th><span translate="credmgrApp.oPConfig.requiredOpenIdScope">Required Open Id Scope</span></th>
+                    <th><span translate="credmgrApp.oPConfig.requiredClaim">Required Claim</span></th>
+                    <th><span translate="credmgrApp.oPConfig.requiredClaimValue">Required Claim Value</span></th>
+                    <th><span translate="credmgrApp.oPConfig.enablePasswordManagement">Enable Password Management</span></th>
+                    <th><span translate="credmgrApp.oPConfig.enableAdminPage">Enable Admin Page</span></th>
+                    <th><span translate="credmgrApp.oPConfig.enableEmailManagement">Enable Email Management</span></th>
+                    <th><span translate="credmgrApp.oPConfig.activationKey">Activation Key</span></th>
+                    <th><span translate="credmgrApp.oPConfig.email">Email</span></th>
+                    <th><span translate="credmgrApp.oPConfig.activated">Activated</span></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="oPConfig in vm.oPConfigs track by oPConfig.id">
+                    <td><a ui-sref="o-p-config-detail({id:oPConfig.id})">{{oPConfig.id}}</a></td>
+                    <td>{{oPConfig.inum}}</td>
+                    <td>{{oPConfig.companyName}}</td>
+                    <td>{{oPConfig.companyShortName}}</td>
+                    <td>{{oPConfig.host}}</td>
+                    <td>{{oPConfig.clientId}}</td>
+                    <td>{{oPConfig.clientJWKS}}</td>
+                    <td>{{oPConfig.authenticationLevel}}</td>
+                    <td>{{oPConfig.requiredOpenIdScope}}</td>
+                    <td>{{oPConfig.requiredClaim}}</td>
+                    <td>{{oPConfig.requiredClaimValue}}</td>
+                    <td>{{oPConfig.enablePasswordManagement}}</td>
+                    <td>{{oPConfig.enableAdminPage}}</td>
+                    <td>{{oPConfig.enableEmailManagement}}</td>
+                    <td>{{oPConfig.activationKey}}</td>
+                    <td>{{oPConfig.email}}</td>
+                    <td>{{oPConfig.activated}}</td>
+                    <td class="text-right">
+                        <div class="btn-group flex-btn-group-container">
+                            <button type="submit"
+                                    ui-sref="o-p-config-detail({id:oPConfig.id})"
+                                    class="btn btn-info btn-sm">
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                                <span class="hidden-xs hidden-sm" translate="entity.action.view"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="o-p-config.edit({id:oPConfig.id})"
+                                    class="btn btn-primary btn-sm">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                                <span class="hidden-xs hidden-sm" translate="entity.action.edit"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="o-p-config.delete({id:oPConfig.id})"
+                                    class="btn btn-danger btn-sm">
+                                <span class="glyphicon glyphicon-remove-circle"></span>
+                                <span class="hidden-xs hidden-sm" translate="entity.action.delete"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

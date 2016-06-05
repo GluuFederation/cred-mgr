@@ -8,7 +8,7 @@ module.exports = {
     port: 9000,
     apiPort: 8443,
     liveReloadPort: 35729,
-    uri: 'https://localhost:',
+    uri: 'https://127.0.0.1:',
     constantTemplate:
         '(function () {\n' +
         '    \'use strict\';\n' +

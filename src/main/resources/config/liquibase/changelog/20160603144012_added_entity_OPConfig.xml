@@ -14,26 +14,34 @@
     <property name="floatType" value="float" dbms="mysql, oracle"/>
 
     <!--
-        Added the entity OpenidServerConfiguration.
+        Added the entity OPConfig.
     -->
-    <changeSet id="20160531083430-1" author="jhipster">
-        <createTable tableName="openid_server_configuration">
+    <changeSet id="20160603144012-1" author="jhipster">
+        <createTable tableName="op_config">
             <column name="id" type="bigint" autoIncrement="${autoIncrement}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
+            <column name="inum" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            
+            <column name="company_name" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            
+            <column name="company_short_name" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            
             <column name="host" type="varchar(255)">
-                <constraints nullable="false" />
+                <constraints nullable="true" />
             </column>
             
             <column name="client_id" type="varchar(255)">
-                <constraints nullable="false" />
+                <constraints nullable="true" />
             </column>
             
             <column name="client_jwks" type="varchar(255)">
-                <constraints nullable="false" />
-            </column>
-            
-            <column name="enable_admin_page" type="bit">
                 <constraints nullable="true" />
             </column>
             
@@ -42,27 +50,41 @@
             </column>
             
             <column name="required_open_id_scope" type="varchar(255)">
-                <constraints nullable="false" />
+                <constraints nullable="true" />
             </column>
             
             <column name="required_claim" type="varchar(255)">
-                <constraints nullable="false" />
+                <constraints nullable="true" />
             </column>
             
             <column name="required_claim_value" type="varchar(255)">
-                <constraints nullable="false" />
+                <constraints nullable="true" />
             </column>
             
             <column name="enable_password_management" type="bit">
                 <constraints nullable="true" />
             </column>
             
+            <column name="enable_admin_page" type="bit">
+                <constraints nullable="true" />
+            </column>
+            
             <column name="enable_email_management" type="bit">
                 <constraints nullable="true" />
             </column>
-                        <column name="user_id" type="bigint">
-                <constraints unique="true" nullable="true" />
+            
+            <column name="activation_key" type="varchar(255)">
+                <constraints nullable="true" />
             </column>
+            
+            <column name="email" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            
+            <column name="activated" type="bit">
+                <constraints nullable="false" />
+            </column>
+            
             <!-- jhipster-needle-liquibase-add-column - Jhipster will add columns here, do not remove-->
         </createTable>
         

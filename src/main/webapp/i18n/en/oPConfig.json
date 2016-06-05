@@ -1,0 +1,37 @@
+{
+    "credmgrApp": {
+        "oPConfig" : {
+            "home": {
+                "title": "OP Configs",
+                "createLabel": "Create a new OP Config",
+                "createOrEditLabel": "Create or edit a OP Config",
+                "search": "Search for OP Config"
+            },
+            "created": "A new OP Config is created with identifier {{ param }}",
+            "updated": "A OP Config is updated with identifier {{ param }}",
+            "deleted": "A OP Config is deleted with identifier {{ param }}",
+            "delete": {
+                "question": "Are you sure you want to delete OP Config {{ id }}?"
+            },
+            "detail": {
+                "title": "OP Config"
+            },
+            "inum": "Inum",
+            "companyName": "Company Name",
+            "companyShortName": "Company Short Name",
+            "host": "Host",
+            "clientId": "Client Id",
+            "clientJWKS": "Client JWKS",
+            "authenticationLevel": "Authentication Level",
+            "requiredOpenIdScope": "Required Open Id Scope",
+            "requiredClaim": "Required Claim",
+            "requiredClaimValue": "Required Claim Value",
+            "enablePasswordManagement": "Enable Password Management",
+            "enableAdminPage": "Enable Admin Page",
+            "enableEmailManagement": "Enable Email Management",
+            "activationKey": "Activation Key",
+            "email": "Email",
+            "activated": "Activated"
+        }
+    }
+}

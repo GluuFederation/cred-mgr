@@ -1,14 +1,14 @@
-(function() {
+(function () {
     'use strict';
 
     angular
         .module('credmgrApp')
-        .controller('RegisterController', RegisterController);
+        .controller('CredMgrRegisterController', CredMgrRegisterController);
 
 
-    RegisterController.$inject = ['$timeout', 'Auth', 'LoginService'];
+    CredMgrRegisterController.$inject = ['$translate', '$timeout', 'Auth', 'LoginService'];
 
-    function RegisterController($timeout, Auth, LoginService) {
+    function CredMgrRegisterController($translate, $timeout, Auth, LoginService) {
         var vm = this;
 
         vm.doNotMatch = null;
@@ -20,14 +20,14 @@
         vm.success = null;
 
         $timeout(function () {
-            angular.element('[ng-model="vm.registerAccount.login"]').focus();
+            angular.element('#login').focus();
         });
 
-        function register () {
+        function register() {
             if (vm.registerAccount.password !== vm.confirmPassword) {
                 vm.doNotMatch = 'ERROR';
             } else {
-                vm.registerAccount.langKey = 'en';
+                vm.registerAccount.langKey = $translate.use();
                 vm.doNotMatch = null;
                 vm.error = null;
                 vm.errorUserExists = null;

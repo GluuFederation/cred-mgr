@@ -6,10 +6,7 @@
 
     <include file="classpath:config/liquibase/changelog/00000000000000_initial_schema.xml"
              relativeToChangelogFile="false"/>
-    <include file="classpath:config/liquibase/changelog/20160531083430_added_entity_OpenidServerConfiguration.xml"
+    <include file="classpath:config/liquibase/changelog/20160603144012_added_entity_OPConfig.xml"
              relativeToChangelogFile="false"/>
-    <include
-        file="classpath:config/liquibase/changelog/20160531083430_added_entity_constraints_OpenidServerConfiguration.xml"
-        relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
 </databaseChangeLog>

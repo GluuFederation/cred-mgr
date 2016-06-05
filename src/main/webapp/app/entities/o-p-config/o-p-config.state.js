@@ -9,133 +9,139 @@
 
     function stateConfig($stateProvider) {
         $stateProvider
-            .state('openid-server-configuration', {
+            .state('o-p-config', {
                 parent: 'entity',
-                url: '/openid-server-configuration',
+                url: '/o-p-config',
                 data: {
                     authorities: ['ROLE_ADMIN'],
-                    pageTitle: 'credmgrApp.openidServerConfiguration.home.title'
+                    pageTitle: 'credmgrApp.oPConfig.home.title'
                 },
                 views: {
                     'content@': {
-                        templateUrl: 'app/entities/openid-server-configuration/openid-server-configurations.html',
-                        controller: 'OpenidServerConfigurationController',
+                        templateUrl: 'app/entities/o-p-config/o-p-configs.html',
+                        controller: 'OPConfigController',
                         controllerAs: 'vm'
                     }
                 },
                 resolve: {
                     translatePartialLoader: ['$translate', '$translatePartialLoader', function ($translate, $translatePartialLoader) {
-                        $translatePartialLoader.addPart('openidServerConfiguration');
+                        $translatePartialLoader.addPart('oPConfig');
                         $translatePartialLoader.addPart('global');
                         return $translate.refresh();
                     }]
                 }
             })
-            .state('openid-server-configuration-detail', {
+            .state('o-p-config-detail', {
                 parent: 'entity',
-                url: '/openid-server-configuration/{id}',
+                url: '/o-p-config/{id}',
                 data: {
                     authorities: ['ROLE_ADMIN'],
-                    pageTitle: 'credmgrApp.openidServerConfiguration.detail.title'
+                    pageTitle: 'credmgrApp.oPConfig.detail.title'
                 },
                 views: {
                     'content@': {
-                        templateUrl: 'app/entities/openid-server-configuration/openid-server-configuration-detail.html',
-                        controller: 'OpenidServerConfigurationDetailController',
+                        templateUrl: 'app/entities/o-p-config/o-p-config-detail.html',
+                        controller: 'OPConfigDetailController',
                         controllerAs: 'vm'
                     }
                 },
                 resolve: {
                     translatePartialLoader: ['$translate', '$translatePartialLoader', function ($translate, $translatePartialLoader) {
-                        $translatePartialLoader.addPart('openidServerConfiguration');
+                        $translatePartialLoader.addPart('oPConfig');
                         return $translate.refresh();
                     }],
-                    entity: ['$stateParams', 'OpenidServerConfiguration', function ($stateParams, OpenidServerConfiguration) {
-                        return OpenidServerConfiguration.get({id: $stateParams.id}).$promise;
+                    entity: ['$stateParams', 'OPConfig', function ($stateParams, OPConfig) {
+                        return OPConfig.get({id: $stateParams.id}).$promise;
                     }]
                 }
             })
-            .state('openid-server-configuration.new', {
-                parent: 'openid-server-configuration',
+            .state('o-p-config.new', {
+                parent: 'o-p-config',
                 url: '/new',
                 data: {
                     authorities: ['ROLE_ADMIN']
                 },
                 onEnter: ['$stateParams', '$state', '$uibModal', function ($stateParams, $state, $uibModal) {
                     $uibModal.open({
-                        templateUrl: 'app/entities/openid-server-configuration/openid-server-configuration-dialog.html',
-                        controller: 'OpenidServerConfigurationDialogController',
+                        templateUrl: 'app/entities/o-p-config/o-p-config-dialog.html',
+                        controller: 'OPConfigDialogController',
                         controllerAs: 'vm',
                         backdrop: 'static',
                         size: 'lg',
                         resolve: {
                             entity: function () {
                                 return {
+                                    inum: null,
+                                    companyName: null,
+                                    companyShortName: null,
                                     host: null,
                                     clientId: null,
                                     clientJWKS: null,
-                                    enableAdminPage: null,
                                     authenticationLevel: null,
                                     requiredOpenIdScope: null,
                                     requiredClaim: null,
                                     requiredClaimValue: null,
                                     enablePasswordManagement: null,
+                                    enableAdminPage: null,
                                     enableEmailManagement: null,
+                                    activationKey: null,
+                                    email: null,
+                                    activated: false,
                                     id: null
                                 };
                             }
                         }
                     }).result.then(function () {
-                        $state.go('openid-server-configuration', null, {reload: true});
+                        $state.go('o-p-config', null, {reload: true});
                     }, function () {
-                        $state.go('openid-server-configuration');
+                        $state.go('o-p-config');
                     });
                 }]
             })
-            .state('openid-server-configuration.edit', {
-                parent: 'openid-server-configuration',
+            .state('o-p-config.edit', {
+                parent: 'o-p-config',
                 url: '/{id}/edit',
                 data: {
                     authorities: ['ROLE_ADMIN']
                 },
                 onEnter: ['$stateParams', '$state', '$uibModal', function ($stateParams, $state, $uibModal) {
                     $uibModal.open({
-                        templateUrl: 'app/entities/openid-server-configuration/openid-server-configuration-dialog.html',
-                        controller: 'OpenidServerConfigurationDialogController',
+                        templateUrl: 'app/entities/o-p-config/o-p-config-dialog.html',
+                        controller: 'OPConfigDialogController',
                         controllerAs: 'vm',
                         backdrop: 'static',
                         size: 'lg',
                         resolve: {
-                            entity: ['OpenidServerConfiguration', function (OpenidServerConfiguration) {
-                                return OpenidServerConfiguration.get({id: $stateParams.id}).$promise;
+                            entity: ['OPConfig', function (OPConfig) {
+                                return OPConfig.get({id: $stateParams.id}).$promise;
                             }]
                         }
                     }).result.then(function () {
-                        $state.go('openid-server-configuration', null, {reload: true});
+                        $state.go('o-p-config', null, {reload: true});
                     }, function () {
                         $state.go('^');
                     });
                 }]
             })
-            .state('openid-server-configuration.delete', {
-                parent: 'openid-server-configuration',
+            .state('o-p-config.delete', {
+                parent: 'o-p-config',
                 url: '/{id}/delete',
                 data: {
                     authorities: ['ROLE_ADMIN']
                 },
                 onEnter: ['$stateParams', '$state', '$uibModal', function ($stateParams, $state, $uibModal) {
                     $uibModal.open({
-                        templateUrl: 'app/entities/openid-server-configuration/openid-server-configuration-delete-dialog.html',
-                        controller: 'OpenidServerConfigurationDeleteController',
+                        templateUrl: 'app/entities/o-p-config/o-p-config-delete-dialog.html',
+                        controller: 'OPConfigDeleteController',
                         controllerAs: 'vm',
                         size: 'md',
                         resolve: {
-                            entity: ['OpenidServerConfiguration', function (OpenidServerConfiguration) {
-                                return OpenidServerConfiguration.get({id: $stateParams.id}).$promise;
+                            entity: ['OPConfig', function (OPConfig) {
+                                return OPConfig.get({id: $stateParams.id}).$promise;
                             }]
                         }
                     }).result.then(function () {
-                        $state.go('openid-server-configuration', null, {reload: true});
+                        $state.go('o-p-config', null, {reload: true});
                     }, function () {
                         $state.go('^');
                     });

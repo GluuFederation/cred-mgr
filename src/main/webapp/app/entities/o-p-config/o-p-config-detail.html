@@ -1,0 +1,78 @@
+
+<div>
+    <h2><span translate="credmgrApp.oPConfig.detail.title">OP Config</span> {{vm.oPConfig.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="dl-horizontal jh-entity-details">
+        <dt><span translate="credmgrApp.oPConfig.inum">Inum</span></dt>
+        <dd>
+            <span>{{vm.oPConfig.inum}}</span>
+        </dd>
+        <dt><span translate="credmgrApp.oPConfig.companyName">Company Name</span></dt>
+        <dd>
+            <span>{{vm.oPConfig.companyName}}</span>
+        </dd>
+        <dt><span translate="credmgrApp.oPConfig.companyShortName">Company Short Name</span></dt>
+        <dd>
+            <span>{{vm.oPConfig.companyShortName}}</span>
+        </dd>
+        <dt><span translate="credmgrApp.oPConfig.host">Host</span></dt>
+        <dd>
+            <span>{{vm.oPConfig.host}}</span>
+        </dd>
+        <dt><span translate="credmgrApp.oPConfig.clientId">Client Id</span></dt>
+        <dd>
+            <span>{{vm.oPConfig.clientId}}</span>
+        </dd>
+        <dt><span translate="credmgrApp.oPConfig.clientJWKS">Client JWKS</span></dt>
+        <dd>
+            <span>{{vm.oPConfig.clientJWKS}}</span>
+        </dd>
+        <dt><span translate="credmgrApp.oPConfig.authenticationLevel">Authentication Level</span></dt>
+        <dd>
+            <span>{{vm.oPConfig.authenticationLevel}}</span>
+        </dd>
+        <dt><span translate="credmgrApp.oPConfig.requiredOpenIdScope">Required Open Id Scope</span></dt>
+        <dd>
+            <span>{{vm.oPConfig.requiredOpenIdScope}}</span>
+        </dd>
+        <dt><span translate="credmgrApp.oPConfig.requiredClaim">Required Claim</span></dt>
+        <dd>
+            <span>{{vm.oPConfig.requiredClaim}}</span>
+        </dd>
+        <dt><span translate="credmgrApp.oPConfig.requiredClaimValue">Required Claim Value</span></dt>
+        <dd>
+            <span>{{vm.oPConfig.requiredClaimValue}}</span>
+        </dd>
+        <dt><span translate="credmgrApp.oPConfig.enablePasswordManagement">Enable Password Management</span></dt>
+        <dd>
+            <span>{{vm.oPConfig.enablePasswordManagement}}</span>
+        </dd>
+        <dt><span translate="credmgrApp.oPConfig.enableAdminPage">Enable Admin Page</span></dt>
+        <dd>
+            <span>{{vm.oPConfig.enableAdminPage}}</span>
+        </dd>
+        <dt><span translate="credmgrApp.oPConfig.enableEmailManagement">Enable Email Management</span></dt>
+        <dd>
+            <span>{{vm.oPConfig.enableEmailManagement}}</span>
+        </dd>
+        <dt><span translate="credmgrApp.oPConfig.activationKey">Activation Key</span></dt>
+        <dd>
+            <span>{{vm.oPConfig.activationKey}}</span>
+        </dd>
+        <dt><span translate="credmgrApp.oPConfig.email">Email</span></dt>
+        <dd>
+            <span>{{vm.oPConfig.email}}</span>
+        </dd>
+        <dt><span translate="credmgrApp.oPConfig.activated">Activated</span></dt>
+        <dd>
+            <span>{{vm.oPConfig.activated}}</span>
+        </dd>
+    </dl>
+
+    <button type="submit"
+            onclick="window.history.back()"
+            class="btn btn-info">
+        <span class="glyphicon glyphicon-arrow-left"></span>&nbsp;<span translate="entity.action.back"> Back</span>
+    </button>
+</div>

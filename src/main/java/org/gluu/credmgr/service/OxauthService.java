@@ -1,6 +1,6 @@
 package org.gluu.credmgr.service;
 
-import org.gluu.credmgr.service.error.OxauthException;
+import org.gluu.credmgr.service.error.OPException;
 import org.springframework.stereotype.Service;
 import org.xdi.oxauth.client.*;
 import org.xdi.oxauth.model.common.AuthorizationMethod;
@@ -15,7 +15,7 @@ public class OxauthService {
 
     private static final String OPEN_ID_CONFIGURATION = "/.well-known/openid-configuration";
 
-    public OpenIdConfigurationResponse getOpenIdConfiguration(String gluuHost) throws OxauthException {
+    public OpenIdConfigurationResponse getOpenIdConfiguration(String gluuHost) throws OPException {
         try {
             OpenIdConnectDiscoveryClient openIdConnectDiscoveryClient = new OpenIdConnectDiscoveryClient(gluuHost);
             OpenIdConnectDiscoveryResponse openIdConnectDiscoveryResponse = openIdConnectDiscoveryClient.exec();
@@ -28,19 +28,19 @@ public class OxauthService {
                 return openIdConfigurationClient.execOpenIdConfiguration();
             }
         } catch (Exception e) {
-            throw new OxauthException(OxauthException.CAN_NOT_RETRIEVE_OPEN_ID_CONFIGURATION, e);
+            throw new OPException(OPException.CAN_NOT_RETRIEVE_OPEN_ID_CONFIGURATION, e);
         }
-        throw new OxauthException(OxauthException.CAN_NOT_RETRIEVE_OPEN_ID_CONFIGURATION);
+        throw new OPException(OPException.CAN_NOT_RETRIEVE_OPEN_ID_CONFIGURATION);
     }
- 
-    public ClientInfoResponse getClientInfo(String gluuHost, String accessToken) throws OxauthException {
+
+    public ClientInfoResponse getClientInfo(String gluuHost, String accessToken) throws OPException {
         OpenIdConfigurationResponse openIdConfiguration = getOpenIdConfiguration(gluuHost);
         ClientInfoClient clientInfoClient = new ClientInfoClient(openIdConfiguration.getClientInfoEndpoint());
         return clientInfoClient.execClientInfo(accessToken);
     }
 
     public RegisterResponse registerClient(String gluuHost, ApplicationType applicationType, String clientName,
-                                           List<String> redirectUris) throws OxauthException {
+                                           List<String> redirectUris) throws OPException {
         RegisterRequest request = new RegisterRequest(applicationType, clientName, redirectUris);
 
         OpenIdConfigurationResponse openIdConfiguration = getOpenIdConfiguration(gluuHost);
@@ -49,19 +49,17 @@ public class OxauthService {
         return client.exec();
     }
 
-    public AuthorizationResponse getAuthorizationUrl(String gluuHost, String clientId, List<ResponseType> responseTypes,
-                                                     List<String> scopes, String redirectUri) throws OxauthException {
+    public String getAuthorizationUrl(String gluuHost, String clientId, List<ResponseType> responseTypes,
+                                      List<String> scopes, String redirectUri) throws OPException {
         AuthorizationRequest authorizationRequest = new AuthorizationRequest(responseTypes, clientId, scopes,
             redirectUri, null);
 
         OpenIdConfigurationResponse openIdConfiguration = getOpenIdConfiguration(gluuHost);
-        AuthorizeClient authorizeClient = new AuthorizeClient(openIdConfiguration.getAuthorizationEndpoint());
-        authorizeClient.setRequest(authorizationRequest);
-        return authorizeClient.exec();
+        return openIdConfiguration.getAuthorizationEndpoint() + "?" + authorizationRequest.getQueryString();
     }
 
     public TokenResponse getToken(String gluuHost, GrantType grantType, String clientId, String clientSecret,
-                                  String code, String redirectUri, String scope) throws OxauthException {
+                                  String code, String redirectUri, String scope) throws OPException {
         TokenRequest request = new TokenRequest(grantType);
         request.setAuthUsername(clientId);
         request.setAuthPassword(clientSecret);
@@ -76,7 +74,7 @@ public class OxauthService {
     }
 
     public UserInfoResponse getUserInfo(String gluuHost, String accessToken, AuthorizationMethod authorizationMethod)
-        throws OxauthException {
+        throws OPException {
         UserInfoRequest request = new UserInfoRequest(accessToken);
         request.setAuthorizationMethod(authorizationMethod);
 
@@ -86,7 +84,7 @@ public class OxauthService {
         return client.exec();
     }
 
-    public EndSessionResponse logout(String gluuHost, String idToken, String logoutRedirectUri) throws OxauthException {
+    public EndSessionResponse logout(String gluuHost, String idToken, String logoutRedirectUri) throws OPException {
         EndSessionRequest endSessionRequest = new EndSessionRequest(idToken, logoutRedirectUri, null);
 
         OpenIdConfigurationResponse openIdConfiguration = getOpenIdConfiguration(gluuHost);
