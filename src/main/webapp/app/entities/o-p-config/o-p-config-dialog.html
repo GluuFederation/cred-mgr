@@ -1,146 +1,137 @@
+
 <form name="editForm" role="form" novalidate ng-submit="vm.save()" show-validation>
 
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
                 ng-click="vm.clear()">&times;</button>
-        <h4 class="modal-title" id="myOPConfigLabel" translate="credmgrApp.oPConfig.home.createOrEditLabel">Create or
-            edit a OP Config</h4>
+        <h4 class="modal-title" id="myOPConfigLabel" translate="credmgrApp.oPConfig.home.createOrEditLabel">Create or edit a OP Config</h4>
     </div>
     <div class="modal-body">
         <jhi-alert-error></jhi-alert-error>
         <div class="form-group" ng-show="vm.oPConfig.id">
             <label for="id" translate="global.field.id">ID</label>
             <input type="text" class="form-control" id="id" name="id"
-                   ng-model="vm.oPConfig.id" readonly/>
+                    ng-model="vm.oPConfig.id" readonly />
         </div>
         <div class="form-group">
             <label class="control-label" translate="credmgrApp.oPConfig.inum" for="field_inum">Inum</label>
             <input type="text" class="form-control" name="inum" id="field_inum"
-                   ng-model="vm.oPConfig.inum"
-            />
+                    ng-model="vm.oPConfig.inum"
+                     />
         </div>
         <div class="form-group">
-            <label class="control-label" translate="credmgrApp.oPConfig.companyName" for="field_companyName">Company
-                Name</label>
+            <label class="control-label" translate="credmgrApp.oPConfig.companyName" for="field_companyName">Company Name</label>
             <input type="text" class="form-control" name="companyName" id="field_companyName"
-                   ng-model="vm.oPConfig.companyName"
-            />
+                    ng-model="vm.oPConfig.companyName"
+                     />
         </div>
         <div class="form-group">
-            <label class="control-label" translate="credmgrApp.oPConfig.companyShortName" for="field_companyShortName">Company
-                Short Name</label>
+            <label class="control-label" translate="credmgrApp.oPConfig.companyShortName" for="field_companyShortName">Company Short Name</label>
             <input type="text" class="form-control" name="companyShortName" id="field_companyShortName"
-                   ng-model="vm.oPConfig.companyShortName"
-            />
+                    ng-model="vm.oPConfig.companyShortName"
+                     />
         </div>
         <div class="form-group">
             <label class="control-label" translate="credmgrApp.oPConfig.host" for="field_host">Host</label>
             <input type="text" class="form-control" name="host" id="field_host"
-                   ng-model="vm.oPConfig.host"
-                   ng-pattern="/^https?://[^/]*$/"/>
+                    ng-model="vm.oPConfig.host"
+                    ng-pattern="/^https?://[^/]*$/" />
             <div ng-show="editForm.host.$invalid">
                 <p class="help-block"
-                   ng-show="editForm.host.$error.pattern" translate="entity.validation.pattern"
-                   translate-value-pattern="^https?:\/\/[^\/]*$">
-                    This field should follow pattern "^https?:\/\/[^\/]*$".
+                    ng-show="editForm.host.$error.pattern" translate="entity.validation.pattern" translate-value-pattern="^https?://[^/]*$">
+                    This field should follow pattern "^https?://[^/]*$".
                 </p>
             </div>
         </div>
         <div class="form-group">
             <label class="control-label" translate="credmgrApp.oPConfig.clientId" for="field_clientId">Client Id</label>
             <input type="text" class="form-control" name="clientId" id="field_clientId"
-                   ng-model="vm.oPConfig.clientId"
-            />
+                    ng-model="vm.oPConfig.clientId"
+                     />
         </div>
         <div class="form-group">
-            <label class="control-label" translate="credmgrApp.oPConfig.clientJWKS" for="field_clientJWKS">Client
-                JWKS</label>
+            <label class="control-label" translate="credmgrApp.oPConfig.clientJWKS" for="field_clientJWKS">Client JWKS</label>
             <input type="text" class="form-control" name="clientJWKS" id="field_clientJWKS"
-                   ng-model="vm.oPConfig.clientJWKS"
-            />
+                    ng-model="vm.oPConfig.clientJWKS"
+                     />
         </div>
         <div class="form-group">
-            <label class="control-label" translate="credmgrApp.oPConfig.authenticationLevel"
-                   for="field_authenticationLevel">Authentication Level</label>
+            <label class="control-label" translate="credmgrApp.oPConfig.authenticationLevel" for="field_authenticationLevel">Authentication Level</label>
             <input type="number" class="form-control" name="authenticationLevel" id="field_authenticationLevel"
-                   ng-model="vm.oPConfig.authenticationLevel"
-            />
+                    ng-model="vm.oPConfig.authenticationLevel"
+                     />
         </div>
         <div class="form-group">
-            <label class="control-label" translate="credmgrApp.oPConfig.requiredOpenIdScope"
-                   for="field_requiredOpenIdScope">Required Open Id Scope</label>
+            <label class="control-label" translate="credmgrApp.oPConfig.requiredOpenIdScope" for="field_requiredOpenIdScope">Required Open Id Scope</label>
             <input type="text" class="form-control" name="requiredOpenIdScope" id="field_requiredOpenIdScope"
-                   ng-model="vm.oPConfig.requiredOpenIdScope"
-            />
+                    ng-model="vm.oPConfig.requiredOpenIdScope"
+                     />
         </div>
         <div class="form-group">
-            <label class="control-label" translate="credmgrApp.oPConfig.requiredClaim" for="field_requiredClaim">Required
-                Claim</label>
+            <label class="control-label" translate="credmgrApp.oPConfig.requiredClaim" for="field_requiredClaim">Required Claim</label>
             <input type="text" class="form-control" name="requiredClaim" id="field_requiredClaim"
-                   ng-model="vm.oPConfig.requiredClaim"
-            />
+                    ng-model="vm.oPConfig.requiredClaim"
+                     />
         </div>
         <div class="form-group">
-            <label class="control-label" translate="credmgrApp.oPConfig.requiredClaimValue"
-                   for="field_requiredClaimValue">Required Claim Value</label>
+            <label class="control-label" translate="credmgrApp.oPConfig.requiredClaimValue" for="field_requiredClaimValue">Required Claim Value</label>
             <input type="text" class="form-control" name="requiredClaimValue" id="field_requiredClaimValue"
-                   ng-model="vm.oPConfig.requiredClaimValue"
-            />
+                    ng-model="vm.oPConfig.requiredClaimValue"
+                     />
         </div>
         <div class="form-group">
-            <label class="control-label" translate="credmgrApp.oPConfig.enablePasswordManagement"
-                   for="field_enablePasswordManagement">Enable Password Management</label>
-            <input type="checkbox" class="form-control" name="enablePasswordManagement"
-                   id="field_enablePasswordManagement"
-                   ng-model="vm.oPConfig.enablePasswordManagement"
-            />
+            <label class="control-label" translate="credmgrApp.oPConfig.enablePasswordManagement" for="field_enablePasswordManagement">Enable Password Management</label>
+            <input type="checkbox" class="form-control" name="enablePasswordManagement" id="field_enablePasswordManagement"
+                    ng-model="vm.oPConfig.enablePasswordManagement"
+                     />
         </div>
         <div class="form-group">
-            <label class="control-label" translate="credmgrApp.oPConfig.enableAdminPage" for="field_enableAdminPage">Enable
-                Admin Page</label>
+            <label class="control-label" translate="credmgrApp.oPConfig.enableAdminPage" for="field_enableAdminPage">Enable Admin Page</label>
             <input type="checkbox" class="form-control" name="enableAdminPage" id="field_enableAdminPage"
-                   ng-model="vm.oPConfig.enableAdminPage"
-            />
+                    ng-model="vm.oPConfig.enableAdminPage"
+                     />
         </div>
         <div class="form-group">
-            <label class="control-label" translate="credmgrApp.oPConfig.enableEmailManagement"
-                   for="field_enableEmailManagement">Enable Email Management</label>
+            <label class="control-label" translate="credmgrApp.oPConfig.enableEmailManagement" for="field_enableEmailManagement">Enable Email Management</label>
             <input type="checkbox" class="form-control" name="enableEmailManagement" id="field_enableEmailManagement"
-                   ng-model="vm.oPConfig.enableEmailManagement"
-            />
+                    ng-model="vm.oPConfig.enableEmailManagement"
+                     />
         </div>
         <div class="form-group">
-            <label class="control-label" translate="credmgrApp.oPConfig.activationKey" for="field_activationKey">Activation
-                Key</label>
+            <label class="control-label" translate="credmgrApp.oPConfig.activationKey" for="field_activationKey">Activation Key</label>
             <input type="text" class="form-control" name="activationKey" id="field_activationKey"
-                   ng-model="vm.oPConfig.activationKey"
-            />
+                    ng-model="vm.oPConfig.activationKey"
+                     />
         </div>
         <div class="form-group">
             <label class="control-label" translate="credmgrApp.oPConfig.email" for="field_email">Email</label>
             <input type="text" class="form-control" name="email" id="field_email"
-                   ng-model="vm.oPConfig.email"
-            />
+                    ng-model="vm.oPConfig.email"
+                     />
         </div>
         <div class="form-group">
-            <label class="control-label" translate="credmgrApp.oPConfig.activated"
-                   for="field_activated">Activated</label>
+            <label class="control-label" translate="credmgrApp.oPConfig.activated" for="field_activated">Activated</label>
             <input type="checkbox" class="form-control" name="activated" id="field_activated"
-                   ng-model="vm.oPConfig.activated"
-            />
+                    ng-model="vm.oPConfig.activated"
+                     />
             <div ng-show="editForm.activated.$invalid">
                 <p class="help-block"
-                   ng-show="editForm.activated.$error.required" translate="entity.validation.required">
+                    ng-show="editForm.activated.$error.required" translate="entity.validation.required">
                     This field is required.
                 </p>
             </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.clientSecret" for="field_clientSecret">Client Secret</label>
+            <input type="text" class="form-control" name="clientSecret" id="field_clientSecret"
+                    ng-model="vm.oPConfig.clientSecret"
+                     />
         </div>
 
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="vm.clear()">
-            <span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span
-            translate="entity.action.cancel">Cancel</span>
+            <span class="glyphicon glyphicon-ban-circle"></span>&nbsp;<span translate="entity.action.cancel">Cancel</span>
         </button>
         <button type="submit" ng-disabled="editForm.$invalid || vm.isSaving" class="btn btn-primary">
             <span class="glyphicon glyphicon-save"></span>&nbsp;<span translate="entity.action.save">Save</span>

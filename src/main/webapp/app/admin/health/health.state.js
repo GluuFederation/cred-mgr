@@ -12,7 +12,7 @@
             parent: 'admin',
             url: '/health',
             data: {
-                authorities: ['ROLE_ADMIN'],
+                authorities: ['OP_SUPER_ADMIN'],
                 pageTitle: 'health.title'
             },
             views: {

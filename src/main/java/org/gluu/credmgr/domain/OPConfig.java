@@ -4,8 +4,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -32,7 +31,7 @@ public class OPConfig implements Serializable {
     @Column(name = "company_short_name")
     private String companyShortName;
 
-    @Pattern(regexp = "^https?:\\/\\/[^\\/]*$")
+    @Pattern(regexp = "undefined")
     @Column(name = "host")
     private String host;
 
@@ -72,6 +71,9 @@ public class OPConfig implements Serializable {
     @NotNull
     @Column(name = "activated", nullable = false)
     private Boolean activated;
+
+    @Column(name = "client_secret")
+    private String clientSecret;
 
     public Long getId() {
         return id;
@@ -209,6 +211,14 @@ public class OPConfig implements Serializable {
         this.activated = activated;
     }
 
+    public String getClientSecret() {
+        return clientSecret;
+    }
+
+    public void setClientSecret(String clientSecret) {
+        this.clientSecret = clientSecret;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -218,7 +228,7 @@ public class OPConfig implements Serializable {
             return false;
         }
         OPConfig oPConfig = (OPConfig) o;
-        if (oPConfig.id == null || id == null) {
+        if(oPConfig.id == null || id == null) {
             return false;
         }
         return Objects.equals(id, oPConfig.id);
@@ -249,6 +259,7 @@ public class OPConfig implements Serializable {
             ", activationKey='" + activationKey + "'" +
             ", email='" + email + "'" +
             ", activated='" + activated + "'" +
+            ", clientSecret='" + clientSecret + "'" +
             '}';
     }
 }

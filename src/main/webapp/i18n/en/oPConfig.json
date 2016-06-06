@@ -31,7 +31,8 @@
             "enableEmailManagement": "Enable Email Management",
             "activationKey": "Activation Key",
             "email": "Email",
-            "activated": "Activated"
+            "activated": "Activated",
+            "clientSecret": "Client Secret"
         }
     }
 }

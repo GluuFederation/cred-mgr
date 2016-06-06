@@ -10,7 +10,7 @@
     function UserManagementController(Principal, User, ParseLinks, paginationConstants, JhiLanguageService) {
         var vm = this;
 
-        vm.authorities = ['ROLE_ADMIN', 'ROLE_GLUU_ADMIN'];
+        vm.authorities = ['OP_ADMIN', 'OP_SUPER_ADMIN'];
         vm.clear = clear;
         vm.currentAccount = null;
         vm.languages = null;

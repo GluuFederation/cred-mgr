@@ -67,7 +67,7 @@ class OPConfigGatlingTest extends Simulation {
             .exec(http("Create new oPConfig")
             .post("/api/o-p-configs")
             .headers(headers_http_authenticated)
-            .body(StringBody("""{"id":null, "inum":"SAMPLE_TEXT", "companyName":"SAMPLE_TEXT", "companyShortName":"SAMPLE_TEXT", "host":"SAMPLE_TEXT", "clientId":"SAMPLE_TEXT", "clientJWKS":"SAMPLE_TEXT", "authenticationLevel":"0", "requiredOpenIdScope":"SAMPLE_TEXT", "requiredClaim":"SAMPLE_TEXT", "requiredClaimValue":"SAMPLE_TEXT", "enablePasswordManagement":null, "enableAdminPage":null, "enableEmailManagement":null, "activationKey":"SAMPLE_TEXT", "email":"SAMPLE_TEXT", "activated":null}""")).asJSON
+            .body(StringBody("""{"id":null, "inum":"SAMPLE_TEXT", "companyName":"SAMPLE_TEXT", "companyShortName":"SAMPLE_TEXT", "host":"SAMPLE_TEXT", "clientId":"SAMPLE_TEXT", "clientJWKS":"SAMPLE_TEXT", "authenticationLevel":"0", "requiredOpenIdScope":"SAMPLE_TEXT", "requiredClaim":"SAMPLE_TEXT", "requiredClaimValue":"SAMPLE_TEXT", "enablePasswordManagement":null, "enableAdminPage":null, "enableEmailManagement":null, "activationKey":"SAMPLE_TEXT", "email":"SAMPLE_TEXT", "activated":null, "clientSecret":"SAMPLE_TEXT"}""")).asJSON
             .check(status.is(201))
             .check(headerRegex("Location", "(.*)").saveAs("new_oPConfig_url"))).exitHereIfFailed
             .pause(10)

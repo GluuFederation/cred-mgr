@@ -9,37 +9,42 @@
             <h1 translate="login.title">Sign in</h1>
         </div>
         <div class="col-md-8 col-md-offset-2">
-            <div class="alert alert-danger" ng-show="vm.authenticationError" translate="login.messages.error.authentication">
+            <div class="alert alert-danger" ng-show="vm.authenticationError"
+                 translate="login.messages.error.authentication">
                 <strong>Failed to sign in!</strong> Please check your credentials and try again.
             </div>
         </div>
-        <div class="col-md-8 col-md-offset-2">
-            <form class="form" role="form" ng-submit="vm.login($event)">
+        <div class="col-md-8 col-md-offset-2" ng-switch="vm.loginUri==null">
+            <form name="form" role="form" ng-submit="vm.getLoginUri()" show-validation
+                  ng-switch-when="true">
                 <div class="form-group">
-                    <label for="username" translate="global.form.companyShortName">Login</label>
-                    <input type="text" class="form-control" id="username"
+                    <label for="companyShortName" translate="global.form.companyShortName">Login</label>
+                    <input type="text" class="form-control" id="companyShortName"
                            placeholder="{{'global.form.companyShortName.placeholder' | translate}}"
-                           ng-model="vm.username">
+                           ng-model="vm.companyShortName" required>
+                    <div ng-show="form.companyShortName.$dirty && form.companyShortName.$invalid">
+                        <p class="help-block"
+                           ng-show="form.companyShortName.$error.required"
+                           translate="global.messages.validate.email.required">
+                            Your e-mail is required.
+                        </p>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="password" translate="login.form.password">Password</label>
-                    <input type="password" class="form-control" id="password" placeholder="{{'login.form.password.placeholder' | translate}}"
-                           ng-model="vm.password">
+                <button type="submit" class="btn btn-primary" translate="login.form.next.button">Sign in
+                </button>
+                <p></p>
+                <div class="alert alert-warning" translate="global.messages.info.register" translate-compile>
+                    You don't have an account yet? <a class="alert-link" href="" ng-click="vm.register()">Register a new
+                    account</a>
                 </div>
-                <div class="form-group">
-                    <label for="rememberMe">
-                        <input type="checkbox" id="rememberMe" ng-model="vm.rememberMe" checked>
-                        <span translate="login.form.rememberme">Remember me</span>
-                    </label>
-                </div>
-                <button type="submit" class="btn btn-primary" translate="login.form.button">Sign in</button>
             </form>
-            <p></p>
-            <div class="alert alert-warning">
-                <a class="alert-link" href="" ng-click="vm.requestResetPassword()" translate="login.password.forgot">Did you forget your password?</a>
-            </div>
-            <div class="alert alert-warning" translate="global.messages.info.register" translate-compile>
-                You don't have an account yet? <a class="alert-link" href="" ng-click="vm.register()">Register a new account</a>
+            <div ng-switch-when="false">
+                <a ng-href="{{vm.loginUri}}" class="btn btn-primary" translate="login.form.login.button">Sign in</a>
+                <p></p>
+                <div class="alert alert-warning" translate="global.messages.info.register" translate-compile>
+                    You don't have an account yet? <a class="alert-link" href="" ng-click="vm.register()">Register a new
+                    account</a>
+                </div>
             </div>
         </div>
     </div>

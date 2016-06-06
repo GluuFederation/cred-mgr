@@ -13,7 +13,7 @@
             parent: 'admin',
             url: '/user-management',
             data: {
-                authorities: ['ROLE_ADMIN'],
+                authorities: ['OP_SUPER_ADMIN'],
                 pageTitle: 'user-management.home.title'
             },
             views: {
@@ -34,7 +34,7 @@
             parent: 'admin',
             url: '/user/:login',
             data: {
-                authorities: ['ROLE_ADMIN'],
+                authorities: ['OP_SUPER_ADMIN'],
                 pageTitle: 'user-management.detail.title'
             },
             views: {
@@ -55,7 +55,7 @@
             parent: 'user-management',
             url: '/new',
             data: {
-                authorities: ['ROLE_ADMIN']
+                authorities: ['OP_SUPER_ADMIN']
             },
             onEnter: ['$stateParams', '$state', '$uibModal', function($stateParams, $state, $uibModal) {
                 $uibModal.open({
@@ -85,7 +85,7 @@
             parent: 'user-management',
             url: '/{login}/edit',
             data: {
-                authorities: ['ROLE_ADMIN']
+                authorities: ['OP_SUPER_ADMIN']
             },
             onEnter: ['$stateParams', '$state', '$uibModal', function($stateParams, $state, $uibModal) {
                 $uibModal.open({
@@ -110,7 +110,7 @@
             parent: 'user-management',
             url: '/{login}/delete',
             data: {
-                authorities: ['ROLE_ADMIN']
+                authorities: ['OP_SUPER_ADMIN']
             },
             onEnter: ['$stateParams', '$state', '$uibModal', function($stateParams, $state, $uibModal) {
                 $uibModal.open({

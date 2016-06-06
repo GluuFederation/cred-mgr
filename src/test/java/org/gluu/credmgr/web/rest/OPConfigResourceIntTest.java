@@ -78,6 +78,8 @@ public class OPConfigResourceIntTest {
 
     private static final Boolean DEFAULT_ACTIVATED = false;
     private static final Boolean UPDATED_ACTIVATED = true;
+    private static final String DEFAULT_CLIENT_SECRET = "AAAAA";
+    private static final String UPDATED_CLIENT_SECRET = "BBBBB";
 
     @Inject
     private OPConfigRepository oPConfigRepository;
@@ -121,6 +123,7 @@ public class OPConfigResourceIntTest {
         oPConfig.setActivationKey(DEFAULT_ACTIVATION_KEY);
         oPConfig.setEmail(DEFAULT_EMAIL);
         oPConfig.setActivated(DEFAULT_ACTIVATED);
+        oPConfig.setClientSecret(DEFAULT_CLIENT_SECRET);
     }
 
     @Test
@@ -155,6 +158,7 @@ public class OPConfigResourceIntTest {
         assertThat(testOPConfig.getActivationKey()).isEqualTo(DEFAULT_ACTIVATION_KEY);
         assertThat(testOPConfig.getEmail()).isEqualTo(DEFAULT_EMAIL);
         assertThat(testOPConfig.isActivated()).isEqualTo(DEFAULT_ACTIVATED);
+        assertThat(testOPConfig.getClientSecret()).isEqualTo(DEFAULT_CLIENT_SECRET);
     }
 
     @Test
@@ -201,7 +205,8 @@ public class OPConfigResourceIntTest {
                 .andExpect(jsonPath("$.[*].enableEmailManagement").value(hasItem(DEFAULT_ENABLE_EMAIL_MANAGEMENT.booleanValue())))
                 .andExpect(jsonPath("$.[*].activationKey").value(hasItem(DEFAULT_ACTIVATION_KEY.toString())))
                 .andExpect(jsonPath("$.[*].email").value(hasItem(DEFAULT_EMAIL.toString())))
-                .andExpect(jsonPath("$.[*].activated").value(hasItem(DEFAULT_ACTIVATED.booleanValue())));
+                .andExpect(jsonPath("$.[*].activated").value(hasItem(DEFAULT_ACTIVATED.booleanValue())))
+                .andExpect(jsonPath("$.[*].clientSecret").value(hasItem(DEFAULT_CLIENT_SECRET.toString())));
     }
 
     @Test
@@ -230,7 +235,8 @@ public class OPConfigResourceIntTest {
             .andExpect(jsonPath("$.enableEmailManagement").value(DEFAULT_ENABLE_EMAIL_MANAGEMENT.booleanValue()))
             .andExpect(jsonPath("$.activationKey").value(DEFAULT_ACTIVATION_KEY.toString()))
             .andExpect(jsonPath("$.email").value(DEFAULT_EMAIL.toString()))
-            .andExpect(jsonPath("$.activated").value(DEFAULT_ACTIVATED.booleanValue()));
+            .andExpect(jsonPath("$.activated").value(DEFAULT_ACTIVATED.booleanValue()))
+            .andExpect(jsonPath("$.clientSecret").value(DEFAULT_CLIENT_SECRET.toString()));
     }
 
     @Test
@@ -267,6 +273,7 @@ public class OPConfigResourceIntTest {
         updatedOPConfig.setActivationKey(UPDATED_ACTIVATION_KEY);
         updatedOPConfig.setEmail(UPDATED_EMAIL);
         updatedOPConfig.setActivated(UPDATED_ACTIVATED);
+        updatedOPConfig.setClientSecret(UPDATED_CLIENT_SECRET);
 
         restOPConfigMockMvc.perform(put("/api/o-p-configs")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -293,6 +300,7 @@ public class OPConfigResourceIntTest {
         assertThat(testOPConfig.getActivationKey()).isEqualTo(UPDATED_ACTIVATION_KEY);
         assertThat(testOPConfig.getEmail()).isEqualTo(UPDATED_EMAIL);
         assertThat(testOPConfig.isActivated()).isEqualTo(UPDATED_ACTIVATED);
+        assertThat(testOPConfig.getClientSecret()).isEqualTo(UPDATED_CLIENT_SECRET);
     }
 
     @Test

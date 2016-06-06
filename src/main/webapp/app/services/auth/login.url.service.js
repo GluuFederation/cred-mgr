@@ -6,12 +6,12 @@
 
     angular
         .module('credmgrApp')
-        .factory('Login', Login);
+        .factory('LoginUri', LoginUri);
 
-    Login.$inject = ['$resource'];
+    LoginUri.$inject = ['$resource'];
 
-    function Login($resource) {
-        var service = $resource('api/openid/login', {}, {
+    function LoginUri($resource) {
+        var service = $resource('api/openid/login-uri', {}, {
             'get': {method: 'GET', params: {}, isArray: false}
         });
 

@@ -1,6 +1,6 @@
 {
     "register": {
-        "title": "Registration",
+        "title": "OP Admin Registration",
         "form": {
             "button": "Register"
         },

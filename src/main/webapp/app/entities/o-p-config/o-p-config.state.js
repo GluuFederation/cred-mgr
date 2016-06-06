@@ -13,7 +13,7 @@
                 parent: 'entity',
                 url: '/o-p-config',
                 data: {
-                    authorities: ['ROLE_ADMIN'],
+                    authorities: ['OP_SUPER_ADMIN'],
                     pageTitle: 'credmgrApp.oPConfig.home.title'
                 },
                 views: {
@@ -35,7 +35,7 @@
                 parent: 'entity',
                 url: '/o-p-config/{id}',
                 data: {
-                    authorities: ['ROLE_ADMIN'],
+                    authorities: ['OP_SUPER_ADMIN'],
                     pageTitle: 'credmgrApp.oPConfig.detail.title'
                 },
                 views: {
@@ -59,7 +59,7 @@
                 parent: 'o-p-config',
                 url: '/new',
                 data: {
-                    authorities: ['ROLE_ADMIN']
+                    authorities: ['OP_SUPER_ADMIN']
                 },
                 onEnter: ['$stateParams', '$state', '$uibModal', function ($stateParams, $state, $uibModal) {
                     $uibModal.open({
@@ -87,9 +87,10 @@
                                     activationKey: null,
                                     email: null,
                                     activated: false,
+                                    clientSecret: null,
                                     id: null
                                 };
-                            }
+                        }
                         }
                     }).result.then(function () {
                         $state.go('o-p-config', null, {reload: true});
@@ -102,7 +103,7 @@
                 parent: 'o-p-config',
                 url: '/{id}/edit',
                 data: {
-                    authorities: ['ROLE_ADMIN']
+                    authorities: ['OP_SUPER_ADMIN']
                 },
                 onEnter: ['$stateParams', '$state', '$uibModal', function ($stateParams, $state, $uibModal) {
                     $uibModal.open({
@@ -127,7 +128,7 @@
                 parent: 'o-p-config',
                 url: '/{id}/delete',
                 data: {
-                    authorities: ['ROLE_ADMIN']
+                    authorities: ['OP_SUPER_ADMIN']
                 },
                 onEnter: ['$stateParams', '$state', '$uibModal', function ($stateParams, $state, $uibModal) {
                     $uibModal.open({

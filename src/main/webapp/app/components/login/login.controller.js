@@ -1,15 +1,16 @@
-(function() {
+(function () {
     'use strict';
 
     angular
         .module('credmgrApp')
         .controller('LoginController', LoginController);
 
-    LoginController.$inject = ['$rootScope', '$state', '$timeout', 'Auth', '$uibModalInstance'];
+    LoginController.$inject = ['$rootScope', '$state', '$timeout', 'LoginUri', 'Auth', '$uibModalInstance'];
 
-    function LoginController ($rootScope, $state, $timeout, Auth, $uibModalInstance) {
+    function LoginController($rootScope, $state, $timeout, LoginUri, Auth, $uibModalInstance) {
         var vm = this;
-
+        vm.companyShortName = null;
+        vm.loginUri = null;
         vm.authenticationError = false;
         vm.cancel = cancel;
         vm.credentials = {};
@@ -20,9 +21,21 @@
         vm.requestResetPassword = requestResetPassword;
         vm.username = null;
 
-        $timeout(function (){angular.element('#username').focus();});
+        $timeout(function () {
+            angular.element('#username').focus();
+        });
 
-        function cancel () {
+        vm.getLoginUri = function getLoginUri() {
+            LoginUri.get({companyShortName: vm.companyShortName}, function (response) {
+                    vm.loginUri = angular.fromJson(response).value;
+                    vm.authenticationError = false;
+                },
+                function (err) {
+                    vm.authenticationError = true;
+                }.bind(this)).$promise;
+        };
+
+        function cancel() {
             vm.credentials = {
                 username: null,
                 password: null,
@@ -32,7 +45,7 @@
             $uibModalInstance.dismiss('cancel');
         }
 
-        function login (event) {
+        function login(event) {
             event.preventDefault();
             Auth.login({
                 username: vm.username,
@@ -60,12 +73,12 @@
             });
         }
 
-        function register () {
+        function register() {
             $uibModalInstance.dismiss('cancel');
-            $state.go('register');
+            $state.go('idp-register');
         }
 
-        function requestResetPassword () {
+        function requestResetPassword() {
             $uibModalInstance.dismiss('cancel');
             $state.go('requestReset');
         }

@@ -9,6 +9,7 @@ import org.xdi.oxauth.model.common.ResponseType;
 import org.xdi.oxauth.model.register.ApplicationType;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OxauthService {
@@ -17,20 +18,12 @@ public class OxauthService {
 
     public OpenIdConfigurationResponse getOpenIdConfiguration(String gluuHost) throws OPException {
         try {
-            OpenIdConnectDiscoveryClient openIdConnectDiscoveryClient = new OpenIdConnectDiscoveryClient(gluuHost);
-            OpenIdConnectDiscoveryResponse openIdConnectDiscoveryResponse = openIdConnectDiscoveryClient.exec();
-
-            if (openIdConnectDiscoveryResponse.getStatus() == 200) {
-                String openIdConfigurationUrl = openIdConnectDiscoveryResponse.getLinks().get(0).getHref()
-                    + OPEN_ID_CONFIGURATION;
-                OpenIdConfigurationClient openIdConfigurationClient = new OpenIdConfigurationClient(
-                    openIdConfigurationUrl);
-                return openIdConfigurationClient.execOpenIdConfiguration();
-            }
+            String openIdConfigurationUrl = gluuHost + OPEN_ID_CONFIGURATION;
+            OpenIdConfigurationClient openIdConfigurationClient = new OpenIdConfigurationClient(openIdConfigurationUrl);
+            return openIdConfigurationClient.execOpenIdConfiguration();
         } catch (Exception e) {
             throw new OPException(OPException.CAN_NOT_RETRIEVE_OPEN_ID_CONFIGURATION, e);
         }
-        throw new OPException(OPException.CAN_NOT_RETRIEVE_OPEN_ID_CONFIGURATION);
     }
 
     public ClientInfoResponse getClientInfo(String gluuHost, String accessToken) throws OPException {
@@ -58,8 +51,8 @@ public class OxauthService {
         return openIdConfiguration.getAuthorizationEndpoint() + "?" + authorizationRequest.getQueryString();
     }
 
-    public TokenResponse getToken(String gluuHost, GrantType grantType, String clientId, String clientSecret,
-                                  String code, String redirectUri, String scope) throws OPException {
+    public Optional<String> getToken(String gluuHost, GrantType grantType, String clientId, String clientSecret,
+                                     String code, String redirectUri, String scope) throws OPException {
         TokenRequest request = new TokenRequest(grantType);
         request.setAuthUsername(clientId);
         request.setAuthPassword(clientSecret);
@@ -70,7 +63,7 @@ public class OxauthService {
         OpenIdConfigurationResponse openIdConfiguration = getOpenIdConfiguration(gluuHost);
         TokenClient client = new TokenClient(openIdConfiguration.getTokenEndpoint());
         client.setRequest(request);
-        return client.exec();
+        return Optional.of(client.exec().getAccessToken());
     }
 
     public UserInfoResponse getUserInfo(String gluuHost, String accessToken, AuthorizationMethod authorizationMethod)
