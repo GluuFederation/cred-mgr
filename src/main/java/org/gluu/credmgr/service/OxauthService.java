@@ -16,73 +16,101 @@ public class OxauthService {
 
     private static final String OPEN_ID_CONFIGURATION = "/.well-known/openid-configuration";
 
-    public OpenIdConfigurationResponse getOpenIdConfiguration(String gluuHost) throws OPException {
+    public Optional<OpenIdConfigurationResponse> getOpenIdConfiguration(String gluuHost) {
         try {
             String openIdConfigurationUrl = gluuHost + OPEN_ID_CONFIGURATION;
             OpenIdConfigurationClient openIdConfigurationClient = new OpenIdConfigurationClient(openIdConfigurationUrl);
-            return openIdConfigurationClient.execOpenIdConfiguration();
+
+            OpenIdConfigurationResponse response = openIdConfigurationClient.execOpenIdConfiguration();
+            if (response.getStatus() == 200)
+                return Optional.of(response);
+            else
+                return Optional.empty();
         } catch (Exception e) {
-            throw new OPException(OPException.CAN_NOT_RETRIEVE_OPEN_ID_CONFIGURATION, e);
+            return Optional.empty();
         }
     }
 
-    public ClientInfoResponse getClientInfo(String gluuHost, String accessToken) throws OPException {
-        OpenIdConfigurationResponse openIdConfiguration = getOpenIdConfiguration(gluuHost);
-        ClientInfoClient clientInfoClient = new ClientInfoClient(openIdConfiguration.getClientInfoEndpoint());
-        return clientInfoClient.execClientInfo(accessToken);
+    public Optional<ClientInfoResponse> getClientInfo(String gluuHost, String accessToken) throws OPException {
+        return getOpenIdConfiguration(gluuHost).map(openIdConfiguration -> {
+            ClientInfoClient clientInfoClient = new ClientInfoClient(openIdConfiguration.getClientInfoEndpoint());
+
+            ClientInfoResponse response = clientInfoClient.execClientInfo(accessToken);
+            if (response.getStatus() == 200)
+                return response;
+            else
+                return null;
+        });
     }
 
-    public RegisterResponse registerClient(String gluuHost, ApplicationType applicationType, String clientName,
-                                           List<String> redirectUris) throws OPException {
-        RegisterRequest request = new RegisterRequest(applicationType, clientName, redirectUris);
+    public Optional<RegisterResponse> registerClient(String gluuHost, ApplicationType applicationType, String clientName,
+                                                     List<String> redirectUris) {
+        return getOpenIdConfiguration(gluuHost).map(openIdConfiguration -> {
+            RegisterRequest request = new RegisterRequest(applicationType, clientName, redirectUris);
+            RegisterClient client = new RegisterClient(openIdConfiguration.getRegistrationEndpoint());
+            client.setRequest(request);
 
-        OpenIdConfigurationResponse openIdConfiguration = getOpenIdConfiguration(gluuHost);
-        RegisterClient client = new RegisterClient(openIdConfiguration.getRegistrationEndpoint());
-        client.setRequest(request);
-        return client.exec();
+            RegisterResponse response = client.exec();
+            if (response.getStatus() == 200)
+                return response;
+            else
+                return null;
+        });
     }
 
-    public String getAuthorizationUrl(String gluuHost, String clientId, List<ResponseType> responseTypes,
-                                      List<String> scopes, String redirectUri) throws OPException {
-        AuthorizationRequest authorizationRequest = new AuthorizationRequest(responseTypes, clientId, scopes,
-            redirectUri, null);
+    public Optional<String> getAuthorizationUri(String gluuHost, String clientId, List<ResponseType> responseTypes,
+                                                List<String> scopes, String redirectUri) {
+        return getOpenIdConfiguration(gluuHost).map(openIdConfiguration -> {
+            AuthorizationRequest authorizationRequest = new AuthorizationRequest(responseTypes, clientId, scopes,
+                redirectUri, null);
+            return openIdConfiguration.getAuthorizationEndpoint() + "?" + authorizationRequest.getQueryString();
+        });
 
-        OpenIdConfigurationResponse openIdConfiguration = getOpenIdConfiguration(gluuHost);
-        return openIdConfiguration.getAuthorizationEndpoint() + "?" + authorizationRequest.getQueryString();
     }
 
-    public Optional<String> getToken(String gluuHost, GrantType grantType, String clientId, String clientSecret,
-                                     String code, String redirectUri, String scope) throws OPException {
-        TokenRequest request = new TokenRequest(grantType);
-        request.setAuthUsername(clientId);
-        request.setAuthPassword(clientSecret);
-        request.setCode(code);
-        request.setRedirectUri(redirectUri);
-        request.setScope(scope);
+    public Optional<TokenResponse> getToken(String gluuHost, GrantType grantType, String clientId, String clientSecret,
+                                            String code, String redirectUri, String scope) {
+        return getOpenIdConfiguration(gluuHost).map(openIdConfiguration -> {
+            TokenRequest request = new TokenRequest(grantType);
+            request.setAuthUsername(clientId);
+            request.setAuthPassword(clientSecret);
+            request.setCode(code);
+            request.setRedirectUri(redirectUri);
+            request.setScope(scope);
 
-        OpenIdConfigurationResponse openIdConfiguration = getOpenIdConfiguration(gluuHost);
-        TokenClient client = new TokenClient(openIdConfiguration.getTokenEndpoint());
-        client.setRequest(request);
-        return Optional.of(client.exec().getAccessToken());
+            TokenClient client = new TokenClient(openIdConfiguration.getTokenEndpoint());
+            client.setRequest(request);
+
+            TokenResponse response = client.exec();
+            if (response.getStatus() == 200)
+                return response;
+            else
+                return null;
+        });
+
     }
 
-    public UserInfoResponse getUserInfo(String gluuHost, String accessToken, AuthorizationMethod authorizationMethod)
-        throws OPException {
-        UserInfoRequest request = new UserInfoRequest(accessToken);
-        request.setAuthorizationMethod(authorizationMethod);
+    public Optional<UserInfoResponse> getUserInfo(String gluuHost, String accessToken, AuthorizationMethod authorizationMethod) {
+        return getOpenIdConfiguration(gluuHost).map(openIdConfiguration -> {
+            UserInfoRequest request = new UserInfoRequest(accessToken);
+            request.setAuthorizationMethod(authorizationMethod);
 
-        OpenIdConfigurationResponse openIdConfiguration = getOpenIdConfiguration(gluuHost);
-        UserInfoClient client = new UserInfoClient(openIdConfiguration.getUserInfoEndpoint());
-        client.setRequest(request);
-        return client.exec();
+            UserInfoClient client = new UserInfoClient(openIdConfiguration.getUserInfoEndpoint());
+            client.setRequest(request);
+
+            UserInfoResponse response = client.exec();
+            if (response.getStatus() == 200)
+                return response;
+            else
+                return null;
+        });
+
     }
 
-    public EndSessionResponse logout(String gluuHost, String idToken, String logoutRedirectUri) throws OPException {
-        EndSessionRequest endSessionRequest = new EndSessionRequest(idToken, logoutRedirectUri, null);
-
-        OpenIdConfigurationResponse openIdConfiguration = getOpenIdConfiguration(gluuHost);
-        EndSessionClient endSessionClient = new EndSessionClient(openIdConfiguration.getEndSessionEndpoint());
-        endSessionClient.setRequest(endSessionRequest);
-        return endSessionClient.exec();
+    public Optional<String> getLogoutUri(String gluuHost, String idToken, String logoutRedirectUri) {
+        return getOpenIdConfiguration(gluuHost).map(openIdConfiguration -> {
+            EndSessionRequest endSessionRequest = new EndSessionRequest(idToken, logoutRedirectUri, null);
+            return openIdConfiguration.getEndSessionEndpoint() + "?" + endSessionRequest.getQueryString();
+        });
     }
 }

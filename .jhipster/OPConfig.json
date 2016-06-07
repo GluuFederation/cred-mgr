@@ -23,7 +23,7 @@
             "fieldValidateRules": [
                 "pattern"
             ],
-            "fieldValidateRulesPattern": "^https?://[^/]*$"
+            "fieldValidateRulesPattern": "^https?:\/\/[^\/]*$"
         },
         {
             "fieldId": 5,

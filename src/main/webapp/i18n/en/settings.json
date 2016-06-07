@@ -1,11 +1,22 @@
 {
     "settings": {
         "title": "User settings for [<b>{{username}}</b>]",
+        "server.configuration": "SERVER CONFIGURATION",
+        "admin.configuration": "ADMIN CREDENTIAL WEBSITE CONFIGURATION",
         "form": {
-            "firstname": "First Name",
-            "firstname.placeholder": "Your first name",
-            "lastname": "Last Name",
-            "lastname.placeholder": "Your last name",
+            "host": "Gluu server url",
+            "host.placeholder": "Your server url e.g. 'https://gluu.server.org'",
+            "clientId": "Client ID",
+            "clientId.placeholder": "Your client_id e.g. '@!C0B0.XXXX.XXXX.XXXX!XXXX!XXXX.XXXX!XXXX!XXXX.3ECC'",
+            "clientJWKS": "Client JWKS",
+            "clientJWKS.placeholder": "Your file on Gluu Server '/install/community-edition-setup/setup.properties.last'",
+            "enableAdminPage": "Enable web admin page",
+            "requiredClaim": "Required claim",
+            "requiredClaim.placeholder": "Your required claim e.g. 'role'",
+            "requiredClaimValue": "Required claim value",
+            "requiredClaimValue.placeholder": "Your required claim value e.g. 'IT Manager'",
+            "enablePasswordManagement": "Enable password management",
+            "enableEmailManagement": "Enable email management",
             "language": "Language",
             "button": "Save"
         },

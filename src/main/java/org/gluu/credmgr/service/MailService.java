@@ -1,5 +1,10 @@
 package org.gluu.credmgr.service;
 
+import java.util.Locale;
+
+import javax.inject.Inject;
+import javax.mail.internet.MimeMessage;
+
 import org.apache.commons.lang.CharEncoding;
 import org.gluu.credmgr.config.JHipsterProperties;
 import org.gluu.credmgr.domain.OPConfig;
@@ -13,10 +18,6 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
-import javax.inject.Inject;
-import javax.mail.internet.MimeMessage;
-import java.util.Locale;
-
 /**
  * Service for sending e-mails.
  * <p>
@@ -29,7 +30,6 @@ public class MailService {
     private final Logger log = LoggerFactory.getLogger(MailService.class);
 
     private static final String OP_CONFIG = "opConfig";
-    private static final String USER = "user";
     private static final String BASE_URL = "baseUrl";
 
     @Inject

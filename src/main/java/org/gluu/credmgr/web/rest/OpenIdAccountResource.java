@@ -56,29 +56,35 @@ public class OpenidAccountResource {
     }
 
     @RequestMapping("/openid/login-uri")
-    public ResponseEntity<SingleValueDTO> getLoginUri(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "companyShortName") String companyShortName) throws OPException {
+    public ResponseEntity<SingleValueDTO> getLoginUri(HttpServletRequest request, @RequestParam(value = "companyShortName") String companyShortName){
         return opUserService.getLoginUri(companyShortName, getBaseUrl(request) + "/api/openid/login-redirect")
-            .map(location -> {
-
-                return new ResponseEntity<SingleValueDTO>(new SingleValueDTO(location), HttpStatus.OK);
-            })
+            .map(location -> new ResponseEntity<SingleValueDTO>(new SingleValueDTO(location), HttpStatus.OK))
             .orElse(new ResponseEntity<SingleValueDTO>(HttpStatus.NOT_FOUND));
     }
+
+    @RequestMapping("/openid/logout-uri")
+    public ResponseEntity<SingleValueDTO> getLogoutUri(HttpServletRequest request){
+        return opUserService.getLogoutUri(getBaseUrl(request) + "/api/openid/logout-redirect")
+            .map(location -> new ResponseEntity<SingleValueDTO>(new SingleValueDTO(location), HttpStatus.OK))
+            .orElse(new ResponseEntity<SingleValueDTO>(HttpStatus.NOT_FOUND));
+    }
+
 
     @RequestMapping("/openid/login-redirect")
     public void loginRedirectionHandler(HttpServletResponse response, HttpServletRequest request,
                                         @RequestParam(required = false, value = "session_state") String sessionState,
                                         @RequestParam(required = false, value = "scope") String scope,
                                         @RequestParam(required = false, value = "state") String state,
-                                        @RequestParam(required = false, value = "code") String code) throws IOException, OPException, JAXBException {
+                                        @RequestParam(required = false, value = "code") String code) throws IOException {
 
-        opUserService.login(getBaseUrl(request) + "/#/reset-password", sessionState, scope, state, code);
+        opUserService.login(getBaseUrl(request) + "/#/reset-password", code);
         response.sendRedirect("/#/reset-password");
     }
 
     @RequestMapping("/openid/logout-redirect")
-    public void logoutRedirectionHandler() {
-
+    public void logoutRedirectionHandler(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        opUserService.logout(request, response);
+        response.sendRedirect("/#/");
     }
 
     @RequestMapping(value = "/openid/account",

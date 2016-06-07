@@ -42,16 +42,7 @@
         }
 
         function logout () {
-
-            
-            // logout from the server
-            $http.post('api/logout').success(function (response) {
-                delete $localStorage.authenticationToken;
-                // to get a new csrf token call the api
-                $http.get('api/account');
-                return response;
-            });
-            
+            delete $localStorage.authenticationToken;
         }
     }
 })();

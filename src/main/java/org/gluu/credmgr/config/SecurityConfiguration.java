@@ -41,7 +41,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .accessDeniedHandler(new CustomAccessDeniedHandler())
             .and()
             .logout()
-            .logoutUrl("/api/logout")
+            .logoutUrl("/api/getLogoutUri")
             .deleteCookies("JSESSIONID", "CSRF-TOKEN")
             .permitAll()
             .and()

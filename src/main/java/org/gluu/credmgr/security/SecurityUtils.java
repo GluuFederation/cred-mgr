@@ -1,13 +1,14 @@
 package org.gluu.credmgr.security;
 
+import java.util.Collection;
+
+import org.gluu.credmgr.domain.OPAuthority;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.Collection;
 
 /**
  * Utility class for Spring Security.
@@ -47,7 +48,7 @@ public final class SecurityUtils {
         Collection<? extends GrantedAuthority> authorities = securityContext.getAuthentication().getAuthorities();
         if (authorities != null) {
             for (GrantedAuthority authority : authorities) {
-                if (authority.getAuthority().equals(AuthoritiesConstants.ANONYMOUS)) {
+		if (authority.getAuthority().equals(OPAuthority.OP_ANONYMOUS.toString())) {
                     return false;
                 }
             }

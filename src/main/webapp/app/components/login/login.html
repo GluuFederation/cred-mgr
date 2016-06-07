@@ -39,7 +39,11 @@
                 </div>
             </form>
             <div ng-switch-when="false">
-                <a ng-href="{{vm.loginUri}}" class="btn btn-primary" translate="login.form.login.button">Sign in</a>
+                <form ng-submit="vm.login()">
+                    <button type="submit" id="loginBtn" class="btn btn-primary" translate="login.form.login.button">Sign
+                        in
+                    </button>
+                </form>
                 <p></p>
                 <div class="alert alert-warning" translate="global.messages.info.register" translate-compile>
                     You don't have an account yet? <a class="alert-link" href="" ng-click="vm.register()">Register a new

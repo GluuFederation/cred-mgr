@@ -4,7 +4,8 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -31,7 +32,7 @@ public class OPConfig implements Serializable {
     @Column(name = "company_short_name")
     private String companyShortName;
 
-    @Pattern(regexp = "undefined")
+    @Pattern(regexp = "^https?:\\/\\/[^\\/]*$")
     @Column(name = "host")
     private String host;
 

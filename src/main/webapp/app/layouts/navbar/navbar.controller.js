@@ -5,9 +5,9 @@
         .module('credmgrApp')
         .controller('NavbarController', NavbarController);
 
-    NavbarController.$inject = ['$state', 'Auth', 'Principal', 'ProfileService', 'LoginService'];
+    NavbarController.$inject = ['$state', 'Auth', 'Principal', 'LogoutUri', 'ProfileService', 'LoginService'];
 
-    function NavbarController ($state, Auth, Principal, ProfileService, LoginService) {
+    function NavbarController($state, Auth, Principal, LogoutUri, ProfileService, LoginService) {
         var vm = this;
 
         vm.isNavbarCollapsed = true;
@@ -23,6 +23,20 @@
         vm.toggleNavbar = toggleNavbar;
         vm.collapseNavbar = collapseNavbar;
         vm.$state = $state;
+        vm.logoutError = true;
+        vm.logoutUri = null;
+
+        if (vm.isAuthenticated()) {
+            LogoutUri.get({},
+                function (response) {
+                    vm.logoutUri = angular.fromJson(response).value;
+                    vm.logoutError = false;
+                },
+                function (err) {
+                    vm.logoutError = true;
+                }.bind(this)
+            ).$promise;
+        }
 
         function login() {
             collapseNavbar();
@@ -30,9 +44,10 @@
         }
 
         function logout() {
+            if (vm.logoutError) return;
             collapseNavbar();
             Auth.logout();
-            $state.go('home');
+            window.location = vm.logoutUri;
         }
 
         function toggleNavbar() {

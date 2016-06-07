@@ -1,14 +1,14 @@
 package org.gluu.credmgr.config;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.core.io.ClassPathResource;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * Utility class to load a Spring profile to be used as default
@@ -16,8 +16,6 @@ import java.util.Properties;
  * If the value is not available in <code>application.yml</code> then <code>dev</code> profile will be used as default.
  */
 public final class DefaultProfileUtil {
-
-    private static final long serialVersionUID = 1L;
 
     private static final Logger log = LoggerFactory.getLogger(DefaultProfileUtil.class);
 
