@@ -86,6 +86,13 @@
 
 
     <dependencies>
+        <!--<dependency>-->
+        <!--<groupId>gluu.scim.client</groupId>-->
+        <!--<artifactId>SCIM-Client</artifactId>-->
+        <!--<version>2.4.3-SNAPSHOT</version>-->
+        <!--<scope>system</scope>-->
+        <!--<systemPath>${project.basedir}/lib/program.jar</systemPath>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>gluu.scim.client</groupId>
             <artifactId>SCIM-Client</artifactId>

@@ -16,7 +16,7 @@
             "detail": {
                 "title": "OP Config"
             },
-            "inum": "Inum",
+            "adminScimId": "Admin Scim Id",
             "companyName": "Company Name",
             "companyShortName": "Company Short Name",
             "host": "Host",

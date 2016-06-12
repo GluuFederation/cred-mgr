@@ -41,8 +41,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @IntegrationTest
 public class OPConfigResourceIntTest {
 
-    private static final String DEFAULT_INUM = "AAAAA";
-    private static final String UPDATED_INUM = "BBBBB";
+    private static final String DEFAULT_ADMIN_SCIM_ID = "AAAAA";
+    private static final String UPDATED_ADMIN_SCIM_ID = "BBBBB";
     private static final String DEFAULT_COMPANY_NAME = "AAAAA";
     private static final String UPDATED_COMPANY_NAME = "BBBBB";
     private static final String DEFAULT_COMPANY_SHORT_NAME = "AAAAA";
@@ -107,7 +107,7 @@ public class OPConfigResourceIntTest {
     @Before
     public void initTest() {
         oPConfig = new OPConfig();
-        oPConfig.setInum(DEFAULT_INUM);
+        oPConfig.setAdminScimId(DEFAULT_ADMIN_SCIM_ID);
         oPConfig.setCompanyName(DEFAULT_COMPANY_NAME);
         oPConfig.setCompanyShortName(DEFAULT_COMPANY_SHORT_NAME);
         oPConfig.setHost(DEFAULT_HOST);
@@ -142,7 +142,7 @@ public class OPConfigResourceIntTest {
         List<OPConfig> oPConfigs = oPConfigRepository.findAll();
         assertThat(oPConfigs).hasSize(databaseSizeBeforeCreate + 1);
         OPConfig testOPConfig = oPConfigs.get(oPConfigs.size() - 1);
-        assertThat(testOPConfig.getInum()).isEqualTo(DEFAULT_INUM);
+        assertThat(testOPConfig.getAdminScimId()).isEqualTo(DEFAULT_ADMIN_SCIM_ID);
         assertThat(testOPConfig.getCompanyName()).isEqualTo(DEFAULT_COMPANY_NAME);
         assertThat(testOPConfig.getCompanyShortName()).isEqualTo(DEFAULT_COMPANY_SHORT_NAME);
         assertThat(testOPConfig.getHost()).isEqualTo(DEFAULT_HOST);
@@ -190,7 +190,7 @@ public class OPConfigResourceIntTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.[*].id").value(hasItem(oPConfig.getId().intValue())))
-                .andExpect(jsonPath("$.[*].inum").value(hasItem(DEFAULT_INUM.toString())))
+                .andExpect(jsonPath("$.[*].adminScimId").value(hasItem(DEFAULT_ADMIN_SCIM_ID.toString())))
                 .andExpect(jsonPath("$.[*].companyName").value(hasItem(DEFAULT_COMPANY_NAME.toString())))
                 .andExpect(jsonPath("$.[*].companyShortName").value(hasItem(DEFAULT_COMPANY_SHORT_NAME.toString())))
                 .andExpect(jsonPath("$.[*].host").value(hasItem(DEFAULT_HOST.toString())))
@@ -220,7 +220,7 @@ public class OPConfigResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id").value(oPConfig.getId().intValue()))
-            .andExpect(jsonPath("$.inum").value(DEFAULT_INUM.toString()))
+            .andExpect(jsonPath("$.adminScimId").value(DEFAULT_ADMIN_SCIM_ID.toString()))
             .andExpect(jsonPath("$.companyName").value(DEFAULT_COMPANY_NAME.toString()))
             .andExpect(jsonPath("$.companyShortName").value(DEFAULT_COMPANY_SHORT_NAME.toString()))
             .andExpect(jsonPath("$.host").value(DEFAULT_HOST.toString()))
@@ -257,7 +257,7 @@ public class OPConfigResourceIntTest {
         // Update the oPConfig
         OPConfig updatedOPConfig = new OPConfig();
         updatedOPConfig.setId(oPConfig.getId());
-        updatedOPConfig.setInum(UPDATED_INUM);
+        updatedOPConfig.setAdminScimId(UPDATED_ADMIN_SCIM_ID);
         updatedOPConfig.setCompanyName(UPDATED_COMPANY_NAME);
         updatedOPConfig.setCompanyShortName(UPDATED_COMPANY_SHORT_NAME);
         updatedOPConfig.setHost(UPDATED_HOST);
@@ -284,7 +284,7 @@ public class OPConfigResourceIntTest {
         List<OPConfig> oPConfigs = oPConfigRepository.findAll();
         assertThat(oPConfigs).hasSize(databaseSizeBeforeUpdate);
         OPConfig testOPConfig = oPConfigs.get(oPConfigs.size() - 1);
-        assertThat(testOPConfig.getInum()).isEqualTo(UPDATED_INUM);
+        assertThat(testOPConfig.getAdminScimId()).isEqualTo(UPDATED_ADMIN_SCIM_ID);
         assertThat(testOPConfig.getCompanyName()).isEqualTo(UPDATED_COMPANY_NAME);
         assertThat(testOPConfig.getCompanyShortName()).isEqualTo(UPDATED_COMPANY_SHORT_NAME);
         assertThat(testOPConfig.getHost()).isEqualTo(UPDATED_HOST);

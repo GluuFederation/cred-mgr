@@ -19,7 +19,7 @@
             <thead>
                 <tr>
                     <th><span translate="global.field.id">ID</span></th>
-                    <th><span translate="credmgrApp.oPConfig.inum">Inum</span></th>
+                    <th><span translate="credmgrApp.oPConfig.adminScimId">Admin Scim Id</span></th>
                     <th><span translate="credmgrApp.oPConfig.companyName">Company Name</span></th>
                     <th><span translate="credmgrApp.oPConfig.companyShortName">Company Short Name</span></th>
                     <th><span translate="credmgrApp.oPConfig.host">Host</span></th>
@@ -42,7 +42,7 @@
             <tbody>
                 <tr ng-repeat="oPConfig in vm.oPConfigs track by oPConfig.id">
                     <td><a ui-sref="o-p-config-detail({id:oPConfig.id})">{{oPConfig.id}}</a></td>
-                    <td>{{oPConfig.inum}}</td>
+                    <td>{{oPConfig.adminScimId}}</td>
                     <td>{{oPConfig.companyName}}</td>
                     <td>{{oPConfig.companyShortName}}</td>
                     <td>{{oPConfig.host}}</td>

@@ -3,7 +3,7 @@
     "fields": [
         {
             "fieldId": 1,
-            "fieldName": "inum",
+            "fieldName": "adminScimId",
             "fieldType": "String"
         },
         {

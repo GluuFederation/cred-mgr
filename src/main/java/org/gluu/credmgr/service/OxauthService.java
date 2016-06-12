@@ -1,6 +1,5 @@
 package org.gluu.credmgr.service;
 
-import org.gluu.credmgr.service.error.OPException;
 import org.springframework.stereotype.Service;
 import org.xdi.oxauth.client.*;
 import org.xdi.oxauth.model.common.AuthorizationMethod;
@@ -31,7 +30,7 @@ public class OxauthService {
         }
     }
 
-    public Optional<ClientInfoResponse> getClientInfo(String gluuHost, String accessToken) throws OPException {
+    public Optional<ClientInfoResponse> getClientInfo(String gluuHost, String accessToken) {
         return getOpenIdConfiguration(gluuHost).map(openIdConfiguration -> {
             ClientInfoClient clientInfoClient = new ClientInfoClient(openIdConfiguration.getClientInfoEndpoint());
 

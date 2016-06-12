@@ -23,7 +23,7 @@
                     'content@': {
                         templateUrl: 'app/cred-mgr/reset-password/reset.password.html',
                         controller: 'ResetPasswordController',
-                        controllerAs: 'ctrl'
+                        controllerAs: 'vm'
                     }
                 },
                 resolve: {

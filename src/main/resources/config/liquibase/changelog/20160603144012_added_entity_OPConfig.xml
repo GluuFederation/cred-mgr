@@ -21,76 +21,76 @@
             <column name="id" type="bigint" autoIncrement="${autoIncrement}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="inum" type="varchar(255)">
-                <constraints nullable="true" />
+            <column name="admin_scim_id" type="varchar(255)">
+                <constraints nullable="true"/>
             </column>
-            
+
             <column name="company_name" type="varchar(255)">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
-            
+
             <column name="company_short_name" type="varchar(255)">
-                <constraints nullable="true" />
+                <constraints nullable="true" unique="true"/>
             </column>
-            
+
             <column name="host" type="varchar(255)">
-                <constraints nullable="true" />
+                <constraints nullable="true" unique="true"/>
             </column>
-            
+
             <column name="client_id" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            
+
             <column name="client_jwks" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            
+
             <column name="authentication_level" type="integer">
                 <constraints nullable="true" />
             </column>
-            
+
             <column name="required_open_id_scope" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            
+
             <column name="required_claim" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            
+
             <column name="required_claim_value" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            
+
             <column name="enable_password_management" type="bit">
                 <constraints nullable="true" />
             </column>
-            
+
             <column name="enable_admin_page" type="bit">
                 <constraints nullable="true" />
             </column>
-            
+
             <column name="enable_email_management" type="bit">
                 <constraints nullable="true" />
             </column>
-            
+
             <column name="activation_key" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            
+
             <column name="email" type="varchar(255)">
-                <constraints nullable="true" />
+                <constraints nullable="true" unique="true"/>
             </column>
-            
+
             <column name="activated" type="bit">
                 <constraints nullable="false" />
             </column>
-            
+
             <column name="client_secret" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            
+
             <!-- jhipster-needle-liquibase-add-column - Jhipster will add columns here, do not remove-->
         </createTable>
-        
+
     </changeSet>
 </databaseChangeLog>

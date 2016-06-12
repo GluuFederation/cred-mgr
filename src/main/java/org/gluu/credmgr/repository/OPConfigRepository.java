@@ -12,4 +12,6 @@ public interface OPConfigRepository extends JpaRepository<OPConfig, Long> {
     Optional<OPConfig> findOneByActivationKey(String activationKey);
 
     Optional<OPConfig> findOneByCompanyShortName(String companyShortName);
+
+    Optional<OPConfig> findOneByEmail(String email);
 }

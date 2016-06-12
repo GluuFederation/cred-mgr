@@ -23,17 +23,23 @@ public class OPConfig implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "inum")
-    private String inum;
+    /**
+     * Needed for activation
+     */
+    @Column(name = "admin_scim_id")
+    private String adminScimId;
 
     @Column(name = "company_name")
     private String companyName;
 
-    @Column(name = "company_short_name")
+    /**
+     * Complies with Scim "username"
+     */
+    @Column(name = "company_short_name", unique = true)
     private String companyShortName;
 
     @Pattern(regexp = "^https?:\\/\\/[^\\/]*$")
-    @Column(name = "host")
+    @Column(name = "host", unique = true)
     private String host;
 
     @Column(name = "client_id")
@@ -66,7 +72,7 @@ public class OPConfig implements Serializable {
     @Column(name = "activation_key")
     private String activationKey;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @NotNull
@@ -84,12 +90,12 @@ public class OPConfig implements Serializable {
         this.id = id;
     }
 
-    public String getInum() {
-        return inum;
+    public String getAdminScimId() {
+        return adminScimId;
     }
 
-    public void setInum(String inum) {
-        this.inum = inum;
+    public void setAdminScimId(String adminScimId) {
+        this.adminScimId = adminScimId;
     }
 
     public String getCompanyName() {
@@ -244,7 +250,7 @@ public class OPConfig implements Serializable {
     public String toString() {
         return "OPConfig{" +
             "id=" + id +
-            ", inum='" + inum + "'" +
+            ", adminScimId='" + adminScimId + "'" +
             ", companyName='" + companyName + "'" +
             ", companyShortName='" + companyShortName + "'" +
             ", host='" + host + "'" +

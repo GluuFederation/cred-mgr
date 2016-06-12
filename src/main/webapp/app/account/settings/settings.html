@@ -1,7 +1,8 @@
 <div>
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
-            <h2 translate="settings.title" translate-values="{username: '{{vm.settingsAccount.login}}'}">User settings for [<b>{{vm.settingsAccount.login}}</b>]</h2>
+            <h2 translate="settings.title" translate-values="{username: '{{vm.login}}'}">User settings for [<b>{{vm.login}}</b>]
+            </h2>
             <div class="alert alert-success" ng-show="vm.success" translate="settings.messages.success">
                 <strong>Settings saved!</strong>
             </div>
@@ -19,7 +20,7 @@
                     <label class="control-label" for="host" translate="settings.form.host">First Name</label>
                     <input type="text" class="form-control" id="host" name="host"
                            placeholder="{{'settings.form.host.placeholder' | translate}}"
-                           ng-model="vm.settingsAccount.host" ng-minlength=1 ng-maxlength=50 required maxlength="50">
+                           ng-model="vm.opConfig.host" ng-minlength=1 ng-maxlength=50 required maxlength="50">
                     <div ng-show="form.host.$dirty && form.host.$invalid">
                         <p class="help-block"
                            ng-show="form.host.$error.required" translate="settings.messages.validate.host.required">
@@ -31,7 +32,7 @@
                     <label class="control-label" for="clientId" translate="settings.form.clientId">Last Name</label>
                     <input type="text" class="form-control" id="clientId" name="clientId"
                            placeholder="{{'settings.form.clientId.placeholder' | translate}}"
-                           ng-model="vm.settingsAccount.clientId" required>
+                           ng-model="vm.opConfig.clientId" required>
                     <div ng-show="form.clientId.$dirty && form.clientId.$invalid">
                         <p class="help-block"
                            ng-show="form.clientId.$error.required"
@@ -44,7 +45,7 @@
                     <label class="control-label" for="clientJWKS" translate="settings.form.clientJWKS">E-mail</label>
                     <textarea type="clientJWKS" class="form-control" id="clientJWKS" name="clientJWKS"
                               placeholder="{{'settings.form.clientJWKS.placeholder' | translate}}"
-                              ng-model="vm.settingsAccount.clientJWKS" required
+                              ng-model="vm.opConfig.clientJWKS" required
                               rows="7"/>
                     <div ng-show="form.clientJWKS.$dirty && form.clientJWKS.$invalid">
                         <p class="help-block"
@@ -66,14 +67,14 @@
                     <input type="checkbox" class="form-control" id="enableAdminPage"
                            name="enableAdminPage"
                            placeholder="{{'settings.form.enableAdminPage.placeholder' | translate}}"
-                           ng-model="vm.settingsAccount.enableAdminPage"/>
+                           ng-model="vm.opConfig.enableAdminPage"/>
                 </div>
                 <div class="form-group">
                     <label class="control-label" for="requiredClaim" translate="settings.form.requiredClaim">Last
                         Name</label>
                     <input type="text" class="form-control" id="requiredClaim" name="requiredClaim"
                            placeholder="{{'settings.form.requiredClaim.placeholder' | translate}}"
-                           ng-model="vm.settingsAccount.requiredClaim" required>
+                           ng-model="vm.opConfig.requiredClaim" required>
                     <div ng-show="form.requiredClaim.$dirty && form.requiredClaim.$invalid">
                         <p class="help-block"
                            ng-show="form.requiredClaim.$error.required"
@@ -87,7 +88,7 @@
                         Name</label>
                     <input type="text" class="form-control" id="requiredClaimValue" name="requiredClaimValue"
                            placeholder="{{'settings.form.requiredClaimValue.placeholder' | translate}}"
-                           ng-model="vm.settingsAccount.requiredClaimValue" required>
+                           ng-model="vm.opConfig.requiredClaimValue" required>
                     <div ng-show="form.requiredClaimValue.$dirty && form.requiredClaimValue.$invalid">
                         <p class="help-block"
                            ng-show="form.requiredClaimValue.$error.required"
@@ -103,7 +104,7 @@
                     <input type="checkbox" class="form-control" id="enablePasswordManagement"
                            name="enablePasswordManagement"
                            placeholder="{{'settings.form.enablePasswordManagement.placeholder' | translate}}"
-                           ng-model="vm.settingsAccount.enablePasswordManagement"/>
+                           ng-model="vm.opConfig.enablePasswordManagement"/>
                 </div>
                 <div class="form-group">
                     <label class="control-label" for="enableEmailManagement"
@@ -112,7 +113,7 @@
                     <input type="checkbox" class="form-control" id="enableEmailManagement"
                            name="enableEmailManagement"
                            placeholder="{{'settings.form.enableEmailManagement.placeholder' | translate}}"
-                           ng-model="vm.settingsAccount.enableEmailManagement"/>
+                           ng-model="vm.opConfig.enableEmailManagement"/>
                 </div>
 
                 <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary" translate="settings.form.button">Save</button>

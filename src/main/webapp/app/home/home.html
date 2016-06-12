@@ -11,39 +11,17 @@
                 </div>
 
                 <div class="alert alert-warning" ng-switch-when="false">
-                    If you want to <a class="alert-link" href="" ng-click="vm.login()">sign in</a>, you can try the
-                    default accounts:<br/>- Administrator (login="admin" and password="admin") <br/>- User (login="user"
-                    and password="user").
+                    If you want to <a class="alert-link" href="" ng-click="vm.login()">sign in</a>, as op_admin you can
+                    try the default account:<br/>- Company short name ="gluu").
+                </div>
+                <div class="alert alert-warning">
+                    You can reset your credentials <a class="alert-link" ui-sref="reset-password">here</a>
                 </div>
                 <div class="alert alert-warning" ng-switch-when="false">
                     You don't have an account yet? <a class="alert-link" ui-sref="register">Register a new
                     account</a>
                 </div>
             </div>
-
-            <!--<div ng-switch="vm.isAuthenticated()">-->
-            <!--<div class="alert alert-success" ng-switch-when="true" translate="home.logged.message"-->
-            <!--translate-values="{username: '{{vm.account.login}}'}">-->
-            <!--You are logged in as user "{{vm.account.login}}".-->
-            <!--</div>-->
-
-            <!--<div class="alert alert-warning" ng-switch-when="false" translate="global.messages.info.authenticated"-->
-            <!--translate-compile>-->
-            <!--If you want to <a class="alert-link" href="" ng-click="vm.login()">sign in</a>, you can try the-->
-            <!--default accounts:<br/>- Administrator (login="admin" and password="admin") <br/>- User (login="user"-->
-            <!--and password="user").-->
-            <!--</div>-->
-
-            <!--<div class="alert alert-warning" ng-switch-when="false" translate="global.messages.info.register"-->
-            <!--translate-compile>-->
-            <!--You don't have an account yet? <a class="alert-link" ui-sref="register">Register a new account</a>-->
-            <!--</div>-->
-            <!--</div>-->
-            <br/><br/><br/><br/><br/><br/><br/>
-            <ul>
-                <li><a ui-sref="reset-password" href="javascript:void(0);">Go to reset password page.</a>
-                </li>
-            </ul>
         </div>
     </div>
 </div>

@@ -6,6 +6,7 @@ import org.gluu.credmgr.repository.OPConfigRepository;
 import org.gluu.credmgr.web.rest.util.HeaderUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,10 @@ import java.util.Optional;
 public class OPConfigResource {
 
     private final Logger log = LoggerFactory.getLogger(OPConfigResource.class);
-
+        
     @Inject
     private OPConfigRepository oPConfigRepository;
-
+    
     /**
      * POST  /o-p-configs : Create a new oPConfig.
      *
