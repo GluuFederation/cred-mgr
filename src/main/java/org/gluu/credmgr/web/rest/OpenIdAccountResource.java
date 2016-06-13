@@ -6,6 +6,7 @@ import org.gluu.credmgr.domain.OPConfig;
 import org.gluu.credmgr.domain.OPUser;
 import org.gluu.credmgr.service.MailService;
 import org.gluu.credmgr.service.OPUserService;
+import org.gluu.credmgr.service.error.OPException;
 import org.gluu.credmgr.web.rest.dto.KeyAndPasswordDTO;
 import org.gluu.credmgr.web.rest.dto.RegistrationDTO;
 import org.gluu.credmgr.web.rest.dto.SingleValueDTO;
@@ -37,7 +38,7 @@ public class OpenidAccountResource {
     @RequestMapping(value = "/openid/register", method = RequestMethod.POST,
         produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE})
     @Timed
-    public ResponseEntity<String> registerAccount(@Valid @RequestBody RegistrationDTO registrationDTO, HttpServletRequest request) throws Exception {
+    public ResponseEntity<String> registerAccount(@Valid @RequestBody RegistrationDTO registrationDTO, HttpServletRequest request) throws OPException {
         OPConfig opConfig = opUserService.createOPAdminInformation(registrationDTO);
         mailService.sendOPActivationEmail(opConfig, getBaseUrl(request));
         return new ResponseEntity<>(HttpStatus.OK);
@@ -47,24 +48,21 @@ public class OpenidAccountResource {
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
-    public ResponseEntity<String> activateAccount(@RequestParam(value = "key") String key) {
-        return opUserService.activateOPAdminRegistration(key)
-            .map(user -> new ResponseEntity<String>(HttpStatus.OK))
-            .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+    public ResponseEntity<String> activateAccount(@RequestParam(value = "key") String key) throws OPException {
+        opUserService.activateOPAdminRegistration(key);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping("/openid/login-uri")
-    public ResponseEntity<SingleValueDTO> getLoginUri(HttpServletRequest request, @RequestParam(value = "companyShortName") String companyShortName) {
-        return opUserService.getLoginUri(companyShortName, getBaseUrl(request) + "/api/openid/login-redirect")
-            .map(location -> new ResponseEntity<SingleValueDTO>(new SingleValueDTO(location), HttpStatus.OK))
-            .orElse(new ResponseEntity<SingleValueDTO>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<SingleValueDTO> getLoginUri(HttpServletRequest request, @RequestParam(value = "companyShortName") String companyShortName) throws OPException {
+        String loginUrl = opUserService.getLoginUri(companyShortName, getBaseUrl(request) + "/api/openid/login-redirect");
+        return new ResponseEntity<SingleValueDTO>(new SingleValueDTO(loginUrl), HttpStatus.OK);
     }
 
     @RequestMapping("/openid/logout-uri")
-    public ResponseEntity<SingleValueDTO> getLogoutUri(HttpServletRequest request) {
-        return opUserService.getLogoutUri(getBaseUrl(request) + "/api/openid/logout-redirect")
-            .map(location -> new ResponseEntity<SingleValueDTO>(new SingleValueDTO(location), HttpStatus.OK))
-            .orElse(new ResponseEntity<SingleValueDTO>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<SingleValueDTO> getLogoutUri(HttpServletRequest request) throws OPException {
+        String logoutUrl = opUserService.getLogoutUri(getBaseUrl(request) + "/api/openid/logout-redirect");
+        return new ResponseEntity<SingleValueDTO>(new SingleValueDTO(logoutUrl), HttpStatus.OK);
     }
 
 
@@ -75,10 +73,12 @@ public class OpenidAccountResource {
                                         @RequestParam(required = false, value = "state") String state,
                                         @RequestParam(required = false, value = "code") String code) throws IOException {
 
-        if (opUserService.login(getBaseUrl(request) + "/#/reset-password", code).isPresent())
+        try {
+            opUserService.login(getBaseUrl(request) + "/#/reset-password", code);
             response.sendRedirect("/#/reset-password");
-        else
+        } catch (OPException e) {
             response.sendRedirect("/#/error");
+        }
     }
 
     @RequestMapping("/openid/logout-redirect")
@@ -101,13 +101,11 @@ public class OpenidAccountResource {
         method = RequestMethod.POST,
         produces = MediaType.TEXT_PLAIN_VALUE)
     @Timed
-    public ResponseEntity<?> changePassword(@RequestBody String password) {
-        if (!checkPasswordLength(password)) {
+    public ResponseEntity<?> changePassword(@RequestBody String password) throws OPException {
+        if (!checkPasswordLength(password))
             return new ResponseEntity<>("Incorrect password", HttpStatus.BAD_REQUEST);
-        }
-        return opUserService.changePassword(password)
-            .map(opConfig -> new ResponseEntity<>(HttpStatus.OK))
-            .orElse(new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR));
+        opUserService.changePassword(password);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/openid/reset_password/init",

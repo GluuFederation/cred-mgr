@@ -1,17 +1,18 @@
 package org.gluu.credmgr.service;
 
 import org.gluu.credmgr.CredmgrApp;
+import org.gluu.credmgr.service.error.OPException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.xdi.oxauth.client.OpenIdConfigurationResponse;
 
 import javax.inject.Inject;
-import java.util.Optional;
 
 /**
  * Created by eugeniuparvan on 6/6/16.
@@ -21,6 +22,8 @@ import java.util.Optional;
 @IntegrationTest
 public class OxauthServiceIntTest {
 
+    private final Logger log = LoggerFactory.getLogger(OxauthServiceIntTest.class);
+
     @Value("${credmgr.gluuIdpOrg.host}")
     private String host;
 
@@ -29,21 +32,37 @@ public class OxauthServiceIntTest {
 
     @Test
     public void getOpenIdConfigurationTest() {
-        Optional<OpenIdConfigurationResponse> configuration = oxauthService.getOpenIdConfiguration(host);
-        Assert.assertTrue(configuration.isPresent());
+        try {
+            oxauthService.getOpenIdConfiguration(host);
+        } catch (OPException e) {
+            Assert.fail();
+        }
+        try {
+            oxauthService.getOpenIdConfiguration(host + ".com");
+            Assert.fail();
+        } catch (OPException e) {
+            log.info("passed");
+        }
     }
 
 
     @Test
     public void getAuthorizationUriTest() {
-        Optional<String> authorizationUri = oxauthService.getAuthorizationUri(host, null, null, null, null);
-        Assert.assertTrue(authorizationUri.isPresent());
+        try {
+            String authorizationUri = oxauthService.getAuthorizationUri(host, null, null, null, null);
+            Assert.assertNotNull(authorizationUri);
+        } catch (OPException e) {
+            Assert.fail();
+        }
     }
 
     @Test
     public void getLogoutUriTest() {
-        Optional<String> logoutUri = oxauthService.getLogoutUri(host, null, null);
-        Assert.assertTrue(logoutUri.isPresent());
-
+        try {
+            String logoutUri = oxauthService.getLogoutUri(host, null, null);
+            Assert.assertNotNull(logoutUri);
+        } catch (OPException e) {
+            Assert.fail();
+        }
     }
 }

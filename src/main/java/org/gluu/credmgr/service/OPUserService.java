@@ -138,11 +138,11 @@ public class OPUserService {
             throw new OPException(OPException.ERROR_EMAIL_OR_LOGIN_ALREADY_EXISTS, e);
         }
 
-        log.debug("Created OP Admin configuration for user {}", registrationDTO.getCompanyShortName());
+        log.debug("Created OP Admin configuration {} for user {}", opConfig, registrationDTO.getCompanyShortName());
         return opConfig;
     }
 
-    public OPConfig activateOPAdminRegistration(String key) throws OPException {
+    public void activateOPAdminRegistration(String key) throws OPException {
         log.debug("Activating OP Admin configuration for activation key {}", key);
         Optional<OPConfig> config = opConfigRepository.findOneByActivationKey(key).map(opConfig -> {
             try {
@@ -169,98 +169,83 @@ public class OPUserService {
             log.error(OPException.ERROR_ACTIVATE_OP_ADMIN);
             return null;
         });
-        if (config.isPresent())
-            return config.get();
-        else
+        if (!config.isPresent())
             throw new OPException(OPException.ERROR_ACTIVATE_OP_ADMIN);
     }
 
-    @Transactional(readOnly = true)
-    public Optional<String> getLoginUri(String companyShortName, String redirectUri) {
-        return opConfigRepository.findOneByCompanyShortName(companyShortName).map(opConfig -> {
-            String host = opConfig.getHost();
-            String clientId = opConfig.getClientId();
-            List<ResponseType> responseTypes = Arrays.asList(new ResponseType[]{ResponseType.CODE});
-            List<String> scopes = Arrays.asList(new String[]{"openid", opConfig.getRequiredOpenIdScope()});
+    public String getLoginUri(String companyShortName, String redirectUri) throws OPException {
+        log.debug("Retrieving login uri for company {}", companyShortName);
+        OPConfig opConfig = opConfigRepository.findOneByCompanyShortName(companyShortName).orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_LOGIN_URI));
 
-            OPUser opUser = new OPUser();
-            opUser.getAuthorities().add(OPAuthority.OP_ANONYMOUS);
-            opUser.setHost(host);
-            opUser.setLoginOpConfigId(opConfig.getId());
+        String host = opConfig.getHost();
+        String clientId = opConfig.getClientId();
+        List<ResponseType> responseTypes = Arrays.asList(new ResponseType[]{ResponseType.CODE});
+        List<String> scopes = Arrays.asList(new String[]{"openid", opConfig.getRequiredOpenIdScope()});
 
-            SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(opUser, null, opUser.getAuthorities().stream()
-                    .map(role -> new SimpleGrantedAuthority(role.toString())).collect(Collectors.toList())));
-            return oxauthService.getAuthorizationUri(host, clientId, responseTypes, scopes, redirectUri).orElse(null);
-        });
+        OPUser opUser = new OPUser();
+        opUser.getAuthorities().add(OPAuthority.OP_ANONYMOUS);
+        opUser.setHost(host);
+        opUser.setLoginOpConfigId(opConfig.getId());
+
+        SecurityContextHolder.getContext().setAuthentication(
+            new UsernamePasswordAuthenticationToken(opUser, null, opUser.getAuthorities().stream()
+                .map(role -> new SimpleGrantedAuthority(role.toString())).collect(Collectors.toList())));
+
+        String loginUri = oxauthService.getAuthorizationUri(host, clientId, responseTypes, scopes, redirectUri);
+
+        log.debug("Retrieved login uri {} for company {}", loginUri, companyShortName);
+        return loginUri;
     }
 
-    public Optional<String> getLogoutUri(String redirectUri) {
-        return Optional.of(SecurityContextHolder.getContext().getAuthentication())
-            .map(authentication -> {
-                try {
-                    return (OPUser) authentication.getPrincipal();
-                } catch (ClassCastException e) {
-                    return null;
-                }
-            })
-            .map(opUser -> oxauthService.getLogoutUri(opUser.getHost(), opUser.getIdToken(), redirectUri).orElse(null));
+    public String getLogoutUri(String redirectUri) throws OPException {
+        log.debug("Retrieving logout uri");
+        Optional<OPUser> opUser = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+            .map(authentication -> authentication.getPrincipal())
+            .filter(OPUser.class::isInstance)
+            .map(OPUser.class::cast);
+        OPUser user = opUser.orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_LOGOUT_URI));
+        String logoutUri = oxauthService.getLogoutUri(user.getHost(), user.getIdToken(), redirectUri);
+        log.debug("Retrieved logout uri");
+        return logoutUri;
+
     }
 
-    public Optional<OPUser> login(String redirectUri, String code) {
-        Optional<OPUser> opUser = Optional.of(SecurityContextHolder.getContext().getAuthentication())
-            .map(authentication -> {
-                try {
-                    return (OPUser) authentication.getPrincipal();
-                } catch (ClassCastException e) {
-                    return null;
-                }
-            });
+    public OPUser login(String redirectUri, String code) throws OPException {
+        Optional<OPUser> opUser = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+            .map(authentication -> authentication.getPrincipal())
+            .filter(OPUser.class::isInstance)
+            .map(OPUser.class::cast);
+
         Optional<OPConfig> opConfig = opUser.map(user -> opConfigRepository.findOne(opUser.get().getLoginOpConfigId()));
-        Optional<TokenResponse> tokenResponse = opConfig.map(config -> {
-            String host = config.getHost();
-            GrantType grantType = GrantType.AUTHORIZATION_CODE;
-            String clientId = config.getClientId();
-            String clientSecret = config.getClientSecret();
-            String requiredScope = config.getRequiredOpenIdScope();
-            return oxauthService.getToken(host, grantType, clientId, clientSecret, code, redirectUri,
-                "openid" + " " + requiredScope).orElse(null);
-        });
-        Optional<UserInfoResponse> userInfoResponse = tokenResponse.map(response -> {
-            if (!opConfig.isPresent())
-                return null;
-            String host = opConfig.get().getHost();
-            return oxauthService.getUserInfo(host, response.getAccessToken(),
-                AuthorizationMethod.AUTHORIZATION_REQUEST_HEADER_FIELD).orElse(null);
-        });
-        Optional<ScimResponse> scimResponse = userInfoResponse.map(user -> user.getClaim("inum")).map(claim -> {
-            if (claim.size() == 0)
-                return null;
+        OPConfig config = opConfig.orElseThrow(() -> new OPException(OPException.ERROR_LOGIN));
+        OPUser user = opUser.get();
 
-            try {
-                return scimService.retrievePerson(claim.get(0));
-            } catch (IOException | JAXBException e) {
-                return null;
-            }
-        });
-        return scimResponse.map(response -> {
-            if (!opUser.isPresent())
-                return null;
-            OPUser user = opUser.get();
+        String host = config.getHost();
+        GrantType grantType = GrantType.AUTHORIZATION_CODE;
+        String clientId = config.getClientId();
+        String clientSecret = config.getClientSecret();
+        String requiredScope = config.getRequiredOpenIdScope();
 
-            if (!tokenResponse.isPresent())
-                return null;
+        TokenResponse tokenResponse = oxauthService.getToken(host, grantType, clientId, clientSecret, code, redirectUri, "openid" + " " + requiredScope);
+        UserInfoResponse userInfoResponse = oxauthService.getUserInfo(host, tokenResponse.getAccessToken(), AuthorizationMethod.AUTHORIZATION_REQUEST_HEADER_FIELD);
 
+        List<String> claimList = userInfoResponse.getClaim("inum");
+        if (claimList == null || claimList.size() == 0)
+            throw new OPException(OPException.ERROR_LOGIN);
+
+        try {
+            ScimResponse scimResponse = scimService.retrievePerson(claimList.get(0));
+            if (scimResponse.getStatusCode() != 200)
+                throw new OPException(OPException.ERROR_LOGIN);
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             User scimUser = null;
             try {
-                scimUser = objectMapper.readValue(response.getResponseBodyString(), User.class);
+                scimUser = objectMapper.readValue(scimResponse.getResponseBodyString(), User.class);
             } catch (IOException e) {
-                return null;
+                throw new OPException(OPException.ERROR_LOGIN, e);
             }
 
             user.setOpConfigId(user.getLoginOpConfigId());
-
             Optional.ofNullable(scimUser.getEmails())
                 .map(emails -> {
                     if (emails.size() > 0)
@@ -269,8 +254,8 @@ public class OPUserService {
                         return null;
                 })
                 .map(email -> opConfigRepository.findOneByEmail(email.getValue()).orElse(null))
-                .map(config -> {
-                    user.setOpConfigId(config.getId());
+                .map(opConfigByAdminEmail -> {
+                    user.setOpConfigId(opConfigByAdminEmail.getId());
                     return null;
                 });
 
@@ -294,14 +279,16 @@ public class OPUserService {
             user.setScimId(scimUser.getId());
             user.setLogin(scimUser.getUserName());
             user.setLangKey(scimUser.getLocale());
-            user.setIdToken(tokenResponse.get().getIdToken());
+            user.setIdToken(tokenResponse.getIdToken());
 
             SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user,
                 null, user.getAuthorities().stream().map(role -> new SimpleGrantedAuthority(role.toString()))
                 .collect(Collectors.toList())));
 
             return user;
-        });
+        } catch (IOException | JAXBException e) {
+            throw new OPException(OPException.ERROR_LOGIN);
+        }
     }
 
     public void logout(HttpServletRequest request, HttpServletResponse response) {
@@ -311,36 +298,31 @@ public class OPUserService {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
-    public Optional<OPUser> changePassword(String password) {
-        return Optional.of(SecurityContextHolder.getContext().getAuthentication())
-            .map(authentication -> {
-                try {
-                    return (OPUser) authentication.getPrincipal();
-                } catch (ClassCastException e) {
-                    return null;
-                }
-            })
-            .map(opUser -> {
-                try {
-                    ScimResponse scimResponse = scimService.retrievePerson(opUser.getScimId());
-                    if (scimResponse.getStatusCode() == 200) {
-                        User user = objectMapper.readValue(scimResponse.getResponseBodyString(), User.class);
-                        user.setPassword(password);
-                        scimResponse = scimService.updatePerson(user, user.getId());
-                        if (scimResponse.getStatusCode() != 200)
-                            return null;
-                        return opUser;
-                    }
-                    return null;
-                } catch (IOException | JAXBException e) {
-                    return null;
-                }
-            });
+    public OPUser changePassword(String password) throws OPException {
+        Optional<OPUser> opUser = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+            .map(authentication -> authentication.getPrincipal())
+            .filter(OPUser.class::isInstance)
+            .map(OPUser.class::cast);
+        OPUser user = opUser.orElseThrow(() -> new OPException(OPException.ERROR_PASSWORD_CHANGE));
+        try {
+            ScimResponse scimResponse = scimService.retrievePerson(user.getScimId());
+            if (scimResponse.getStatusCode() == 200) {
+                User scimUser = objectMapper.readValue(scimResponse.getResponseBodyString(), User.class);
+                scimUser.setPassword(password);
+                scimResponse = scimService.updatePerson(scimUser, scimUser.getId());
+                if (scimResponse.getStatusCode() != 200)
+                    throw new OPException(OPException.ERROR_PASSWORD_CHANGE);
+                return user;
+            }
+            throw new OPException(OPException.ERROR_PASSWORD_CHANGE);
+        } catch (IOException | JAXBException e) {
+            throw new OPException(OPException.ERROR_PASSWORD_CHANGE, e);
+        }
     }
 
     public Optional<OPUser> getPrincipal() {
         return
-            Optional.of(SecurityContextHolder.getContext().getAuthentication())
+            Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
                 .map(authentication -> authentication.getPrincipal())
                 .filter(OPUser.class::isInstance)
                 .map(OPUser.class::cast)
