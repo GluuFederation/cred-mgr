@@ -72,8 +72,8 @@ public class OPConfigResourceIntTest {
     private static final Boolean UPDATED_ENABLE_EMAIL_MANAGEMENT = true;
     private static final String DEFAULT_ACTIVATION_KEY = "AAAAA";
     private static final String UPDATED_ACTIVATION_KEY = "BBBBB";
-    private static final String DEFAULT_EMAIL = "AAAAA";
-    private static final String UPDATED_EMAIL = "BBBBB";
+    private static final String DEFAULT_EMAIL = "AAAAA@mail.com";
+    private static final String UPDATED_EMAIL = "BBBBB@mail.com";
 
     private static final Boolean DEFAULT_ACTIVATED = false;
     private static final Boolean UPDATED_ACTIVATED = true;
@@ -158,6 +158,78 @@ public class OPConfigResourceIntTest {
         assertThat(testOPConfig.getEmail()).isEqualTo(DEFAULT_EMAIL);
         assertThat(testOPConfig.isActivated()).isEqualTo(DEFAULT_ACTIVATED);
         assertThat(testOPConfig.getClientSecret()).isEqualTo(DEFAULT_CLIENT_SECRET);
+    }
+
+    @Test
+    @Transactional
+    public void checkAdminScimIdIsRequired() throws Exception {
+        int databaseSizeBeforeTest = oPConfigRepository.findAll().size();
+        // set the field null
+        oPConfig.setAdminScimId(null);
+
+        // Create the OPConfig, which fails.
+
+        restOPConfigMockMvc.perform(post("/api/o-p-configs")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(oPConfig)))
+            .andExpect(status().isBadRequest());
+
+        List<OPConfig> oPConfigs = oPConfigRepository.findAll();
+        assertThat(oPConfigs).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    public void checkCompanyNameIsRequired() throws Exception {
+        int databaseSizeBeforeTest = oPConfigRepository.findAll().size();
+        // set the field null
+        oPConfig.setCompanyName(null);
+
+        // Create the OPConfig, which fails.
+
+        restOPConfigMockMvc.perform(post("/api/o-p-configs")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(oPConfig)))
+            .andExpect(status().isBadRequest());
+
+        List<OPConfig> oPConfigs = oPConfigRepository.findAll();
+        assertThat(oPConfigs).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    public void checkCompanyShortNameIsRequired() throws Exception {
+        int databaseSizeBeforeTest = oPConfigRepository.findAll().size();
+        // set the field null
+        oPConfig.setCompanyShortName(null);
+
+        // Create the OPConfig, which fails.
+
+        restOPConfigMockMvc.perform(post("/api/o-p-configs")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(oPConfig)))
+            .andExpect(status().isBadRequest());
+
+        List<OPConfig> oPConfigs = oPConfigRepository.findAll();
+        assertThat(oPConfigs).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    public void checkEmailIsRequired() throws Exception {
+        int databaseSizeBeforeTest = oPConfigRepository.findAll().size();
+        // set the field null
+        oPConfig.setEmail(null);
+
+        // Create the OPConfig, which fails.
+
+        restOPConfigMockMvc.perform(post("/api/o-p-configs")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(oPConfig)))
+            .andExpect(status().isBadRequest());
+
+        List<OPConfig> oPConfigs = oPConfigRepository.findAll();
+        assertThat(oPConfigs).hasSize(databaseSizeBeforeTest);
     }
 
     @Test

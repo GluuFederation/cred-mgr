@@ -23,23 +23,20 @@ public class OPConfig implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    /**
-     * Needed for activation
-     */
-    @Column(name = "admin_scim_id")
+    @NotNull
+    @Column(name = "admin_scim_id", nullable = false)
     private String adminScimId;
 
-    @Column(name = "company_name")
+    @NotNull
+    @Column(name = "company_name", nullable = false)
     private String companyName;
 
-    /**
-     * Complies with Scim "username"
-     */
-    @Column(name = "company_short_name", unique = true)
+    @NotNull
+    @Column(name = "company_short_name", nullable = false, unique = true)
     private String companyShortName;
 
     @Pattern(regexp = "^https?:\\/\\/[^\\/]*$")
-    @Column(name = "host", unique = true)
+    @Column(name = "host")
     private String host;
 
     @Column(name = "client_id")
@@ -72,7 +69,9 @@ public class OPConfig implements Serializable {
     @Column(name = "activation_key")
     private String activationKey;
 
-    @Column(name = "email", unique = true)
+    @NotNull
+    @Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @NotNull

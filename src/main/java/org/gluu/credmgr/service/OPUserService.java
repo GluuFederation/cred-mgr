@@ -237,7 +237,6 @@ public class OPUserService {
             ScimResponse scimResponse = scimService.retrievePerson(claimList.get(0));
             if (scimResponse.getStatusCode() != 200)
                 throw new OPException(OPException.ERROR_LOGIN);
-            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             User scimUser = null;
             try {
                 scimUser = objectMapper.readValue(scimResponse.getResponseBodyString(), User.class);
@@ -245,22 +244,18 @@ public class OPUserService {
                 throw new OPException(OPException.ERROR_LOGIN, e);
             }
 
-            user.setOpConfigId(user.getLoginOpConfigId());
-            Optional.ofNullable(scimUser.getEmails())
+            //Setting admin opConfigId
+            Optional<OPConfig> opAdminConfig = Optional.ofNullable(scimUser.getEmails())
                 .map(emails -> {
                     if (emails.size() > 0)
                         return emails.get(0);
                     else
                         return null;
                 })
-                .map(email -> opConfigRepository.findOneByEmail(email.getValue()).orElse(null))
-                .map(opConfigByAdminEmail -> {
-                    user.setOpConfigId(opConfigByAdminEmail.getId());
-                    return null;
-                });
+                .map(email -> opConfigRepository.findOneByEmail(email.getValue()).orElse(null));
+            user.setOpConfigId(opAdminConfig.orElseThrow(() -> new OPException(OPException.ERROR_LOGIN)).getId());
 
             List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-
             authorities.add(new SimpleGrantedAuthority(OPAuthority.OP_USER.toString()));
             user.getAuthorities().add(OPAuthority.OP_USER);
 

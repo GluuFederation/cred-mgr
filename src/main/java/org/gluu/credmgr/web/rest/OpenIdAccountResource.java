@@ -67,12 +67,7 @@ public class OpenidAccountResource {
 
 
     @RequestMapping("/openid/login-redirect")
-    public void loginRedirectionHandler(HttpServletResponse response, HttpServletRequest request,
-                                        @RequestParam(required = false, value = "session_state") String sessionState,
-                                        @RequestParam(required = false, value = "scope") String scope,
-                                        @RequestParam(required = false, value = "state") String state,
-                                        @RequestParam(required = false, value = "code") String code) throws IOException {
-
+    public void loginRedirectionHandler(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "code") String code) throws IOException {
         try {
             opUserService.login(getBaseUrl(request) + "/#/reset-password", code);
             response.sendRedirect("/#/reset-password");
@@ -89,7 +84,7 @@ public class OpenidAccountResource {
 
     @RequestMapping(value = "/openid/account",
         method = RequestMethod.GET,
-        produces = MediaType.APPLICATION_JSON_VALUE)
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @Timed
     public ResponseEntity<OPUser> getAccount() {
         return opUserService.getPrincipal()

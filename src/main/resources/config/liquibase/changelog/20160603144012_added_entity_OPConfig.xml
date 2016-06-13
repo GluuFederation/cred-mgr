@@ -22,19 +22,19 @@
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="admin_scim_id" type="varchar(255)">
-                <constraints nullable="true"/>
+                <constraints nullable="false"/>
             </column>
 
             <column name="company_name" type="varchar(255)">
-                <constraints nullable="true"/>
+                <constraints nullable="false"/>
             </column>
 
             <column name="company_short_name" type="varchar(255)">
-                <constraints nullable="true" unique="true"/>
+                <constraints nullable="false" unique="true"/>
             </column>
 
             <column name="host" type="varchar(255)">
-                <constraints nullable="true" unique="true"/>
+                <constraints nullable="true"/>
             </column>
 
             <column name="client_id" type="varchar(255)">
@@ -78,7 +78,7 @@
             </column>
 
             <column name="email" type="varchar(255)">
-                <constraints nullable="true" unique="true"/>
+                <constraints nullable="false" unique="true"/>
             </column>
 
             <column name="activated" type="bit">
