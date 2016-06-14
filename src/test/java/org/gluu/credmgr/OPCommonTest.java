@@ -8,10 +8,12 @@ import org.gluu.credmgr.service.OxauthService;
 import org.gluu.credmgr.service.ScimService;
 import org.gluu.credmgr.service.error.OPException;
 import org.gluu.credmgr.web.rest.dto.RegistrationDTO;
-import org.junit.Assert;
+import org.gluu.oxtrust.model.scim2.User;
 import org.mockito.Mockito;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
+import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.DeserializationFeature;
+import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.xdi.oxauth.client.TokenResponse;
@@ -51,7 +53,8 @@ public abstract class OPCommonTest {
 
     protected OPConfig register() throws OPException {
         RegistrationDTO registrationDTO = getRegistrationDTO();
-        return getOPUserService().createOPAdminInformation(registrationDTO);
+        OPConfig opConfig = getOPUserService().createOPAdminInformation(registrationDTO);
+        return opConfig;
     }
 
     protected OPConfig registerAndPreLogin() throws OPException {
@@ -84,10 +87,17 @@ public abstract class OPCommonTest {
     }
 
     protected void cleanUp(OPConfig opConfig) throws IOException, JAXBException {
-        if (opConfig == null) return;
-        ScimResponse scimResponse = getScimService().deletePerson(opConfig.getAdminScimId());
-        Assert.assertEquals(200, scimResponse.getStatusCode());
-        getOPConfigRepository().delete(opConfig.getId());
+        ScimResponse scimResponse = null;
+        do {
+            scimResponse = getScimService().searchUsers("mail", "company@mail.com");
+            if (scimResponse.getStatusCode() != 200) break;
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            User scimUser = objectMapper.readValue(scimResponse.getResponseBodyString(), User.class);
+            getScimService().deletePerson(scimUser.getId());
+        } while (scimResponse.getStatusCode() == 200);
+        if (opConfig != null)
+            getOPConfigRepository().delete(opConfig.getId());
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 

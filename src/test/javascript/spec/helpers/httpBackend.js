@@ -1,6 +1,6 @@
 function mockApiAccountCall() {
     inject(function($httpBackend) {
-        $httpBackend.whenGET(/api\/account.*/).respond({});
+        $httpBackend.whenGET(/api\/openid\/account.*/).respond({});
     });
 }
 

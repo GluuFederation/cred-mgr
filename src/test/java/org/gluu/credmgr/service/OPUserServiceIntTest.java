@@ -62,7 +62,6 @@ public class OPUserServiceIntTest extends OPCommonTest {
 
     @After
     public void tearDown() throws Exception {
-        //TODO: clean up scim users by username pattern
         ReflectionTestUtils.setField(unwrapOPUserService(), "oxauthService", oxauthServiceOriginal);
         cleanUp(opConfig);
     }
@@ -82,6 +81,7 @@ public class OPUserServiceIntTest extends OPCommonTest {
         Assert.assertNotNull(opConfig.getActivationKey());
         Assert.assertFalse(opConfig.isActivated());
 
+
         //Attempt to create user with existing username(oxTrust returns error status)
         try {
             opUserService.createOPAdminInformation(registrationDTO);
@@ -92,7 +92,7 @@ public class OPUserServiceIntTest extends OPCommonTest {
         //Attempt to create user with existing email(spring returns data integrity violation exception)
         registrationDTO.setCompanyShortName(registrationDTO.getCompanyShortName() + "test");
         try {
-            opUserService.createOPAdminInformation(registrationDTO);
+            opUserService.createOPAdminInformation(registrationDTO).getAdminScimId();
         } catch (OPException e) {
             Assert.assertEquals(OPException.ERROR_EMAIL_OR_LOGIN_ALREADY_EXISTS, e.getMessage());
         }
@@ -111,7 +111,7 @@ public class OPUserServiceIntTest extends OPCommonTest {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         User scimUser = objectMapper.readValue(scimResponse.getResponseBodyString(), User.class);
 
-        Assert.assertFalse(scimUser.isActive());
+        Assert.assertTrue(scimUser.isActive());
         Assert.assertFalse(opConfig.isActivated());
 
         opUserService.activateOPAdminRegistration(activationKey);

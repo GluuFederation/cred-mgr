@@ -73,10 +73,31 @@ public class ExceptionTranslator {
     }
 
     @ExceptionHandler(OPException.class)
-    @ResponseBody
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorDTO processOPException(OPException exception) {
-        return new ErrorDTO(exception.getMessage());
+    public ResponseEntity<ErrorDTO> processOPException(OPException exception) {
+        BodyBuilder builder = null;
+        switch (exception.getMessage()) {
+            case OPException.ERROR_CREATE_SCIM_USER:
+            case OPException.ERROR_EMAIL_OR_LOGIN_ALREADY_EXISTS:
+            case OPException.ERROR_RETRIEVE_LOGIN_URI:
+            case OPException.ERROR_RETRIEVE_LOGOUT_URI:
+            case OPException.ERROR_PASSWORD_CHANGE:
+                builder = ResponseEntity.status(HttpStatus.BAD_REQUEST);
+                break;
+            case OPException.ERROR_RETRIEVE_OPEN_ID_CONFIGURATION:
+            case OPException.ERROR_RETRIEVE_CLIENT_INFO:
+            case OPException.ERROR_REGISTER_CLIENT:
+            case OPException.ERROR_RETRIEVE_TOKEN:
+            case OPException.ERROR_RETRIEVE_USER_INFO:
+            case OPException.ERROR_ACTIVATE_OP_ADMIN:
+            case OPException.ERROR_LOGIN:
+                builder = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR);
+                break;
+            default:
+                builder = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR);
+                break;
+
+        }
+        return builder.body(new ErrorDTO(exception.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)

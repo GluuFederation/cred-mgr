@@ -44,8 +44,12 @@ public class ScimService {
         return gluuIdpOrgScim2Client.updatePerson(user, uid, MediaType.APPLICATION_JSON_VALUE);
     }
 
-    public ScimResponse findByUsername(String username) throws IOException, JAXBException {
-        return gluuIdpOrgScim2Client.personSearch("username", username, MediaType.APPLICATION_JSON_VALUE);
+    public ScimResponse findOneByUsername(String username) throws IOException, JAXBException {
+        return gluuIdpOrgScim2Client.personSearch("uid", username, MediaType.APPLICATION_JSON_VALUE);
+    }
+
+    public ScimResponse searchUsers(String attribute, String value) throws IOException, JAXBException {
+        return gluuIdpOrgScim2Client.searchPersons(attribute, value, MediaType.APPLICATION_JSON_VALUE);
     }
 
     public ScimResponse retrievePerson(String uid) throws IOException, JAXBException {

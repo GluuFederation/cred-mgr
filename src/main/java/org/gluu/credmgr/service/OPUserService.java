@@ -14,8 +14,6 @@ import org.gluu.oxtrust.model.scim2.Email;
 import org.gluu.oxtrust.model.scim2.Name;
 import org.gluu.oxtrust.model.scim2.Role;
 import org.gluu.oxtrust.model.scim2.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.DeserializationFeature;
 import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,8 +49,6 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class OPUserService {
 
-    private final Logger log = LoggerFactory.getLogger(OPUserService.class);
-
     @Value("${credmgr.gluuIdpOrg.requiredOPAdminClaimValue}")
     private String opAdmin;
 
@@ -76,11 +72,15 @@ public class OPUserService {
     }
 
     public OPConfig createOPAdminInformation(RegistrationDTO registrationDTO) throws OPException {
-        log.debug("Creating OP Admin configuration for user {}", registrationDTO.getCompanyShortName());
         User user = new User();
         user.setUserName(registrationDTO.getCompanyShortName());
         user.setPassword(registrationDTO.getPassword());
         user.setDisplayName(registrationDTO.getCompanyName());
+        user.setNickName("");
+        user.setProfileUrl("");
+        user.setLocale("en");
+        user.setPreferredLanguage("US_en");
+        user.setTitle("");
 
         Name name = new Name();
         name.setGivenName(registrationDTO.getFirstName());
@@ -105,23 +105,20 @@ public class OPUserService {
         email.setReference("");
         user.setEmails(Arrays.asList(new Email[]{email}));
 
-        user.setActive(false);
+        user.setActive(true);
 
         ScimResponse scimResponse;
         try {
             scimResponse = scimService.createPerson(user);
             if (scimResponse.getStatusCode() != 201) {
-                log.error(OPException.ERROR_CREATE_SCIM_USER + " " + scimResponse.getResponseBodyString());
                 throw new OPException(OPException.ERROR_CREATE_SCIM_USER);
             }
         } catch (IOException | JAXBException e) {
-            log.error(OPException.ERROR_CREATE_SCIM_USER, e);
             throw new OPException(OPException.ERROR_CREATE_SCIM_USER, e);
         }
         try {
             user = objectMapper.readValue(scimResponse.getResponseBodyString(), User.class);
         } catch (IOException e) {
-            log.error("Failed to deserialize Scim user.", e);
             throw new OPException(OPException.ERROR_CREATE_SCIM_USER, e);
         }
 
@@ -138,43 +135,37 @@ public class OPUserService {
             throw new OPException(OPException.ERROR_EMAIL_OR_LOGIN_ALREADY_EXISTS, e);
         }
 
-        log.debug("Created OP Admin configuration {} for user {}", opConfig, registrationDTO.getCompanyShortName());
         return opConfig;
     }
 
     public void activateOPAdminRegistration(String key) throws OPException {
-        log.debug("Activating OP Admin configuration for activation key {}", key);
         Optional<OPConfig> config = opConfigRepository.findOneByActivationKey(key).map(opConfig -> {
             try {
                 ScimResponse scimResponse = scimService.retrievePerson(opConfig.getAdminScimId());
                 if (scimResponse.getStatusCode() == 200) {
                     User user = objectMapper.readValue(scimResponse.getResponseBodyString(), User.class);
+                    user.setNickName("activated");
                     user.setActive(true);
                     scimResponse = scimService.updatePerson(user, user.getId());
-                    if (scimResponse.getStatusCode() != 200) {
-                        log.error(OPException.ERROR_ACTIVATE_OP_ADMIN + ". " + scimResponse.getResponseBodyString());
+                    if (scimResponse.getStatusCode() != 200)
                         return null;
-                    }
 
                     opConfig.setActivated(true);
                     opConfig.setActivationKey(null);
                     opConfigRepository.save(opConfig);
-                    log.debug("Activated OP Admin configuration for activation key {}", key);
                     return opConfig;
                 }
             } catch (IOException | JAXBException e) {
-                log.error(OPException.ERROR_ACTIVATE_OP_ADMIN, e);
                 return null;
             }
-            log.error(OPException.ERROR_ACTIVATE_OP_ADMIN);
             return null;
         });
-        if (!config.isPresent())
+        if (!config.isPresent()) {
             throw new OPException(OPException.ERROR_ACTIVATE_OP_ADMIN);
+        }
     }
 
     public String getLoginUri(String companyShortName, String redirectUri) throws OPException {
-        log.debug("Retrieving login uri for company {}", companyShortName);
         OPConfig opConfig = opConfigRepository.findOneByCompanyShortName(companyShortName).orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_LOGIN_URI));
 
         String host = opConfig.getHost();
@@ -193,19 +184,16 @@ public class OPUserService {
 
         String loginUri = oxauthService.getAuthorizationUri(host, clientId, responseTypes, scopes, redirectUri);
 
-        log.debug("Retrieved login uri {} for company {}", loginUri, companyShortName);
         return loginUri;
     }
 
     public String getLogoutUri(String redirectUri) throws OPException {
-        log.debug("Retrieving logout uri");
         Optional<OPUser> opUser = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
             .map(authentication -> authentication.getPrincipal())
             .filter(OPUser.class::isInstance)
             .map(OPUser.class::cast);
         OPUser user = opUser.orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_LOGOUT_URI));
         String logoutUri = oxauthService.getLogoutUri(user.getHost(), user.getIdToken(), redirectUri);
-        log.debug("Retrieved logout uri");
         return logoutUri;
 
     }
@@ -230,13 +218,15 @@ public class OPUserService {
         UserInfoResponse userInfoResponse = oxauthService.getUserInfo(host, tokenResponse.getAccessToken(), AuthorizationMethod.AUTHORIZATION_REQUEST_HEADER_FIELD);
 
         List<String> claimList = userInfoResponse.getClaim("inum");
-        if (claimList == null || claimList.size() == 0)
+        if (claimList == null || claimList.size() == 0) {
             throw new OPException(OPException.ERROR_LOGIN);
+        }
 
         try {
             ScimResponse scimResponse = scimService.retrievePerson(claimList.get(0));
-            if (scimResponse.getStatusCode() != 200)
+            if (scimResponse.getStatusCode() != 200) {
                 throw new OPException(OPException.ERROR_LOGIN);
+            }
             User scimUser = null;
             try {
                 scimUser = objectMapper.readValue(scimResponse.getResponseBodyString(), User.class);
@@ -305,8 +295,9 @@ public class OPUserService {
                 User scimUser = objectMapper.readValue(scimResponse.getResponseBodyString(), User.class);
                 scimUser.setPassword(password);
                 scimResponse = scimService.updatePerson(scimUser, scimUser.getId());
-                if (scimResponse.getStatusCode() != 200)
+                if (scimResponse.getStatusCode() != 200) {
                     throw new OPException(OPException.ERROR_PASSWORD_CHANGE);
+                }
                 return user;
             }
             throw new OPException(OPException.ERROR_PASSWORD_CHANGE);

@@ -102,7 +102,6 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
 
     @After
     public void tearDown() throws Exception {
-        //TODO: clean up scim users by username pattern
         ReflectionTestUtils.setField(unwrapOPUserService(), "oxauthService", oxauthServiceOriginal);
         cleanUp(opConfig);
     }

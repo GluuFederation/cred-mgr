@@ -38,11 +38,10 @@ describe('Directive Tests', function () {
 
         it("Should change the first 4 points of the strength bar", function() {
             scope.$apply(function() {
-                scope.password = "mo5ch$=!"; // that should trigger the 3 first points
+                scope.password = "mo5ch$=!"; // that should trigger the 4 first points
             });
 
             var firstpointStyle = elm.find('ul').children('li')[0].getAttribute('style');
-            dump(firstpointStyle);
             expect(firstpointStyle).toContain('background-color: rgb(153, 255, 0)');
 
             var secondpointStyle = elm.find('ul').children('li')[1].getAttribute('style');
