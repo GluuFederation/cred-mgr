@@ -42,7 +42,7 @@ public class OPConfig implements Serializable {
     @Column(name = "client_id")
     private String clientId;
 
-    @Column(name = "client_jwks")
+    @Column(name = "client_jwks", columnDefinition = "text")
     private String clientJWKS;
 
     @Column(name = "authentication_level")
@@ -80,6 +80,12 @@ public class OPConfig implements Serializable {
 
     @Column(name = "client_secret")
     private String clientSecret;
+
+    @Column(name = "uma_aat_client_id")
+    private String umaAatClientId;
+
+    @Column(name = "uma_aat_client_key_id")
+    private String umaAatClientKeyId;
 
     public Long getId() {
         return id;
@@ -225,6 +231,22 @@ public class OPConfig implements Serializable {
         this.clientSecret = clientSecret;
     }
 
+    public String getUmaAatClientId() {
+        return umaAatClientId;
+    }
+
+    public void setUmaAatClientId(String umaAatClientId) {
+        this.umaAatClientId = umaAatClientId;
+    }
+
+    public String getUmaAatClientKeyId() {
+        return umaAatClientKeyId;
+    }
+
+    public void setUmaAatClientKeyId(String umaAatClientKeyId) {
+        this.umaAatClientKeyId = umaAatClientKeyId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -266,6 +288,8 @@ public class OPConfig implements Serializable {
             ", email='" + email + "'" +
             ", activated='" + activated + "'" +
             ", clientSecret='" + clientSecret + "'" +
+            ", umaAatClientId='" + umaAatClientId + "'" +
+            ", umaAatClientKeyId='" + umaAatClientKeyId + "'" +
             '}';
     }
 }

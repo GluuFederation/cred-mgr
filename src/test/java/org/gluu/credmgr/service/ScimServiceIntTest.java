@@ -1,27 +1,22 @@
 package org.gluu.credmgr.service;
 
-import gluu.scim.client.ScimResponse;
 import org.gluu.credmgr.CredmgrApp;
-import org.gluu.oxtrust.model.scim2.Constants;
-import org.gluu.oxtrust.model.scim2.Extension;
-import org.gluu.oxtrust.model.scim2.Name;
-import org.gluu.oxtrust.model.scim2.User;
+import org.gluu.credmgr.service.error.OPException;
+import org.gluu.oxtrust.model.scim2.*;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.DeserializationFeature;
-import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.util.Date;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created by eugeniuparvan on 6/1/16.
@@ -40,9 +35,7 @@ public class ScimServiceIntTest {
     @Before
     public void setUp() throws Exception {
         cleanUp();
-        ScimResponse scimResponse = scimService.createPerson(getUser());
-        ObjectMapper objectMapper = new ObjectMapper();
-        user = objectMapper.readValue(scimResponse.getResponseBodyString(), User.class);
+        user = scimService.createPerson(getUser());
     }
 
     @After
@@ -51,39 +44,33 @@ public class ScimServiceIntTest {
     }
 
     @Test
-    public void retrievePersonTest() throws IOException, JAXBException {
-        ScimResponse scimResponse = scimService.retrievePerson(user.getId());
-        Assert.assertEquals(200, scimResponse.getStatusCode());
+    public void retrievePersonTest() throws OPException {
+        User scimUser = scimService.retrievePerson(user.getId());
+        assertThat(scimUser).isNotNull();
     }
 
     @Test
-    public void updatePersonTest() throws IOException, JAXBException {
+    public void updatePersonTest() throws OPException {
         try {
             Extension.Builder extensionBuilder = new Extension.Builder(Constants.USER_EXT_SCHEMA_ID);
-            extensionBuilder.setField("resetKey", "valueOne");
-            extensionBuilder.setField("resetDate", new Date());
+            extensionBuilder.setField("opRole", "valueTwo");
             user.addExtension(extensionBuilder.build());
         } catch (Exception e) {
         }
-        ScimResponse scimResponse = scimService.updatePerson(user, user.getId());
-        Assert.assertEquals(200, scimResponse.getStatusCode());
-        scimResponse = scimService.retrievePerson(user.getId());
-        Assert.assertEquals(200, scimResponse.getStatusCode());
+        User scimUser = scimService.updatePerson(user, user.getId());
+        assertThat(scimUser).isNotNull();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        Object o = objectMapper.readValue(scimResponse.getResponseBodyString(), Object.class);
-        Assert.assertNotNull(o);
-
-        scimResponse = scimService.searchUsers("resetKey", "valueOne");
-        Assert.assertEquals(200, scimResponse.getStatusCode());
+        scimUser = scimService.retrievePerson(scimUser.getId());
+        assertThat(scimUser).isNotNull();
     }
 
     @Test
-    public void findPersonTest() throws IOException, JAXBException {
-        ScimResponse scimResponse = scimService.findOneByUsername("12test");
-        Assert.assertEquals(200, scimResponse.getStatusCode());
-        scimResponse = scimService.searchUsers("displayName", "Test User");
-        Assert.assertEquals(200, scimResponse.getStatusCode());
+    public void findPersonTest() throws OPException {
+        User scimUser = scimService.findOneByUsername("12test");
+        assertThat(scimUser).isNotNull();
+        List<User> users = scimService.searchUsers("displayName eq \"Test User\"");
+        assertThat(users).isNotNull();
+        assertThat(users.size()).isEqualTo(1);
     }
 
     private User getUser() {
@@ -96,6 +83,15 @@ public class ScimServiceIntTest {
 
         user.setActive(true);
 
+        Email email = new Email();
+        email.setType(Email.Type.WORK);
+        email.setPrimary(true);
+        email.setValue("company@mail.com");
+        email.setDisplay("company@mail.com");
+        email.setOperation("CREATE");
+        email.setReference("");
+        user.setEmails(Arrays.asList(new Email[]{email}));
+
         user.setUserName("12test");
         user.setPassword("test");
         user.setDisplayName("Test User");
@@ -104,19 +100,18 @@ public class ScimServiceIntTest {
         user.setLocale("en");
         user.setPreferredLanguage("US_en");
         user.setTitle("Test");
-
+        try {
+            Extension.Builder extensionBuilder = new Extension.Builder(Constants.USER_EXT_SCHEMA_ID);
+            extensionBuilder.setField("opRole", "valueOne");
+            user.addExtension(extensionBuilder.build());
+        } catch (Exception e) {
+        }
         return user;
     }
 
     private void cleanUp() throws Exception {
-        ScimResponse scimResponse = null;
-        do {
-            scimResponse = scimService.findOneByUsername("12test");
-            if (scimResponse.getStatusCode() != 200) break;
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            User scimUser = objectMapper.readValue(scimResponse.getResponseBodyString(), User.class);
-            scimService.deletePerson(scimUser.getId());
-        } while (scimResponse.getStatusCode() == 200);
+        List<User> users = scimService.searchUsers("mail eq \"company@mail.com\"");
+        for (User user : users)
+            scimService.deletePerson(user.getId());
     }
 }

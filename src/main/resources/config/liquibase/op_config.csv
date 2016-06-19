@@ -1,0 +1,2 @@
+id;admin_scim_id;company_name;company_short_name;host;client_id;client_jwks;authentication_level;required_open_id_scope;required_claim;required_claim_value;enable_password_management;enable_admin_page;enable_email_management;activation_key;email;activated;client_secret
+1;;Gluu Inc.;gluu;change_host;change_client_id;change_client_jwks;0;roles_scope;opRole;IT Manager;true;true;true;;;true;change_client_secret

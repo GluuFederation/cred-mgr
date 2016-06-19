@@ -8,7 +8,7 @@
     PasswordResetFinish.$inject = ['$resource'];
 
     function PasswordResetFinish($resource) {
-        var service = $resource('api/account/reset_password/finish', {}, {});
+        var service = $resource('api/openid/reset_password/finish', {}, {});
 
         return service;
     }

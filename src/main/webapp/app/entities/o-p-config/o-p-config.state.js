@@ -88,6 +88,8 @@
                                     email: null,
                                     activated: false,
                                     clientSecret: null,
+                                    umaAatClientId: null,
+                                    umaAatClientKeyId: null,
                                     id: null
                                 };
                         }

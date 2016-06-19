@@ -74,15 +74,20 @@ public class ExceptionTranslator {
 
     @ExceptionHandler(OPException.class)
     public ResponseEntity<ErrorDTO> processOPException(OPException exception) {
-        BodyBuilder builder = null;
+        BodyBuilder builder;
         switch (exception.getMessage()) {
+
+            case OPException.ERROR_RETRIEVE_OP_CONFIG:
             case OPException.ERROR_CREATE_SCIM_USER:
+            case OPException.ERROR_FIND_SCIM_USER:
+
             case OPException.ERROR_EMAIL_OR_LOGIN_ALREADY_EXISTS:
-            case OPException.ERROR_RETRIEVE_LOGIN_URI:
-            case OPException.ERROR_RETRIEVE_LOGOUT_URI:
             case OPException.ERROR_PASSWORD_CHANGE:
                 builder = ResponseEntity.status(HttpStatus.BAD_REQUEST);
                 break;
+            case OPException.ERROR_UPDATE_SCIM_USER:
+            case OPException.ERROR_DELETE_SCIM_USER:
+            case OPException.ERROR_RETRIEVE_LOGOUT_URI:
             case OPException.ERROR_RETRIEVE_OPEN_ID_CONFIGURATION:
             case OPException.ERROR_RETRIEVE_CLIENT_INFO:
             case OPException.ERROR_REGISTER_CLIENT:

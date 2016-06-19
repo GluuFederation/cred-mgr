@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 @IntegrationTest
 public class OPConfigResourceIntTest {
-
+    //TODO: crud operations also should affect scim user
     private static final String DEFAULT_ADMIN_SCIM_ID = "AAAAA";
     private static final String UPDATED_ADMIN_SCIM_ID = "BBBBB";
     private static final String DEFAULT_COMPANY_NAME = "AAAAA";

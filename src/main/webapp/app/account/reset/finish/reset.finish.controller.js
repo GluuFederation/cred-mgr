@@ -5,11 +5,12 @@
         .module('credmgrApp')
         .controller('ResetFinishController', ResetFinishController);
 
-    ResetFinishController.$inject = ['$stateParams', '$timeout', 'Auth', 'LoginService'];
+    ResetFinishController.$inject = ['Principal', '$stateParams', '$timeout', 'Auth', 'LoginService'];
 
-    function ResetFinishController ($stateParams, $timeout, Auth, LoginService) {
+    function ResetFinishController(Principal, $stateParams, $timeout, Auth, LoginService) {
         var vm = this;
 
+        vm.isAuthenticated = null;
         vm.keyMissing = angular.isUndefined($stateParams.key);
         vm.confirmPassword = null;
         vm.doNotMatch = null;
@@ -19,6 +20,10 @@
         vm.resetAccount = {};
         vm.success = null;
 
+        Principal.identity().then(function (account) {
+            vm.isAuthenticated = Principal.isAuthenticated;
+        });
+
         $timeout(function (){angular.element('#password').focus();});
 
         function finishReset() {
@@ -27,7 +32,11 @@
             if (vm.resetAccount.password !== vm.confirmPassword) {
                 vm.doNotMatch = 'ERROR';
             } else {
-                Auth.resetPasswordFinish({key: $stateParams.key, newPassword: vm.resetAccount.password}).then(function () {
+                Auth.resetPasswordFinish({
+                    key: $stateParams.key,
+                    newPassword: vm.resetAccount.password,
+                    companyShortName: $stateParams.csn
+                }).then(function () {
                     vm.success = 'OK';
                 }).catch(function () {
                     vm.success = null;

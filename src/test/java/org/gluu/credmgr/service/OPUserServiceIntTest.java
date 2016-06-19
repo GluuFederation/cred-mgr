@@ -1,9 +1,9 @@
 package org.gluu.credmgr.service;
 
-import gluu.scim.client.ScimResponse;
 import org.gluu.credmgr.CredmgrApp;
 import org.gluu.credmgr.OPCommonTest;
 import org.gluu.credmgr.domain.OPAuthority;
+import org.gluu.credmgr.domain.OPConfig;
 import org.gluu.credmgr.domain.OPUser;
 import org.gluu.credmgr.repository.OPConfigRepository;
 import org.gluu.credmgr.service.error.OPException;
@@ -17,8 +17,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.DeserializationFeature;
-import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -44,6 +42,15 @@ public class OPUserServiceIntTest extends OPCommonTest {
     @Value("${credmgr.gluuIdpOrg.host}")
     private String host;
 
+    @Value("${credmgr.gluuIdpOrg.companyShortName}")
+    private String companyShortName;
+
+    @Value("${credmgr.gluuIdpOrg.requiredOPAdminClaimValue}")
+    private String adminClaimValue;
+
+    @Value("${credmgr.gluuIdpOrg.requiredOPSuperAdminClaimValue}")
+    private String superAdminClaimValue;
+
     @Inject
     private OPUserService opUserService;
 
@@ -63,14 +70,14 @@ public class OPUserServiceIntTest extends OPCommonTest {
     @After
     public void tearDown() throws Exception {
         ReflectionTestUtils.setField(unwrapOPUserService(), "oxauthService", oxauthServiceOriginal);
-        cleanUp(opConfig);
+        cleanUp();
     }
 
     @Test
     public void createOPAdminInformationTest() throws OPException, IOException, JAXBException {
         RegistrationDTO registrationDTO = getRegistrationDTO();
 
-        opConfig = opUserService.createOPAdminInformation(registrationDTO);
+        OPConfig opConfig = opUserService.createOPAdminInformation(registrationDTO);
 
         Assert.assertNotNull(opConfig);
         Assert.assertNotNull(opConfig.getId());
@@ -96,28 +103,25 @@ public class OPUserServiceIntTest extends OPCommonTest {
         } catch (OPException e) {
             Assert.assertEquals(OPException.ERROR_EMAIL_OR_LOGIN_ALREADY_EXISTS, e.getMessage());
         }
+        opConfigRepository.delete(opConfig.getId());
     }
 
     @Test
-    public void activateOPAdminRegistrationTest() throws OPException, IOException, JAXBException {
-        opConfig = register();
+    public void activateOPAdminRegistrationTest() throws OPException {
+        OPConfig opConfig = register();
 
         String activationKey = "activationKey" + new Date().getTime();
         opConfig.setActivationKey(activationKey);
         opConfigRepository.save(opConfig);
 
-        ScimResponse scimResponse = scimService.retrievePerson(opConfig.getAdminScimId());
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        User scimUser = objectMapper.readValue(scimResponse.getResponseBodyString(), User.class);
+        User scimUser = scimService.retrievePerson(opConfig.getAdminScimId());
 
         Assert.assertTrue(scimUser.isActive());
         Assert.assertFalse(opConfig.isActivated());
 
         opUserService.activateOPAdminRegistration(activationKey);
 
-        scimResponse = scimService.retrievePerson(opConfig.getAdminScimId());
-        scimUser = objectMapper.readValue(scimResponse.getResponseBodyString(), User.class);
+        scimUser = scimService.retrievePerson(opConfig.getAdminScimId());
 
         Assert.assertTrue(scimUser.isActive());
 
@@ -126,8 +130,8 @@ public class OPUserServiceIntTest extends OPCommonTest {
     }
 
     @Test
-    public void getLoginUriTest() throws OPException, IOException, JAXBException {
-        opConfig = register();
+    public void getLoginUriTest() throws OPException {
+        OPConfig opConfig = register();
         try {
             opUserService.getLoginUri(opConfig.getCompanyShortName(), null);
         } catch (OPException e) {
@@ -148,8 +152,8 @@ public class OPUserServiceIntTest extends OPCommonTest {
     }
 
     @Test
-    public void getLogoutUriTest() throws OPException, IOException, JAXBException {
-        opConfig = registerAndPreLogin();
+    public void getLogoutUriTest() throws OPException {
+        registerAndPreLoginUser();
 
         Assert.assertNotNull(opUserService.getLogoutUri(null));
 
@@ -163,8 +167,8 @@ public class OPUserServiceIntTest extends OPCommonTest {
     }
 
     @Test
-    public void loginTest() throws Exception {
-        opConfig = registerAndLogin();
+    public void loginUserTest() throws Exception {
+        registerAndLoginUser();
 
         OPUser user = (OPUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Assert.assertNotNull(user);
@@ -173,18 +177,100 @@ public class OPUserServiceIntTest extends OPCommonTest {
         Assert.assertNotNull(user.getHost());
         Assert.assertNotNull(user.getIdToken());
 
-        Assert.assertEquals(3, user.getAuthorities().size());
-        Assert.assertTrue(user.getAuthorities().contains(OPAuthority.OP_ANONYMOUS));
+        Assert.assertEquals(1, user.getAuthorities().size());
         Assert.assertTrue(user.getAuthorities().contains(OPAuthority.OP_USER));
-        Assert.assertTrue(user.getAuthorities().contains(OPAuthority.OP_ADMIN));
 
         Assert.assertNotNull(user.getLoginOpConfigId());
-        Assert.assertNotNull(user.getOpConfigId());
+        Assert.assertNull(user.getOpConfigId());
         Assert.assertNull(user.getOpConfig());
 
         user.setLoginOpConfigId(Long.MAX_VALUE);
         try {
-            opUserService.login(null, null);
+            opUserService.login(null, null, null, null);
+        } catch (OPException e) {
+            Assert.assertEquals(OPException.ERROR_LOGIN, e.getMessage());
+        }
+
+    }
+
+    @Test
+    public void loginAdminTest() throws Exception {
+        registerAndLoginAdmin();
+
+        OPUser user = (OPUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Assert.assertNotNull(user);
+        Assert.assertNotNull(user.getScimId());
+        Assert.assertNotNull(user.getLogin());
+        Assert.assertNotNull(user.getHost());
+        Assert.assertNotNull(user.getIdToken());
+
+        Assert.assertEquals(1, user.getAuthorities().size());
+        Assert.assertTrue(user.getAuthorities().contains(OPAuthority.OP_ADMIN));
+
+        Assert.assertNotNull(user.getLoginOpConfigId());
+        Assert.assertNotNull(user.getOpConfigId());
+        Assert.assertEquals(user.getOpConfigId(), user.getLoginOpConfigId());
+        Assert.assertNull(user.getOpConfig());
+
+        user.setLoginOpConfigId(Long.MAX_VALUE);
+        try {
+            opUserService.login(null, null, null, null);
+        } catch (OPException e) {
+            Assert.assertEquals(OPException.ERROR_LOGIN, e.getMessage());
+        }
+
+    }
+
+    @Test
+    public void loginAdminWithGluuAccountTest() throws Exception {
+        registerAndLoginAdminGluuAccount();
+
+        OPUser user = (OPUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Assert.assertNotNull(user);
+        Assert.assertNotNull(user.getScimId());
+        Assert.assertNotNull(user.getLogin());
+        Assert.assertNotNull(user.getHost());
+        Assert.assertNotNull(user.getIdToken());
+
+        Assert.assertEquals(1, user.getAuthorities().size());
+        Assert.assertTrue(user.getAuthorities().contains(OPAuthority.OP_ADMIN));
+
+        Assert.assertNotNull(user.getLoginOpConfigId());
+        Assert.assertNotNull(user.getOpConfigId());
+        Assert.assertNotEquals(user.getOpConfigId(), user.getLoginOpConfigId());
+        Assert.assertNull(user.getOpConfig());
+
+        user.setLoginOpConfigId(Long.MAX_VALUE);
+        try {
+            opUserService.login(null, null, null, null);
+        } catch (OPException e) {
+            Assert.assertEquals(OPException.ERROR_LOGIN, e.getMessage());
+        }
+
+    }
+
+
+    @Test
+    public void loginSuperAdminTest() throws Exception {
+        registerAndLoginSuperAdmin();
+
+        OPUser user = (OPUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Assert.assertNotNull(user);
+        Assert.assertNotNull(user.getScimId());
+        Assert.assertNotNull(user.getLogin());
+        Assert.assertNotNull(user.getHost());
+        Assert.assertNotNull(user.getIdToken());
+
+        Assert.assertEquals(1, user.getAuthorities().size());
+        Assert.assertTrue(user.getAuthorities().contains(OPAuthority.OP_SUPER_ADMIN));
+
+        Assert.assertNotNull(user.getLoginOpConfigId());
+        Assert.assertNull(user.getOpConfigId());
+        Assert.assertNull(user.getOpConfig());
+
+        user.setLoginOpConfigId(Long.MAX_VALUE);
+        try {
+            opUserService.login(null, null, null, null);
         } catch (OPException e) {
             Assert.assertEquals(OPException.ERROR_LOGIN, e.getMessage());
         }
@@ -193,7 +279,7 @@ public class OPUserServiceIntTest extends OPCommonTest {
 
     @Test
     public void logoutTest() throws OPException {
-        opConfig = registerAndPreLogin();
+        registerAndPreLoginUser();
         Assert.assertNotNull(SecurityContextHolder.getContext().getAuthentication());
 
         opUserService.logout(null, null);
@@ -202,7 +288,7 @@ public class OPUserServiceIntTest extends OPCommonTest {
 
     @Test
     public void changePasswordTest() throws Exception {
-        opConfig = registerAndLogin();
+        registerAndLoginUser();
         Assert.assertNotNull(opUserService.changePassword("new_password"));
         SecurityContextHolder.getContext().setAuthentication(null);
         try {
@@ -214,8 +300,7 @@ public class OPUserServiceIntTest extends OPCommonTest {
 
     @Test
     public void getPrincipalTest() throws Exception {
-        opConfig = registerAndLogin();
-
+        registerAndLoginUser();
         Optional<OPUser> opUser = opUserService.getPrincipal();
         Assert.assertTrue(opUser.isPresent());
         Assert.assertTrue(opUser.map(user -> user.getOpConfig()).isPresent());
@@ -244,5 +329,20 @@ public class OPUserServiceIntTest extends OPCommonTest {
     @Override
     public String getHost() {
         return host;
+    }
+
+    @Override
+    public String getAdminClaimValue() {
+        return adminClaimValue;
+    }
+
+    @Override
+    public String getSuperAdminClaimValue() {
+        return superAdminClaimValue;
+    }
+
+    @Override
+    public String getCompanyShortName() {
+        return companyShortName;
     }
 }

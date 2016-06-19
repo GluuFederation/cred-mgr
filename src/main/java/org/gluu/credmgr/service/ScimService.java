@@ -2,15 +2,18 @@ package org.gluu.credmgr.service;
 
 import gluu.scim.client.ScimResponse;
 import gluu.scim2.client.Scim2Client;
+import gluu.scim2.client.util.Util;
 import org.apache.commons.io.IOUtils;
+import org.gluu.credmgr.service.error.OPException;
+import org.gluu.oxtrust.model.scim2.ListResponse;
 import org.gluu.oxtrust.model.scim2.User;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ScimService {
@@ -33,30 +36,167 @@ public class ScimService {
     @PostConstruct
     public void initIt() throws IOException {
         final String umaAatClientJwks = IOUtils.toString(getClass().getClassLoader().getResourceAsStream(GLUU_IDP_ORG_JWKS_FILE_NAME));
-        gluuIdpOrgScim2Client = Scim2Client.umaInstance(gluuIdpOrgHost + DOMAIN_SUFFIX, gluuIdpOrgHost + UMA_CONFIGURATION, gluuIdpOrgUmaAatClientId, umaAatClientJwks, gluuIdpOrgUmaAatClientKeyId);
+        gluuIdpOrgScim2Client = getScimClient(gluuIdpOrgHost, gluuIdpOrgUmaAatClientId, umaAatClientJwks, gluuIdpOrgUmaAatClientKeyId);
     }
 
-    public ScimResponse createPerson(User user) throws IOException, JAXBException {
-        return gluuIdpOrgScim2Client.createPerson(user, MediaType.APPLICATION_JSON_VALUE);
+    public User createPerson(User user) throws OPException {
+        return createPersonCommon(user, gluuIdpOrgScim2Client);
     }
 
-    public ScimResponse updatePerson(User user, String uid) throws IOException, JAXBException {
-        return gluuIdpOrgScim2Client.updatePerson(user, uid, MediaType.APPLICATION_JSON_VALUE);
+    public User createPerson(User user, Scim2Client scimClient) throws OPException {
+        return createPersonCommon(user, scimClient);
     }
 
-    public ScimResponse findOneByUsername(String username) throws IOException, JAXBException {
-        return gluuIdpOrgScim2Client.personSearch("uid", username, MediaType.APPLICATION_JSON_VALUE);
+    public User updatePerson(User user, String uid) throws OPException {
+        return updatePersonCommon(user, uid, gluuIdpOrgScim2Client);
     }
 
-    public ScimResponse searchUsers(String attribute, String value) throws IOException, JAXBException {
-        return gluuIdpOrgScim2Client.searchPersons(attribute, value, MediaType.APPLICATION_JSON_VALUE);
+    public User updatePerson(User user, String uid, Scim2Client scimClient) throws OPException {
+        return updatePersonCommon(user, uid, scimClient);
     }
 
-    public ScimResponse retrievePerson(String uid) throws IOException, JAXBException {
-        return gluuIdpOrgScim2Client.retrievePerson(uid, MediaType.APPLICATION_JSON_VALUE);
+    public User findOneByUsername(String username) throws OPException {
+        return findOneByUsernameCommon(username, gluuIdpOrgScim2Client);
     }
 
-    public ScimResponse deletePerson(String uid) throws IOException, JAXBException {
-        return gluuIdpOrgScim2Client.deletePerson(uid);
+    public User findOneByUsername(String username, Scim2Client scimClient) throws OPException {
+        return findOneByUsernameCommon(username, scimClient);
+    }
+
+    public List<User> searchUsers(String filter) throws OPException {
+        return searchUsersCommon(filter, gluuIdpOrgScim2Client);
+    }
+
+    public List<User> searchUsers(String filter, Scim2Client scimClient) throws OPException {
+        return searchUsersCommon(filter, scimClient);
+    }
+
+    public User retrievePerson(String uid) throws OPException {
+        return retrievePersonCommon(uid, gluuIdpOrgScim2Client);
+    }
+
+    public User retrievePerson(String uid, Scim2Client scimClient) throws OPException {
+        return retrievePersonCommon(uid, scimClient);
+    }
+
+    public boolean deletePerson(String uid) throws OPException {
+        return deletePersonCommon(uid, gluuIdpOrgScim2Client);
+    }
+
+    public boolean deletePerson(String uid, Scim2Client scimClient) throws OPException {
+        return deletePersonCommon(uid, scimClient);
+    }
+
+    public Scim2Client getScimClient(String host, String umaAatClientId, String umaAatClientJwks, String umaAatClientKeyId) {
+        return Scim2Client.umaInstance(host + DOMAIN_SUFFIX, host + UMA_CONFIGURATION, umaAatClientId, umaAatClientJwks, umaAatClientKeyId);
+    }
+
+    private User createPersonCommon(User user, Scim2Client client) throws OPException {
+        try {
+            ScimResponse scimResponse = client.createUser(user, new String[]{});
+            if (scimResponse.getStatusCode() == 201) {
+                try {
+                    return Util.toUser(scimResponse, client.getUserExtensionSchema());
+                } catch (Exception e) {
+                    throw new OPException(OPException.ERROR_CREATE_SCIM_USER);
+                }
+            }
+            throw new OPException(OPException.ERROR_CREATE_SCIM_USER);
+        } catch (IOException e) {
+            throw new OPException(OPException.ERROR_CREATE_SCIM_USER);
+        }
+    }
+
+    private User updatePersonCommon(User user, String uid, Scim2Client client) throws OPException {
+        try {
+            ScimResponse scimResponse = client.updateUser(user, uid, new String[]{});
+            if (scimResponse.getStatusCode() == 200) {
+                try {
+                    return Util.toUser(scimResponse, client.getUserExtensionSchema());
+                } catch (Exception e) {
+                    throw new OPException(OPException.ERROR_UPDATE_SCIM_USER);
+                }
+            }
+            throw new OPException(OPException.ERROR_UPDATE_SCIM_USER);
+        } catch (IOException e) {
+            throw new OPException(OPException.ERROR_UPDATE_SCIM_USER);
+        }
+    }
+
+    private User findOneByUsernameCommon(String username, Scim2Client client) throws OPException {
+        String filter = "userName eq \"" + username + "\"";
+        try {
+            ScimResponse scimResponse = search(filter, client);
+            if (scimResponse.getStatusCode() == 200) {
+                try {
+                    ListResponse listResponse = Util.toListResponseUser(scimResponse, client.getUserExtensionSchema());
+                    return listResponse.getResources().stream()
+                        .filter(User.class::isInstance)
+                        .findFirst()
+                        .map(User.class::cast).orElseThrow(() -> new OPException(OPException.ERROR_FIND_SCIM_USER));
+                } catch (Exception e) {
+                    throw new OPException(OPException.ERROR_FIND_SCIM_USER);
+                }
+            }
+            throw new OPException(OPException.ERROR_FIND_SCIM_USER);
+        } catch (IOException e) {
+            throw new OPException(OPException.ERROR_FIND_SCIM_USER);
+        }
+    }
+
+    private List<User> searchUsersCommon(String filter, Scim2Client client) throws OPException {
+        try {
+            ScimResponse scimResponse = search(filter, client);
+            if (scimResponse.getStatusCode() == 200) {
+                try {
+                    ListResponse listResponse = Util.toListResponseUser(scimResponse, client.getUserExtensionSchema());
+                    return listResponse.getResources().stream()
+                        .filter(User.class::isInstance)
+                        .map(User.class::cast).collect(Collectors.toList());
+                } catch (Exception e) {
+                    throw new OPException(OPException.ERROR_FIND_SCIM_USER);
+                }
+            }
+            throw new OPException(OPException.ERROR_FIND_SCIM_USER);
+        } catch (IOException e) {
+            throw new OPException(OPException.ERROR_FIND_SCIM_USER);
+        }
+    }
+
+    private User retrievePersonCommon(String uid, Scim2Client client) throws OPException {
+        try {
+            ScimResponse scimResponse = client.retrieveUser(uid, new String[]{});
+            if (scimResponse.getStatusCode() == 200) {
+                try {
+                    return Util.toUser(scimResponse, client.getUserExtensionSchema());
+                } catch (Exception e) {
+                    throw new OPException(OPException.ERROR_FIND_SCIM_USER);
+                }
+            }
+            throw new OPException(OPException.ERROR_FIND_SCIM_USER);
+        } catch (IOException e) {
+            throw new OPException(OPException.ERROR_FIND_SCIM_USER);
+        }
+    }
+
+    private boolean deletePersonCommon(String uid, Scim2Client client) throws OPException {
+        try {
+            ScimResponse scimResponse = client.deletePerson(uid);
+            if (scimResponse.getStatusCode() == 200)
+                return true;
+            else
+                return false;
+        } catch (IOException e) {
+            throw new OPException(OPException.ERROR_FIND_SCIM_USER);
+        }
+    }
+
+    private ScimResponse search(String filter, Scim2Client client) throws IOException {
+        int startIndex = 1;
+        int count = 1;
+        String sortBy = "userName";
+        String sortOrder = "ascending";
+        String[] attributes = null;
+        return client.searchUsers(filter, startIndex, count, sortBy, sortOrder, attributes);
     }
 }

@@ -13,6 +13,9 @@
     <property name="floatType" value="float4" dbms="postgresql, h2"/>
     <property name="floatType" value="float" dbms="mysql, oracle"/>
 
+    <changeSet id="00000000000000" author="jhipster" dbms="postgresql,oracle">
+        <createSequence sequenceName="hibernate_sequence" startValue="1000" incrementBy="1"/>
+    </changeSet>
     <!--
         Added the entity OPConfig.
     -->
@@ -38,43 +41,43 @@
             </column>
 
             <column name="client_id" type="varchar(255)">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
 
-            <column name="client_jwks" type="varchar(255)">
-                <constraints nullable="true" />
+            <column name="client_jwks" type="text">
+                <constraints nullable="true"/>
             </column>
 
             <column name="authentication_level" type="integer">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
 
             <column name="required_open_id_scope" type="varchar(255)">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
 
             <column name="required_claim" type="varchar(255)">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
 
             <column name="required_claim_value" type="varchar(255)">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
 
             <column name="enable_password_management" type="bit">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
 
             <column name="enable_admin_page" type="bit">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
 
             <column name="enable_email_management" type="bit">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
 
             <column name="activation_key" type="varchar(255)">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
 
             <column name="email" type="varchar(255)">
@@ -82,15 +85,26 @@
             </column>
 
             <column name="activated" type="bit">
-                <constraints nullable="false" />
+                <constraints nullable="false"/>
             </column>
 
             <column name="client_secret" type="varchar(255)">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="uma_aat_client_id" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="uma_aat_client_key_id" type="varchar(255)">
+                <constraints nullable="true"/>
             </column>
 
             <!-- jhipster-needle-liquibase-add-column - Jhipster will add columns here, do not remove-->
         </createTable>
-
+        <loadData encoding="UTF-8"
+                  file="config/liquibase/op_config.csv"
+                  separator=";"
+                  tableName="op_config"/>
     </changeSet>
 </databaseChangeLog>

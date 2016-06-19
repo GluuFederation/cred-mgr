@@ -95,10 +95,7 @@ jhipster:
 credmgr:
     gluuIdpOrg:
         host: https://gluu.localhost.info
-        umaAatClientId: '@!0836.FE6E.EE3F.0ABF!0001!0843.BC87!0008!A9A6.BDC1'
+        umaAatClientId: '@!2E2D.BC65.9D7A.C173!0001!7DD1.F276!0008!0D09.4F4C'
         umaAatClientKeyId:
-        clientId: '@!C0B0.0128.9A9D.9453!0001!EF7B.61C8!0008!189A.3F4A'
-        requiredOpenIdScope: role_scopes
-        requiredClaim: role
-        requiredOPAdminClaimValue: IT Manager
+        companyShortName: gluu
         requiredOPSuperAdminClaimValue: Gluu IT Manager

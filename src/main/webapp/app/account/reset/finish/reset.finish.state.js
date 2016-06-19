@@ -10,7 +10,7 @@
     function stateConfig($stateProvider) {
         $stateProvider.state('finishReset', {
             parent: 'account',
-            url: '/reset/finish?key',
+            url: '/reset/finish?key?csn',
             data: {
                 authorities: []
             },

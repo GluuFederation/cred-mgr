@@ -1,6 +1,6 @@
 package org.gluu.credmgr.web.rest;
 
-import gluu.scim.client.ScimResponse;
+import org.apache.commons.io.IOUtils;
 import org.gluu.credmgr.CredmgrApp;
 import org.gluu.credmgr.OPCommonTest;
 import org.gluu.credmgr.domain.OPAuthority;
@@ -11,7 +11,12 @@ import org.gluu.credmgr.service.MailService;
 import org.gluu.credmgr.service.OPUserService;
 import org.gluu.credmgr.service.OxauthService;
 import org.gluu.credmgr.service.ScimService;
+import org.gluu.credmgr.web.rest.dto.KeyAndPasswordDTO;
 import org.gluu.credmgr.web.rest.dto.RegistrationDTO;
+import org.gluu.credmgr.web.rest.dto.ResetPasswordDTO;
+import org.gluu.oxtrust.model.scim2.Constants;
+import org.gluu.oxtrust.model.scim2.ExtensionFieldType;
+import org.gluu.oxtrust.model.scim2.User;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -59,8 +64,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 public class OpenidAccountResourceIntTest extends OPCommonTest {
 
+    @Value("${credmgr.gluuIdpOrg.umaAatClientId}")
+    private String umaAatClientId;
+
+    @Value("${credmgr.gluuIdpOrg.umaAatClientKeyId}")
+    private String umaAatClientKeyId;
+
     @Value("${credmgr.gluuIdpOrg.host}")
     private String host;
+
+    @Value("${credmgr.gluuIdpOrg.companyShortName}")
+    private String companyShortName;
+
+    @Value("${credmgr.gluuIdpOrg.requiredOPAdminClaimValue}")
+    private String adminClaimValue;
+
+    @Value("${credmgr.gluuIdpOrg.requiredOPSuperAdminClaimValue}")
+    private String superAdminClaimValue;
 
     @Inject
     private OPConfigRepository opConfigRepository;
@@ -103,12 +123,11 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
     @After
     public void tearDown() throws Exception {
         ReflectionTestUtils.setField(unwrapOPUserService(), "oxauthService", oxauthServiceOriginal);
-        cleanUp(opConfig);
+        cleanUp();
     }
 
 
     @Test
-    @Transactional
     public void registerAccount() throws Exception {
         int databaseSizeBeforeCreate = opConfigRepository.findAll().size();
 
@@ -129,8 +148,8 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
         assertThat(opConfig.isActivated()).isFalse();
 
         opConfigRepository.delete(opConfig.getId());
-        ScimResponse scimResponse = scimService.deletePerson(opConfig.getAdminScimId());
-        assertThat(scimResponse.getStatusCode()).isEqualTo(200);
+
+        assertThat(scimService.deletePerson(opConfig.getAdminScimId())).isTrue();
 
         registrationDTO.setEmail("wrong_email");
         try {
@@ -146,7 +165,7 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
 
     @Test
     public void activateAccount() throws Exception {
-        opConfig = register();
+        OPConfig opConfig = register();
 
         assertThat(opConfig.getActivationKey()).isNotNull();
         assertThat(opConfig.isActivated()).isFalse();
@@ -167,7 +186,7 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
 
     @Test
     public void getLoginUri() throws Exception {
-        opConfig = register();
+        OPConfig opConfig = register();
         opConfig.setHost(host);
         opConfigRepository.save(opConfig);
         String loginUri = opUserService.getLoginUri(opConfig.getCompanyShortName(), null);
@@ -188,7 +207,7 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
 
     @Test
     public void getLogoutUri() throws Exception {
-        opConfig = registerAndPreLogin();
+        registerAndPreLoginUser();
         String logoutUri = opUserService.getLogoutUri(null);
         restOpenidAccountConfigMockMvc.perform(get("/api/openid/logout-uri"))
             .andExpect(status().isOk())
@@ -206,8 +225,8 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
 
 
     @Test
-    public void loginRedirectionHandler() throws Exception {
-        opConfig = registerAndPreLogin();
+    public void loginUserRedirectionHandler() throws Exception {
+        OPConfig opConfig = registerAndPreLoginUser();
         //mocking oxauthService
         OxauthService oxauthServiceMock = Mockito.mock(OxauthService.class);
         TokenResponse tokenResponse = new TokenResponse();
@@ -225,22 +244,62 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
         OPUser user = (OPUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         assertThat(user.getAuthorities()).doesNotContain(OPAuthority.OP_ADMIN, OPAuthority.OP_USER);
 
-        restOpenidAccountConfigMockMvc.perform(get("/api/openid/login-redirect").param("code", "code")).andExpect(redirectedUrl("/#/reset-password"));
+        restOpenidAccountConfigMockMvc.perform(get("/api/openid/login-redirect").param("code", "code")).andExpect(redirectedUrl("/#/reset-password/"));
         user = (OPUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        assertThat(user.getAuthorities()).contains(OPAuthority.OP_ADMIN, OPAuthority.OP_USER);
+        assertThat(user.getAuthorities()).contains(OPAuthority.OP_USER);
+    }
+
+    @Test
+    public void loginAdminRedirectionHandler() throws Exception {
+        OPConfig opConfig = registerAndPreLoginAdmin();
+        //mocking oxauthService
+        OxauthService oxauthServiceMock = Mockito.mock(OxauthService.class);
+        TokenResponse tokenResponse = new TokenResponse();
+        tokenResponse.setIdToken("id_token");
+        Mockito.when(oxauthServiceMock.getToken(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(tokenResponse);
+
+        UserInfoResponse userInfoResponse = new UserInfoResponse(200);
+        Map<String, List<String>> claims = new HashMap<>();
+        claims.put("inum", Arrays.asList(opConfig.getAdminScimId()));
+        userInfoResponse.setClaims(claims);
+        Mockito.when(oxauthServiceMock.getUserInfo(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(userInfoResponse);
+
+        ReflectionTestUtils.setField(unwrapOPUserService(), "oxauthService", oxauthServiceMock);
+
+        OPUser user = (OPUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        assertThat(user.getAuthorities()).doesNotContain(OPAuthority.OP_ADMIN, OPAuthority.OP_USER);
+
+        restOpenidAccountConfigMockMvc.perform(get("/api/openid/login-redirect").param("code", "code")).andExpect(redirectedUrl("/#/settings"));
+        user = (OPUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        assertThat(user.getAuthorities()).contains(OPAuthority.OP_ADMIN);
     }
 
     @Test
     public void logoutRedirectionHandler() throws Exception {
-        opConfig = registerAndLogin();
+        registerAndLoginUser();
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNotNull();
         restOpenidAccountConfigMockMvc.perform(get("/api/openid/logout-redirect")).andExpect(redirectedUrl("/#/"));
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
     }
 
     @Test
-    public void getAccount() throws Exception {
-        opConfig = registerAndLogin();
+    public void getUserAccount() throws Exception {
+        registerAndLoginUser();
+        OPUser opUser = opUserService.getPrincipal().get();
+        restOpenidAccountConfigMockMvc.perform(get("/api/openid/account"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.scimId").value(opUser.getScimId()))
+            .andExpect(jsonPath("$.login").value(opUser.getLogin()))
+            .andExpect(jsonPath("$.host").value(opUser.getHost()))
+            .andExpect(jsonPath("$.idToken").value(opUser.getIdToken()))
+            .andExpect(jsonPath("$.langKey").value(opUser.getLangKey()))
+            .andExpect(jsonPath("$.authorities").value(Matchers.hasItem(OPAuthority.OP_USER.toString())));
+    }
+
+    @Test
+    public void getAdminAccount() throws Exception {
+        registerAndLoginAdmin();
         OPUser opUser = opUserService.getPrincipal().get();
         restOpenidAccountConfigMockMvc.perform(get("/api/openid/account"))
             .andExpect(status().isOk())
@@ -251,12 +310,27 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
             .andExpect(jsonPath("$.idToken").value(opUser.getIdToken()))
             .andExpect(jsonPath("$.langKey").value(opUser.getLangKey()))
             .andExpect(jsonPath("$.authorities").value(Matchers.hasItem(OPAuthority.OP_ADMIN.toString())));
+    }
+
+    @Test
+    public void getSuperAdminAccount() throws Exception {
+        registerAndLoginSuperAdmin();
+        OPUser opUser = opUserService.getPrincipal().get();
+        restOpenidAccountConfigMockMvc.perform(get("/api/openid/account"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(jsonPath("$.scimId").value(opUser.getScimId()))
+            .andExpect(jsonPath("$.login").value(opUser.getLogin()))
+            .andExpect(jsonPath("$.host").value(opUser.getHost()))
+            .andExpect(jsonPath("$.idToken").value(opUser.getIdToken()))
+            .andExpect(jsonPath("$.langKey").value(opUser.getLangKey()))
+            .andExpect(jsonPath("$.authorities").value(Matchers.hasItem(OPAuthority.OP_SUPER_ADMIN.toString())));
 
     }
 
     @Test
     public void changePassword() throws Exception {
-        opConfig = registerAndLogin();
+        registerAndLoginUser();
         restOpenidAccountConfigMockMvc.perform(post("/api/openid/change_password").contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes("new_password"))).andExpect(status().isOk());
 
@@ -270,13 +344,34 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
     }
 
     @Test
-    public void requestPasswordReset() {
-        //TODO: to implement
-    }
+    public void requestAndFinishPasswordReset() throws Exception {
+        OPConfig opConfig = register();
+        opConfig.setActivated(true);
+        opConfig.setHost(host);
+        opConfig.setUmaAatClientId(umaAatClientId);
+        opConfig.setUmaAatClientKeyId(umaAatClientKeyId);
+        opConfig.setClientJWKS(IOUtils.toString(getClass().getClassLoader().getResourceAsStream("scim-rp-openid-keys.json")));
+        opConfigRepository.save(opConfig);
 
-    @Test
-    public void finishPasswordReset() {
-        //TODO: to implement
+        ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO();
+        resetPasswordDTO.setEmail(opConfig.getEmail());
+        resetPasswordDTO.setCompanyShortName(opConfig.getCompanyShortName());
+        restOpenidAccountConfigMockMvc.perform(post("/api/openid/reset_password/init").contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(resetPasswordDTO)));
+
+        User user = scimService.retrievePerson(opConfig.getAdminScimId());
+        String resetKey = user.getExtension(Constants.USER_EXT_SCHEMA_ID).getField("resetKey", ExtensionFieldType.STRING);
+        assertThat(resetKey).isNotEmpty();
+        assertThat(user.getExtension(Constants.USER_EXT_SCHEMA_ID).getField("resetDate", ExtensionFieldType.STRING)).isNotEmpty();
+
+
+        KeyAndPasswordDTO keyAndPasswordDTO = new KeyAndPasswordDTO();
+        keyAndPasswordDTO.setCompanyShortName(opConfig.getCompanyShortName());
+        keyAndPasswordDTO.setKey(resetKey);
+        keyAndPasswordDTO.setNewPassword("helloworld");
+        restOpenidAccountConfigMockMvc.perform(post("/api/openid/reset_password/finish").contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(keyAndPasswordDTO))).andExpect(status().isOk());
+
     }
 
     @Override
@@ -297,5 +392,20 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
     @Override
     public String getHost() {
         return host;
+    }
+
+    @Override
+    public String getAdminClaimValue() {
+        return adminClaimValue;
+    }
+
+    @Override
+    public String getSuperAdminClaimValue() {
+        return superAdminClaimValue;
+    }
+
+    @Override
+    public String getCompanyShortName() {
+        return companyShortName;
     }
 }

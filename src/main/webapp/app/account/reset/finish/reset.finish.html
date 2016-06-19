@@ -16,7 +16,14 @@
             </div>
 
             <div class="alert alert-success" ng-show="vm.success">
-                <p translate="reset.finish.messages.success" translate-compile><strong>Your password has been reset.</strong> Please <a class="alert-link" href="" ng-click="vm.login()">sign in</a>.</p>
+                <div ng-switch="vm.isAuthenticated()">
+                    <p ng-switch-when="false" translate="reset.finish.messages.success" translate-compile><strong>Your
+                        password has been reset.</strong> Please <a class="alert-link" href="" ng-click="vm.login()">sign
+                        in</a>.</p>
+                    <p ng-switch-when="true" translate="reset.finish.messages.success" translate-compile><strong>Your
+                        password has been
+                        reset.</strong>.</p>
+                </div>
             </div>
 
             <div class="alert alert-danger" ng-show="vm.doNotMatch" translate="global.messages.error.dontmatch">

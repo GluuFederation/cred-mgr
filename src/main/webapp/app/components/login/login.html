@@ -16,7 +16,7 @@
         </div>
         <div class="col-md-8 col-md-offset-2" ng-switch="vm.loginUri==null">
             <form name="form" role="form" ng-submit="vm.getLoginUri()" show-validation
-                  ng-switch-when="true">
+                  ng-switch-when="true" autocomplete="off">
                 <div class="form-group">
                     <label for="companyShortName" translate="global.form.companyShortName">Login</label>
                     <input type="text" class="form-control" id="companyShortName"

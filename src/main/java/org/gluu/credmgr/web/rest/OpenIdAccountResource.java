@@ -2,6 +2,7 @@ package org.gluu.credmgr.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import org.apache.commons.lang.StringUtils;
+import org.gluu.credmgr.domain.OPAuthority;
 import org.gluu.credmgr.domain.OPConfig;
 import org.gluu.credmgr.domain.OPUser;
 import org.gluu.credmgr.service.MailService;
@@ -9,7 +10,9 @@ import org.gluu.credmgr.service.OPUserService;
 import org.gluu.credmgr.service.error.OPException;
 import org.gluu.credmgr.web.rest.dto.KeyAndPasswordDTO;
 import org.gluu.credmgr.web.rest.dto.RegistrationDTO;
+import org.gluu.credmgr.web.rest.dto.ResetPasswordDTO;
 import org.gluu.credmgr.web.rest.dto.SingleValueDTO;
+import org.gluu.oxtrust.model.scim2.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -69,8 +72,16 @@ public class OpenidAccountResource {
     @RequestMapping("/openid/login-redirect")
     public void loginRedirectionHandler(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "code") String code) throws IOException {
         try {
-            opUserService.login(getBaseUrl(request) + "/#/reset-password", code);
-            response.sendRedirect("/#/reset-password");
+            OPUser user = opUserService.login(getBaseUrl(request) + "/#/reset-password/", code, request, response);
+            if (user.getAuthorities().contains(OPAuthority.OP_ADMIN)) {
+                OPUser adminUser = opUserService.getPrincipal().orElseThrow(() -> new OPException(OPException.ERROR_LOGIN));
+                if (StringUtils.isEmpty(adminUser.getOpConfig().getClientJWKS()))
+                    response.sendRedirect("/#/settings");
+                else
+                    response.sendRedirect("/#/reset-password/");
+            } else {
+                response.sendRedirect("/#/reset-password/");
+            }
         } catch (OPException e) {
             response.sendRedirect("/#/error");
         }
@@ -107,16 +118,21 @@ public class OpenidAccountResource {
         method = RequestMethod.POST,
         produces = MediaType.TEXT_PLAIN_VALUE)
     @Timed
-    public ResponseEntity<?> requestPasswordReset(@RequestBody String mail, HttpServletRequest request) {
-        return null;
+    public ResponseEntity<?> requestPasswordReset(@RequestBody ResetPasswordDTO resetPasswordDTO, HttpServletRequest request) throws OPException {
+        User user = opUserService.requestPasswordReset(resetPasswordDTO);
+        mailService.sendPasswordResetMail(user, getBaseUrl(request), resetPasswordDTO.getCompanyShortName());
+        return new ResponseEntity<>("e-mail was sent", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/openid/reset_password/finish",
         method = RequestMethod.POST,
         produces = MediaType.TEXT_PLAIN_VALUE)
     @Timed
-    public ResponseEntity<String> finishPasswordReset(@RequestBody KeyAndPasswordDTO keyAndPassword) {
-        return null;
+    public ResponseEntity<String> finishPasswordReset(@RequestBody KeyAndPasswordDTO keyAndPassword) throws OPException {
+        if (!checkPasswordLength(keyAndPassword.getNewPassword()))
+            return new ResponseEntity<>("Incorrect password", HttpStatus.BAD_REQUEST);
+        opUserService.completePasswordReset(keyAndPassword);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     private boolean checkPasswordLength(String password) {

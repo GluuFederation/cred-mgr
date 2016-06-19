@@ -11,9 +11,14 @@ public class OPException extends Exception {
     public static final String ERROR_RETRIEVE_USER_INFO = "error.retrieveUserInfo";
 
     public static final String ERROR_CREATE_SCIM_USER = "error.createScimUser";
+    public static final String ERROR_UPDATE_SCIM_USER = "error.updateScimUser";
+    public static final String ERROR_FIND_SCIM_USER = "error.findScimUser";
+    public static final String ERROR_DELETE_SCIM_USER = "error.deleteScimUser";
+
+
+    public static final String ERROR_RETRIEVE_OP_CONFIG = "error.retrieveOPConfig";
     public static final String ERROR_EMAIL_OR_LOGIN_ALREADY_EXISTS = "error.emailLoginAlreadyExists";
     public static final String ERROR_ACTIVATE_OP_ADMIN = "error.activateOPAdmin";
-    public static final String ERROR_RETRIEVE_LOGIN_URI = "error.retrieveLoginUri";
     public static final String ERROR_RETRIEVE_LOGOUT_URI = "error.retrieveLogoutUri";
     public static final String ERROR_LOGIN = "error.login";
     public static final String ERROR_PASSWORD_CHANGE = "error.passwordChange";

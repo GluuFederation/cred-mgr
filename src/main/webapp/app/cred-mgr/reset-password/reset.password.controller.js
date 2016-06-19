@@ -13,6 +13,8 @@
     function ResetPasswordController(Auth, Principal, LoginService, $scope, $state) {
         var vm = this;
 
+        vm.account = null;
+        vm.resetPasswordError = null;
         vm.resetPasswordSuccess = null;
 
         vm.updatePasswordError = null;
@@ -23,13 +25,18 @@
         vm.resetAccount = {};
 
         vm.resetAccountEmail = null;
-        vm.resetAccountUsername = null;
+        vm.resetAccountCompanyShortName = null;
         vm.isAuthenticated = Principal.isAuthenticated;
         vm.password = null;
         vm.confirmPassword = null;
         vm.doNotMatch = false;
         vm.changePassword = changePassword;
         vm.login = LoginService.open;
+        vm.requestReset = requestReset;
+
+        Principal.identity().then(function (account) {
+            vm.account = account;
+        });
 
         function changePassword() {
             if (vm.password !== vm.confirmPassword) {
@@ -46,6 +53,29 @@
                     vm.updatePasswordError = 'ERROR';
                 });
             }
+        };
+        function requestReset() {
+            vm.resetPasswordError = null;
+            vm.errorEmailNotExists = null;
+
+            var companyShortName = null;
+            if (vm.isAuthenticated())
+                companyShortName = vm.account.opConfig.companyShortName;
+            else
+                companyShortName = vm.resetAccountCompanyShortName;
+            Auth.resetPasswordInit({
+                "email": vm.resetAccountEmail,
+                "companyShortName": companyShortName
+            }).then(function () {
+                vm.resetPasswordSuccess = 'OK';
+            }).catch(function (response) {
+                vm.resetPasswordSuccess = null;
+                if (response.status === 400 && response.data === 'e-mail address not registered') {
+                    vm.errorEmailNotExists = 'ERROR';
+                } else {
+                    vm.resetPasswordError = 'ERROR';
+                }
+            });
         };
     }
 })();

@@ -14,7 +14,7 @@
         $stateProvider
             .state('reset-password', {
                 parent: 'home',
-                url: 'reset-password',
+                url: 'reset-password/:host?',
                 data: {
                     authorities: [],
                     pageTitle: 'Reset Password'

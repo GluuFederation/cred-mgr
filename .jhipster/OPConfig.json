@@ -85,15 +85,17 @@
             "fieldType": "String"
         },
         {
+            "fieldId": 15,
             "fieldName": "email",
             "fieldType": "String",
             "fieldValidateRules": [
-                "required",
-                "pattern"
-            ],
-            "fieldValidateRulesPattern": "^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"
+                "required"
+                //"pattern"
+            ]
+            //"fieldValidateRulesPattern": "^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"
         },
         {
+            "fieldId": 16,
             "fieldName": "activated",
             "fieldType": "Boolean",
             "fieldValidateRules": [
@@ -101,11 +103,22 @@
             ]
         },
         {
+            "fieldId": 17,
             "fieldName": "clientSecret",
+            "fieldType": "String"
+        },
+        {
+            "fieldId": 18,
+            "fieldName": "umaAatClientId",
+            "fieldType": "String"
+        },
+        {
+            "fieldId": 19,
+            "fieldName": "umaAatClientKeyId",
             "fieldType": "String"
         }
     ],
-    "changelogDate": "20160603144012",
+    "changelogDate": "20160616114012",
     "dto": "no",
     "service": "no",
     "entityTableName": "op_config",
