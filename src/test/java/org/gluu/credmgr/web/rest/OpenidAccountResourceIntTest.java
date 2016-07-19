@@ -350,7 +350,7 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
         opConfig.setHost(host);
         opConfig.setUmaAatClientId(umaAatClientId);
         opConfig.setUmaAatClientKeyId(umaAatClientKeyId);
-        opConfig.setClientJWKS(IOUtils.toString(getClass().getClassLoader().getResourceAsStream("scim-rp-openid-keys.json")));
+        opConfig.setClientJKS(IOUtils.toString(getClass().getClassLoader().getResourceAsStream("scim-rp-openid-keys.json")));
         opConfigRepository.save(opConfig);
 
         ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO();

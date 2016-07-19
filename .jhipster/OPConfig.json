@@ -2,7 +2,6 @@
     "relationships": [],
     "fields": [
         {
-            "fieldId": 1,
             "fieldName": "adminScimId",
             "fieldType": "String",
             "fieldValidateRules": [
@@ -10,7 +9,6 @@
             ]
         },
         {
-            "fieldId": 2,
             "fieldName": "companyName",
             "fieldType": "String",
             "fieldValidateRules": [
@@ -18,7 +16,6 @@
             ]
         },
         {
-            "fieldId": 3,
             "fieldName": "companyShortName",
             "fieldType": "String",
             "fieldValidateRules": [
@@ -26,81 +23,13 @@
             ]
         },
         {
-            "fieldId": 4,
-            "fieldName": "host",
-            "fieldType": "String",
-            "fieldValidateRules": [
-                "pattern"
-            ],
-            "fieldValidateRulesPattern": "^https?:\/\/[^\/]*$"
-        },
-        {
-            "fieldId": 5,
-            "fieldName": "clientId",
-            "fieldType": "String"
-        },
-        {
-            "fieldId": 6,
-            "fieldName": "clientJWKS",
-            "fieldType": "String"
-        },
-        {
-            "fieldId": 7,
-            "fieldName": "authenticationLevel",
-            "fieldType": "Integer"
-        },
-        {
-            "fieldId": 8,
-            "fieldName": "requiredOpenIdScope",
-            "fieldType": "String"
-        },
-        {
-            "fieldId": 9,
-            "fieldName": "requiredClaim",
-            "fieldType": "String"
-        },
-        {
-            "fieldId": 10,
-            "fieldName": "requiredClaimValue",
-            "fieldType": "String"
-        },
-        {
-            "fieldId": 11,
-            "fieldName": "enablePasswordManagement",
-            "fieldType": "Boolean"
-        },
-        {
-            "fieldId": 12,
-            "fieldName": "enableAdminPage",
-            "fieldType": "Boolean"
-        },
-        {
-            "fieldId": 13,
-            "fieldName": "enableEmailManagement",
-            "fieldType": "Boolean"
-        },
-        {
-            "fieldId": 14,
-            "fieldName": "enableMobileManagement",
-            "fieldType": "Boolean"
-        },
-        {
-            "fieldId": 15,
-            "fieldName": "activationKey",
-            "fieldType": "String"
-        },
-        {
-            "fieldId": 16,
             "fieldName": "email",
             "fieldType": "String",
             "fieldValidateRules": [
                 "required"
-                //"pattern"
             ]
-            //"fieldValidateRulesPattern": "^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"
         },
         {
-            "fieldId": 17,
             "fieldName": "activated",
             "fieldType": "Boolean",
             "fieldValidateRules": [
@@ -108,24 +37,141 @@
             ]
         },
         {
-            "fieldId": 18,
+            "fieldName": "activationKey",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "host",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "clientId",
+            "fieldType": "String"
+        },
+        {
             "fieldName": "clientSecret",
             "fieldType": "String"
         },
         {
-            "fieldId": 19,
             "fieldName": "umaAatClientId",
             "fieldType": "String"
         },
         {
-            "fieldId": 20,
             "fieldName": "umaAatClientKeyId",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "clientJKS",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "authenticationLevel",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "requiredOpenIdScope",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "requiredClaim",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "requiredClaimValue",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "enablePasswordManagement",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "enableAdminPage",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "enableEmailManagement",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "enableMobileManagement",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "enableSocialManagement",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "enableU2FManagement",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "enableGoogleLogin",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "enableFacebookLogin",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "enableTwitterLogin",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "enableLinkedInLogin",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "enableWindowsLiveLogin",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "enableGithubLogin",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "enableDropboxLogin",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "enableYahooLogin",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "smtpHost",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "smtpPort",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "smtpUsername",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "smtpPassword",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "smtpUseSSL",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "twilioSID",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "twilioToken",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "twilioFromNumber",
             "fieldType": "String"
         }
     ],
-    "changelogDate": "20160719114012",
+    "changelogDate": "20160719104428",
     "dto": "no",
     "service": "no",
     "entityTableName": "op_config",
-    "pagination": "no"
+    "pagination": "pager"
 }

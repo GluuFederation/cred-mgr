@@ -17,25 +17,46 @@
     <div class="table-responsive">
         <table class="jh-table table table-striped">
             <thead>
-                <tr>
-                    <th><span translate="global.field.id">ID</span></th>
-                    <th><span translate="credmgrApp.oPConfig.adminScimId">Admin Scim Id</span></th>
-                    <th><span translate="credmgrApp.oPConfig.companyName">Company Name</span></th>
-                    <th><span translate="credmgrApp.oPConfig.companyShortName">Company Short Name</span></th>
-                    <th><span translate="credmgrApp.oPConfig.host">Host</span></th>
-                    <th><span translate="credmgrApp.oPConfig.clientId">Client Id</span></th>
-                    <th><span translate="credmgrApp.oPConfig.clientJWKS">Client JWKS</span></th>
-                    <th><span translate="credmgrApp.oPConfig.authenticationLevel">Authentication Level</span></th>
-                    <th><span translate="credmgrApp.oPConfig.requiredOpenIdScope">Required Open Id Scope</span></th>
-                    <th><span translate="credmgrApp.oPConfig.requiredClaim">Required Claim</span></th>
-                    <th><span translate="credmgrApp.oPConfig.requiredClaimValue">Required Claim Value</span></th>
-                    <th><span translate="credmgrApp.oPConfig.enablePasswordManagement">Enable Password Management</span></th>
-                    <th><span translate="credmgrApp.oPConfig.enableAdminPage">Enable Admin Page</span></th>
-                    <th><span translate="credmgrApp.oPConfig.enableEmailManagement">Enable Email Management</span></th>
-                    <th><span translate="credmgrApp.oPConfig.activationKey">Activation Key</span></th>
-                    <th><span translate="credmgrApp.oPConfig.email">Email</span></th>
-                    <th><span translate="credmgrApp.oPConfig.activated">Activated</span></th>
-                    <th><span translate="credmgrApp.oPConfig.clientSecret">Client Secret</span></th>
+                <tr jh-sort="vm.predicate" ascending="vm.reverse" callback="vm.transition()">
+                    <th jh-sort-by="id"><span translate="global.field.id">ID</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="adminScimId"><span translate="credmgrApp.oPConfig.adminScimId">Admin Scim Id</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="companyName"><span translate="credmgrApp.oPConfig.companyName">Company Name</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="companyShortName"><span translate="credmgrApp.oPConfig.companyShortName">Company Short Name</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="email"><span translate="credmgrApp.oPConfig.email">Email</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="activated"><span translate="credmgrApp.oPConfig.activated">Activated</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="activationKey"><span translate="credmgrApp.oPConfig.activationKey">Activation Key</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="host"><span translate="credmgrApp.oPConfig.host">Host</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="clientId"><span translate="credmgrApp.oPConfig.clientId">Client Id</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="clientSecret"><span translate="credmgrApp.oPConfig.clientSecret">Client Secret</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="umaAatClientId"><span translate="credmgrApp.oPConfig.umaAatClientId">Uma Aat Client Id</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="umaAatClientKeyId"><span translate="credmgrApp.oPConfig.umaAatClientKeyId">Uma Aat Client Key Id</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="clientJKS"><span translate="credmgrApp.oPConfig.clientJKS">Client JKS</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="authenticationLevel"><span translate="credmgrApp.oPConfig.authenticationLevel">Authentication Level</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="requiredOpenIdScope"><span translate="credmgrApp.oPConfig.requiredOpenIdScope">Required Open Id Scope</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="requiredClaim"><span translate="credmgrApp.oPConfig.requiredClaim">Required Claim</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="requiredClaimValue"><span translate="credmgrApp.oPConfig.requiredClaimValue">Required Claim Value</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="enablePasswordManagement"><span translate="credmgrApp.oPConfig.enablePasswordManagement">Enable Password Management</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="enableAdminPage"><span translate="credmgrApp.oPConfig.enableAdminPage">Enable Admin Page</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="enableEmailManagement"><span translate="credmgrApp.oPConfig.enableEmailManagement">Enable Email Management</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="enableMobileManagement"><span translate="credmgrApp.oPConfig.enableMobileManagement">Enable Mobile Management</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="enableSocialManagement"><span translate="credmgrApp.oPConfig.enableSocialManagement">Enable Social Management</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="enableU2FManagement"><span translate="credmgrApp.oPConfig.enableU2FManagement">Enable U 2 F Management</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="enableGoogleLogin"><span translate="credmgrApp.oPConfig.enableGoogleLogin">Enable Google Login</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="enableFacebookLogin"><span translate="credmgrApp.oPConfig.enableFacebookLogin">Enable Facebook Login</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="enableTwitterLogin"><span translate="credmgrApp.oPConfig.enableTwitterLogin">Enable Twitter Login</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="enableLinkedInLogin"><span translate="credmgrApp.oPConfig.enableLinkedInLogin">Enable Linked In Login</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="enableWindowsLiveLogin"><span translate="credmgrApp.oPConfig.enableWindowsLiveLogin">Enable Windows Live Login</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="enableGithubLogin"><span translate="credmgrApp.oPConfig.enableGithubLogin">Enable Github Login</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="enableDropboxLogin"><span translate="credmgrApp.oPConfig.enableDropboxLogin">Enable Dropbox Login</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="enableYahooLogin"><span translate="credmgrApp.oPConfig.enableYahooLogin">Enable Yahoo Login</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="smtpHost"><span translate="credmgrApp.oPConfig.smtpHost">Smtp Host</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="smtpPort"><span translate="credmgrApp.oPConfig.smtpPort">Smtp Port</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="smtpUsername"><span translate="credmgrApp.oPConfig.smtpUsername">Smtp Username</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="smtpPassword"><span translate="credmgrApp.oPConfig.smtpPassword">Smtp Password</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="smtpUseSSL"><span translate="credmgrApp.oPConfig.smtpUseSSL">Smtp Use SSL</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="twilioSID"><span translate="credmgrApp.oPConfig.twilioSID">Twilio SID</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="twilioToken"><span translate="credmgrApp.oPConfig.twilioToken">Twilio Token</span> <span class="glyphicon glyphicon-sort"></span></th>
+                    <th jh-sort-by="twilioFromNumber"><span translate="credmgrApp.oPConfig.twilioFromNumber">Twilio From Number</span> <span class="glyphicon glyphicon-sort"></span></th>
                     <th></th>
                 </tr>
             </thead>
@@ -45,9 +66,15 @@
                     <td>{{oPConfig.adminScimId}}</td>
                     <td>{{oPConfig.companyName}}</td>
                     <td>{{oPConfig.companyShortName}}</td>
+                    <td>{{oPConfig.email}}</td>
+                    <td>{{oPConfig.activated}}</td>
+                    <td>{{oPConfig.activationKey}}</td>
                     <td>{{oPConfig.host}}</td>
                     <td>{{oPConfig.clientId}}</td>
-                    <td>{{oPConfig.clientJWKS}}</td>
+                    <td>{{oPConfig.clientSecret}}</td>
+                    <td>{{oPConfig.umaAatClientId}}</td>
+                    <td>{{oPConfig.umaAatClientKeyId}}</td>
+                    <td>{{oPConfig.clientJKS}}</td>
                     <td>{{oPConfig.authenticationLevel}}</td>
                     <td>{{oPConfig.requiredOpenIdScope}}</td>
                     <td>{{oPConfig.requiredClaim}}</td>
@@ -55,12 +82,25 @@
                     <td>{{oPConfig.enablePasswordManagement}}</td>
                     <td>{{oPConfig.enableAdminPage}}</td>
                     <td>{{oPConfig.enableEmailManagement}}</td>
-                    <td>{{oPConfig.activationKey}}</td>
-                    <td>{{oPConfig.email}}</td>
-                    <td>{{oPConfig.activated}}</td>
-                    <td>{{oPConfig.clientSecret}}</td>
-                    <td>{{oPConfig.umaAatClientId}}</td>
-                    <td>{{oPConfig.umaAatClientKeyId}}</td>
+                    <td>{{oPConfig.enableMobileManagement}}</td>
+                    <td>{{oPConfig.enableSocialManagement}}</td>
+                    <td>{{oPConfig.enableU2FManagement}}</td>
+                    <td>{{oPConfig.enableGoogleLogin}}</td>
+                    <td>{{oPConfig.enableFacebookLogin}}</td>
+                    <td>{{oPConfig.enableTwitterLogin}}</td>
+                    <td>{{oPConfig.enableLinkedInLogin}}</td>
+                    <td>{{oPConfig.enableWindowsLiveLogin}}</td>
+                    <td>{{oPConfig.enableGithubLogin}}</td>
+                    <td>{{oPConfig.enableDropboxLogin}}</td>
+                    <td>{{oPConfig.enableYahooLogin}}</td>
+                    <td>{{oPConfig.smtpHost}}</td>
+                    <td>{{oPConfig.smtpPort}}</td>
+                    <td>{{oPConfig.smtpUsername}}</td>
+                    <td>{{oPConfig.smtpPassword}}</td>
+                    <td>{{oPConfig.smtpUseSSL}}</td>
+                    <td>{{oPConfig.twilioSID}}</td>
+                    <td>{{oPConfig.twilioToken}}</td>
+                    <td>{{oPConfig.twilioFromNumber}}</td>
                     <td class="text-right">
                         <div class="btn-group flex-btn-group-container">
                             <button type="submit"
@@ -87,4 +127,8 @@
             </tbody>
         </table>
     </div>
+    <div class="text-center">
+        <jhi-item-count page="vm.page" total="vm.queryCount"></jhi-item-count>
+    </div>
+    <uib-pager total-items="vm.totalItems" ng-model="vm.page" ng-change="vm.transition()"></uib-pager>
 </div>

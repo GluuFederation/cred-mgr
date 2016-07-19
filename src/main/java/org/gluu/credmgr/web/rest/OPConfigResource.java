@@ -4,8 +4,12 @@ import com.codahale.metrics.annotation.Timed;
 import org.gluu.credmgr.domain.OPConfig;
 import org.gluu.credmgr.repository.OPConfigRepository;
 import org.gluu.credmgr.web.rest.util.HeaderUtil;
+import org.gluu.credmgr.web.rest.util.PaginationUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,15 +28,12 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api")
 public class OPConfigResource {
-    //TODO: deactivate buttons on form submit
-    //TODO: handle error messages
-    //TODO: karma tests
-    //TODO: crud operations also should affect scim user
-    private final Logger log = LoggerFactory.getLogger(OPConfigResource.class);
 
+    private final Logger log = LoggerFactory.getLogger(OPConfigResource.class);
+        
     @Inject
     private OPConfigRepository oPConfigRepository;
-
+    
     /**
      * POST  /o-p-configs : Create a new oPConfig.
      *
@@ -82,16 +83,20 @@ public class OPConfigResource {
     /**
      * GET  /o-p-configs : get all the oPConfigs.
      *
+     * @param pageable the pagination information
      * @return the ResponseEntity with status 200 (OK) and the list of oPConfigs in body
+     * @throws URISyntaxException if there is an error to generate the pagination HTTP headers
      */
     @RequestMapping(value = "/o-p-configs",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
-    public List<OPConfig> getAllOPConfigs() {
-        log.debug("REST request to get all OPConfigs");
-        List<OPConfig> oPConfigs = oPConfigRepository.findAll();
-        return oPConfigs;
+    public ResponseEntity<List<OPConfig>> getAllOPConfigs(Pageable pageable)
+        throws URISyntaxException {
+        log.debug("REST request to get a page of OPConfigs");
+        Page<OPConfig> page = oPConfigRepository.findAll(pageable); 
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/o-p-configs");
+        return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
     /**

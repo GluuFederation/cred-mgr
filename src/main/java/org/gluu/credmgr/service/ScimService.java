@@ -86,8 +86,8 @@ public class ScimService {
         return deletePersonCommon(uid, scimClient);
     }
 
-    public Scim2Client getScimClient(String host, String umaAatClientId, String umaAatClientJwks, String umaAatClientKeyId) {
-        return Scim2Client.umaInstance(host + DOMAIN_SUFFIX, host + UMA_CONFIGURATION, umaAatClientId, umaAatClientJwks, "secret", umaAatClientKeyId);
+    public Scim2Client getScimClient(String host, String umaAatClientId, String umaAatClientJks, String umaAatClientKeyId) {
+        return Scim2Client.umaInstance(host + DOMAIN_SUFFIX, host + UMA_CONFIGURATION, umaAatClientId, umaAatClientJks, "secret", umaAatClientKeyId);
     }
 
     private User createPersonCommon(User user, Scim2Client client) throws OPException {

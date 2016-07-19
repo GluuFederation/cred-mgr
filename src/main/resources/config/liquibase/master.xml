@@ -6,5 +6,7 @@
 
     <include file="config/liquibase/changelog/20160603144012_initial_schema.xml"
              relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20160719104428_added_entity_OPConfig.xml"
+             relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
 </databaseChangeLog>

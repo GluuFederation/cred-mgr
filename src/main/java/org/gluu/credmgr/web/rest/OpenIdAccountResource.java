@@ -79,7 +79,7 @@ public class OpenidAccountResource {
             OPUser user = opUserService.login(getBaseUrl(request) + "/#/reset-password/", code, request, response);
             if (user.getAuthorities().contains(OPAuthority.OP_ADMIN)) {
                 OPConfig adminOpConfig = opUserService.getAdminOpConfig(user).orElseThrow(() -> new OPException(OPException.ERROR_LOGIN));
-                if (StringUtils.isEmpty(adminOpConfig.getClientJWKS()))
+                if (StringUtils.isEmpty(adminOpConfig.getClientJKS()))
                     response.sendRedirect("/#/settings");
                 else
                     response.sendRedirect("/#/reset-password/");

@@ -50,13 +50,53 @@
             </div>
         </div>
         <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.email" for="field_email">Email</label>
+            <input type="text" class="form-control" name="email" id="field_email"
+                   ng-model="vm.oPConfig.email"
+                   required
+                   ng-pattern="/^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$/"/>
+            <div ng-show="editForm.email.$invalid">
+                <p class="help-block"
+                   ng-show="editForm.email.$error.required" translate="entity.validation.required">
+                    This field is required.
+                </p>
+                <p class="help-block"
+                   ng-show="editForm.email.$error.pattern" translate="entity.validation.pattern"
+                   translate-value-pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$">
+                    This field should follow pattern
+                    "^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$".
+                </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.activated"
+                   for="field_activated">Activated</label>
+            <input type="checkbox" class="form-control" name="activated" id="field_activated"
+                   ng-model="vm.oPConfig.activated"
+            />
+            <div ng-show="editForm.activated.$invalid">
+                <p class="help-block"
+                   ng-show="editForm.activated.$error.required" translate="entity.validation.required">
+                    This field is required.
+                </p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.activationKey" for="field_activationKey">Activation
+                Key</label>
+            <input type="text" class="form-control" name="activationKey" id="field_activationKey"
+                   ng-model="vm.oPConfig.activationKey"
+            />
+        </div>
+        <div class="form-group">
             <label class="control-label" translate="credmgrApp.oPConfig.host" for="field_host">Host</label>
             <input type="text" class="form-control" name="host" id="field_host"
-                    ng-model="vm.oPConfig.host"
-                    ng-pattern="/^https?://[^/]*$/" />
+                   ng-model="vm.oPConfig.host" ng-pattern="/^https?://[^/]*$/"
+            />
             <div ng-show="editForm.host.$invalid">
                 <p class="help-block"
-                    ng-show="editForm.host.$error.pattern" translate="entity.validation.pattern" translate-value-pattern="^https?://[^/]*$">
+                   ng-show="editForm.host.$error.pattern" translate="entity.validation.pattern"
+                   translate-value-pattern="^https?://[^/]*$">
                     This field should follow pattern "^https?://[^/]*$".
                 </p>
             </div>
@@ -68,10 +108,32 @@
                      />
         </div>
         <div class="form-group">
-            <label class="control-label" translate="credmgrApp.oPConfig.clientJWKS" for="field_clientJWKS">Client JWKS</label>
-            <input type="text" class="form-control" name="clientJWKS" id="field_clientJWKS"
-                    ng-model="vm.oPConfig.clientJWKS"
+            <label class="control-label" translate="credmgrApp.oPConfig.clientSecret" for="field_clientSecret">Client
+                Secret</label>
+            <input type="text" class="form-control" name="clientSecret" id="field_clientSecret"
+                   ng-model="vm.oPConfig.clientSecret"
                      />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.umaAatClientId" for="field_umaAatClientId">Uma
+                Aat Client Id</label>
+            <input type="text" class="form-control" name="umaAatClientId" id="field_umaAatClientId"
+                   ng-model="vm.oPConfig.umaAatClientId"
+            />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.umaAatClientKeyId"
+                   for="field_umaAatClientKeyId">Uma Aat Client Key Id</label>
+            <input type="text" class="form-control" name="umaAatClientKeyId" id="field_umaAatClientKeyId"
+                   ng-model="vm.oPConfig.umaAatClientKeyId"
+            />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.clientJKS" for="field_clientJKS">Client
+                JKS</label>
+            <input type="text" class="form-control" name="clientJKS" id="field_clientJKS"
+                   ng-model="vm.oPConfig.clientJKS"
+            />
         </div>
         <div class="form-group">
             <label class="control-label" translate="credmgrApp.oPConfig.authenticationLevel" for="field_authenticationLevel">Authentication Level</label>
@@ -116,43 +178,134 @@
                      />
         </div>
         <div class="form-group">
-            <label class="control-label" translate="credmgrApp.oPConfig.activationKey" for="field_activationKey">Activation Key</label>
-            <input type="text" class="form-control" name="activationKey" id="field_activationKey"
-                    ng-model="vm.oPConfig.activationKey"
+            <label class="control-label" translate="credmgrApp.oPConfig.enableMobileManagement"
+                   for="field_enableMobileManagement">Enable Mobile Management</label>
+            <input type="checkbox" class="form-control" name="enableMobileManagement" id="field_enableMobileManagement"
+                   ng-model="vm.oPConfig.enableMobileManagement"
                      />
         </div>
         <div class="form-group">
-            <label class="control-label" translate="credmgrApp.oPConfig.email" for="field_email">Email</label>
-            <input type="text" class="form-control" name="email" id="field_email"
-                    ng-model="vm.oPConfig.email"
-                    required ng-pattern="/^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$/" />
-            <div ng-show="editForm.email.$invalid">
-                <p class="help-block"
-                    ng-show="editForm.email.$error.required" translate="entity.validation.required">
-                    This field is required.
-                </p>
-                <p class="help-block"
-                    ng-show="editForm.email.$error.pattern" translate="entity.validation.pattern" translate-value-pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$">
-                    This field should follow pattern "^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$".
-                </p>
-            </div>
+            <label class="control-label" translate="credmgrApp.oPConfig.enableSocialManagement"
+                   for="field_enableSocialManagement">Enable Social Management</label>
+            <input type="checkbox" class="form-control" name="enableSocialManagement" id="field_enableSocialManagement"
+                   ng-model="vm.oPConfig.enableSocialManagement"
+            />
         </div>
         <div class="form-group">
-            <label class="control-label" translate="credmgrApp.oPConfig.activated" for="field_activated">Activated</label>
-            <input type="checkbox" class="form-control" name="activated" id="field_activated"
-                    ng-model="vm.oPConfig.activated"
+            <label class="control-label" translate="credmgrApp.oPConfig.enableU2FManagement"
+                   for="field_enableU2FManagement">Enable U 2 F Management</label>
+            <input type="checkbox" class="form-control" name="enableU2FManagement" id="field_enableU2FManagement"
+                   ng-model="vm.oPConfig.enableU2FManagement"
                      />
-            <div ng-show="editForm.activated.$invalid">
-                <p class="help-block"
-                    ng-show="editForm.activated.$error.required" translate="entity.validation.required">
-                    This field is required.
-                </p>
-            </div>
         </div>
         <div class="form-group">
-            <label class="control-label" translate="credmgrApp.oPConfig.clientSecret" for="field_clientSecret">Client Secret</label>
-            <input type="text" class="form-control" name="clientSecret" id="field_clientSecret"
-                    ng-model="vm.oPConfig.clientSecret"
+            <label class="control-label" translate="credmgrApp.oPConfig.enableGoogleLogin"
+                   for="field_enableGoogleLogin">Enable Google Login</label>
+            <input type="checkbox" class="form-control" name="enableGoogleLogin" id="field_enableGoogleLogin"
+                   ng-model="vm.oPConfig.enableGoogleLogin"
+            />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.enableFacebookLogin"
+                   for="field_enableFacebookLogin">Enable Facebook Login</label>
+            <input type="checkbox" class="form-control" name="enableFacebookLogin" id="field_enableFacebookLogin"
+                   ng-model="vm.oPConfig.enableFacebookLogin"
+            />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.enableTwitterLogin"
+                   for="field_enableTwitterLogin">Enable Twitter Login</label>
+            <input type="checkbox" class="form-control" name="enableTwitterLogin" id="field_enableTwitterLogin"
+                   ng-model="vm.oPConfig.enableTwitterLogin"
+            />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.enableLinkedInLogin"
+                   for="field_enableLinkedInLogin">Enable Linked In Login</label>
+            <input type="checkbox" class="form-control" name="enableLinkedInLogin" id="field_enableLinkedInLogin"
+                   ng-model="vm.oPConfig.enableLinkedInLogin"
+            />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.enableWindowsLiveLogin"
+                   for="field_enableWindowsLiveLogin">Enable Windows Live Login</label>
+            <input type="checkbox" class="form-control" name="enableWindowsLiveLogin" id="field_enableWindowsLiveLogin"
+                   ng-model="vm.oPConfig.enableWindowsLiveLogin"
+            />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.enableGithubLogin"
+                   for="field_enableGithubLogin">Enable Github Login</label>
+            <input type="checkbox" class="form-control" name="enableGithubLogin" id="field_enableGithubLogin"
+                   ng-model="vm.oPConfig.enableGithubLogin"
+            />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.enableDropboxLogin"
+                   for="field_enableDropboxLogin">Enable Dropbox Login</label>
+            <input type="checkbox" class="form-control" name="enableDropboxLogin" id="field_enableDropboxLogin"
+                   ng-model="vm.oPConfig.enableDropboxLogin"
+            />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.enableYahooLogin" for="field_enableYahooLogin">Enable
+                Yahoo Login</label>
+            <input type="checkbox" class="form-control" name="enableYahooLogin" id="field_enableYahooLogin"
+                   ng-model="vm.oPConfig.enableYahooLogin"
+            />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.smtpHost" for="field_smtpHost">Smtp Host</label>
+            <input type="text" class="form-control" name="smtpHost" id="field_smtpHost"
+                   ng-model="vm.oPConfig.smtpHost"
+            />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.smtpPort" for="field_smtpPort">Smtp Port</label>
+            <input type="text" class="form-control" name="smtpPort" id="field_smtpPort"
+                   ng-model="vm.oPConfig.smtpPort"
+            />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.smtpUsername" for="field_smtpUsername">Smtp
+                Username</label>
+            <input type="text" class="form-control" name="smtpUsername" id="field_smtpUsername"
+                   ng-model="vm.oPConfig.smtpUsername"
+            />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.smtpPassword" for="field_smtpPassword">Smtp
+                Password</label>
+            <input type="text" class="form-control" name="smtpPassword" id="field_smtpPassword"
+                   ng-model="vm.oPConfig.smtpPassword"
+            />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.smtpUseSSL" for="field_smtpUseSSL">Smtp Use
+                SSL</label>
+            <input type="checkbox" class="form-control" name="smtpUseSSL" id="field_smtpUseSSL"
+                   ng-model="vm.oPConfig.smtpUseSSL"
+            />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.twilioSID" for="field_twilioSID">Twilio
+                SID</label>
+            <input type="text" class="form-control" name="twilioSID" id="field_twilioSID"
+                   ng-model="vm.oPConfig.twilioSID"
+            />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.twilioToken" for="field_twilioToken">Twilio
+                Token</label>
+            <input type="text" class="form-control" name="twilioToken" id="field_twilioToken"
+                   ng-model="vm.oPConfig.twilioToken"
+            />
+        </div>
+        <div class="form-group">
+            <label class="control-label" translate="credmgrApp.oPConfig.twilioFromNumber" for="field_twilioFromNumber">Twilio
+                From Number</label>
+            <input type="text" class="form-control" name="twilioFromNumber" id="field_twilioFromNumber"
+                   ng-model="vm.oPConfig.twilioFromNumber"
                      />
         </div>
 

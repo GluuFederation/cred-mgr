@@ -319,7 +319,7 @@ public class OPUserService {
      */
     public User requestPasswordReset(ResetPasswordDTO resetPasswordDTO) throws OPException {
         OPConfig opConfig = opConfigRepository.findOneByCompanyShortName(resetPasswordDTO.getCompanyShortName()).filter(OPConfig::isActivated).orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_OP_CONFIG));
-        Scim2Client scimClient = scimService.getScimClient(opConfig.getHost(), opConfig.getUmaAatClientId(), opConfig.getClientJWKS(), opConfig.getUmaAatClientKeyId());
+        Scim2Client scimClient = scimService.getScimClient(opConfig.getHost(), opConfig.getUmaAatClientId(), opConfig.getClientJKS(), opConfig.getUmaAatClientKeyId());
         User user = scimService.searchUsers("mail eq \"" + resetPasswordDTO.getEmail() + "\"", scimClient).stream().findFirst().orElseThrow(() -> new OPException(OPException.ERROR_FIND_SCIM_USER));
         user.addExtension(Optional.of(user.getExtensions())
             .map(extensions -> extensions.get(Constants.USER_EXT_SCHEMA_ID))
@@ -338,7 +338,7 @@ public class OPUserService {
      */
     public void completePasswordReset(KeyAndPasswordDTO keyAndPasswordDTO) throws OPException {
         OPConfig opConfig = opConfigRepository.findOneByCompanyShortName(keyAndPasswordDTO.getCompanyShortName()).filter(OPConfig::isActivated).orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_OP_CONFIG));
-        Scim2Client scimClient = scimService.getScimClient(opConfig.getHost(), opConfig.getUmaAatClientId(), opConfig.getClientJWKS(), opConfig.getUmaAatClientKeyId());
+        Scim2Client scimClient = scimService.getScimClient(opConfig.getHost(), opConfig.getUmaAatClientId(), opConfig.getClientJKS(), opConfig.getUmaAatClientKeyId());
         User scimUser = scimService.searchUsers("resetKey eq \"" + keyAndPasswordDTO.getKey() + "\"", scimClient).stream()
             .filter(user -> {
                 ZonedDateTime oneDayAgo = ZonedDateTime.now().minusHours(24);

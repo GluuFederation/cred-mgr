@@ -11,7 +11,7 @@
         $stateProvider
             .state('o-p-config', {
                 parent: 'entity',
-                url: '/o-p-config',
+                url: '/o-p-config?page&sort&search',
                 data: {
                     authorities: ['OP_SUPER_ADMIN'],
                     pageTitle: 'credmgrApp.oPConfig.home.title'
@@ -23,7 +23,27 @@
                         controllerAs: 'vm'
                     }
                 },
+                params: {
+                    page: {
+                        value: '1',
+                        squash: true
+                    },
+                    sort: {
+                        value: 'id,asc',
+                        squash: true
+                    },
+                    search: null
+                },
                 resolve: {
+                    pagingParams: ['$stateParams', 'PaginationUtil', function ($stateParams, PaginationUtil) {
+                        return {
+                            page: PaginationUtil.parsePage($stateParams.page),
+                            sort: $stateParams.sort,
+                            predicate: PaginationUtil.parsePredicate($stateParams.sort),
+                            ascending: PaginationUtil.parseAscending($stateParams.sort),
+                            search: $stateParams.search
+                        };
+                    }],
                     translatePartialLoader: ['$translate', '$translatePartialLoader', function ($translate, $translatePartialLoader) {
                         $translatePartialLoader.addPart('oPConfig');
                         $translatePartialLoader.addPart('global');
@@ -71,12 +91,18 @@
                         resolve: {
                             entity: function () {
                                 return {
-                                    inum: null,
+                                    adminScimId: null,
                                     companyName: null,
                                     companyShortName: null,
+                                    email: null,
+                                    activated: false,
+                                    activationKey: null,
                                     host: null,
                                     clientId: null,
-                                    clientJWKS: null,
+                                    clientSecret: null,
+                                    umaAatClientId: null,
+                                    umaAatClientKeyId: null,
+                                    clientJKS: null,
                                     authenticationLevel: null,
                                     requiredOpenIdScope: null,
                                     requiredClaim: null,
@@ -84,12 +110,25 @@
                                     enablePasswordManagement: null,
                                     enableAdminPage: null,
                                     enableEmailManagement: null,
-                                    activationKey: null,
-                                    email: null,
-                                    activated: false,
-                                    clientSecret: null,
-                                    umaAatClientId: null,
-                                    umaAatClientKeyId: null,
+                                    enableMobileManagement: null,
+                                    enableSocialManagement: null,
+                                    enableU2FManagement: null,
+                                    enableGoogleLogin: null,
+                                    enableFacebookLogin: null,
+                                    enableTwitterLogin: null,
+                                    enableLinkedInLogin: null,
+                                    enableWindowsLiveLogin: null,
+                                    enableGithubLogin: null,
+                                    enableDropboxLogin: null,
+                                    enableYahooLogin: null,
+                                    smtpHost: null,
+                                    smtpPort: null,
+                                    smtpUsername: null,
+                                    smtpPassword: null,
+                                    smtpUseSSL: null,
+                                    twilioSID: null,
+                                    twilioToken: null,
+                                    twilioFromNumber: null,
                                     id: null
                                 };
                         }
