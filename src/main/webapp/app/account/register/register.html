@@ -7,15 +7,21 @@
                 <strong>Registration saved!</strong> Please check your email for confirmation.
             </div>
 
-            <div class="alert alert-danger" ng-show="vm.error" translate="register.messages.error.fail">
-                <strong>Registration failed!</strong> Please try again later.
-            </div>
+            <div ng-switch="vm.error" ng-show="vm.error">
+                <div class="alert alert-danger" ng-switch-when="error.createScimUser"
+                     translate="register.messages.error.scimuserexists">
+                    <strong>Registration failed!</strong> Please try again later.
+                </div>
 
-            <div class="alert alert-danger" ng-show="vm.errorEmailExists"
-                 translate="register.messages.error.emailexists">
-                <strong>E-mail is already in use!</strong> Please choose another one.
-            </div>
+                <div class="alert alert-danger" ng-switch-when="error.emailLoginAlreadyExists"
+                     translate="register.messages.error.opconfigexists">
+                    <strong>E-mail is already in use!</strong> Please choose another one.
+                </div>
 
+                <div class="alert alert-danger" ng-switch-default translate="register.messages.error.fail">
+                    General error
+                </div>
+            </div>
             <div class="alert alert-danger" ng-show="vm.doNotMatch" translate="global.messages.error.dontmatch">
                 The password and its confirmation do not match!
             </div>
@@ -28,7 +34,7 @@
                     <input type="text" class="form-control" id="firstname" name="firstname"
                            placeholder="{{'global.form.firstname.placeholder' | translate}}"
                            ng-model="vm.registerAccount.firstName" ng-minlength=1 ng-maxlength=50
-                           ng-pattern="/^[_'.@A-Za-z0-9-]*$/" required>
+                           required>
                     <div ng-show="form.firstname.$dirty && form.firstname.$invalid">
                         <p class="help-block"
                            ng-show="form.firstname.$error.required"
@@ -45,11 +51,6 @@
                            translate="register.messages.validate.firstname.maxlength">
                             Your first name cannot be longer than 50 characters.
                         </p>
-                        <p class="help-block"
-                           ng-show="form.firstname.$error.pattern"
-                           translate="register.messages.validate.firstname.pattern">
-                            Your first name can only contain lower-case letters and digits.
-                        </p>
                     </div>
                 </div>
                 <div class="form-group">
@@ -57,7 +58,7 @@
                     <input type="text" class="form-control" id="lastname" name="lastname"
                            placeholder="{{'global.form.lastname.placeholder' | translate}}"
                            ng-model="vm.registerAccount.lastName" ng-minlength=1 ng-maxlength=50
-                           ng-pattern="/^[_'.@A-Za-z0-9-]*$/" required>
+                           required>
                     <div ng-show="form.lastname.$dirty && form.lastname.$invalid">
                         <p class="help-block"
                            ng-show="form.lastname.$error.required"
@@ -73,11 +74,6 @@
                            ng-show="form.lastname.$error.maxlength"
                            translate="register.messages.validate.lastname.maxlength">
                             Your last name cannot be longer than 50 characters.
-                        </p>
-                        <p class="help-block"
-                           ng-show="form.lastname.$error.pattern"
-                           translate="register.messages.validate.lastname.pattern">
-                            Your last name can only contain lower-case letters and digits.
                         </p>
                     </div>
                 </div>

@@ -16,7 +16,6 @@ import org.gluu.oxtrust.model.scim2.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.DeserializationFeature;
 import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -44,7 +43,7 @@ import java.util.stream.Collectors;
  * Created by eugeniuparvan on 6/3/16.
  */
 @Service
-@Transactional
+@Transactional(rollbackFor = Exception.class)
 public class OPUserService {
 
     @Value("${credmgr.gluuIdpOrg.companyShortName}")
@@ -75,7 +74,6 @@ public class OPUserService {
      * @param registrationDTO
      * @return
      * @throws OPException: OPException.ERROR_CREATE_SCIM_USER
-     *                      OPException.ERROR_EMAIL_OR_LOGIN_ALREADY_EXISTS
      */
     public OPConfig createOPAdminInformation(RegistrationDTO registrationDTO) throws OPException {
         OPConfig defaultConfig = getDefaultConfig().orElseThrow(() -> new OPException(OPException.ERROR_CREATE_SCIM_USER));
@@ -112,7 +110,7 @@ public class OPUserService {
             throw new OPException(OPException.ERROR_CREATE_SCIM_USER);
         }
         //TODO: setActive(false);
-        user.setActive(true);
+        user.setActive(false);
 
         user = scimService.createPerson(user);
 
@@ -123,13 +121,7 @@ public class OPUserService {
         opConfig.setActivationKey(RandomUtil.generateActivationKey());
         opConfig.setCompanyName(registrationDTO.getCompanyName());
         opConfig.setCompanyShortName(registrationDTO.getCompanyShortName());
-        try {
-            opConfigRepository.save(opConfig);
-        } catch (DataIntegrityViolationException e) {
-            throw new OPException(OPException.ERROR_EMAIL_OR_LOGIN_ALREADY_EXISTS, e);
-        }
-
-        return opConfig;
+        return opConfigRepository.save(opConfig);
     }
 
     /**
@@ -141,6 +133,7 @@ public class OPUserService {
             try {
                 User user = scimService.retrievePerson(opConfig.getAdminScimId());
                 user.setActive(true);
+                user.setPassword(null);
                 scimService.updatePerson(user, user.getId());
 
                 opConfig.setActivated(true);
@@ -372,6 +365,10 @@ public class OPUserService {
                         return null;
                     }
                 });
+    }
+
+    public Optional<OPConfig> getAdminOpConfig(OPUser user) {
+        return Optional.ofNullable(opConfigRepository.findOne(user.getOpConfigId()));
     }
 
     private Optional<OPConfig> getDefaultConfig() {

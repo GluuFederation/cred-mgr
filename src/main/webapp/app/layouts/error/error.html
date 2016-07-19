@@ -6,8 +6,8 @@
         <div class="col-md-8">
             <h1 translate="error.title">Error Page!</h1>
 
-            <div ng-show="errorMessage">
-                <div class="alert alert-danger">{{errorMessage}}
+            <div ng-show="vm.errorMessage">
+                <div class="alert alert-danger" translate="{{vm.errorMessage}}">{{vm.errorMessage}}
                 </div>
             </div>
         </div>

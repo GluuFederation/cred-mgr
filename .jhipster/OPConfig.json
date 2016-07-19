@@ -81,11 +81,16 @@
         },
         {
             "fieldId": 14,
+            "fieldName": "enableMobileManagement",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldId": 15,
             "fieldName": "activationKey",
             "fieldType": "String"
         },
         {
-            "fieldId": 15,
+            "fieldId": 16,
             "fieldName": "email",
             "fieldType": "String",
             "fieldValidateRules": [
@@ -95,7 +100,7 @@
             //"fieldValidateRulesPattern": "^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$"
         },
         {
-            "fieldId": 16,
+            "fieldId": 17,
             "fieldName": "activated",
             "fieldType": "Boolean",
             "fieldValidateRules": [
@@ -103,22 +108,22 @@
             ]
         },
         {
-            "fieldId": 17,
+            "fieldId": 18,
             "fieldName": "clientSecret",
             "fieldType": "String"
         },
         {
-            "fieldId": 18,
+            "fieldId": 19,
             "fieldName": "umaAatClientId",
             "fieldType": "String"
         },
         {
-            "fieldId": 19,
+            "fieldId": 20,
             "fieldName": "umaAatClientKeyId",
             "fieldType": "String"
         }
     ],
-    "changelogDate": "20160616114012",
+    "changelogDate": "20160719114012",
     "dto": "no",
     "service": "no",
     "entityTableName": "op_config",

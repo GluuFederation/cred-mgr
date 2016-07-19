@@ -42,9 +42,13 @@ public class OpenidAccountResource {
         produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE})
     @Timed
     public ResponseEntity<String> registerAccount(@Valid @RequestBody RegistrationDTO registrationDTO, HttpServletRequest request) throws OPException {
-        OPConfig opConfig = opUserService.createOPAdminInformation(registrationDTO);
-        mailService.sendOPActivationEmail(opConfig, getBaseUrl(request));
-        return new ResponseEntity<>(HttpStatus.OK);
+        try {
+            OPConfig opConfig = opUserService.createOPAdminInformation(registrationDTO);
+            mailService.sendOPActivationEmail(opConfig, getBaseUrl(request));
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            throw new OPException(OPException.ERROR_EMAIL_OR_LOGIN_ALREADY_EXISTS);
+        }
     }
 
     @RequestMapping(value = "/openid/activate",
@@ -74,8 +78,8 @@ public class OpenidAccountResource {
         try {
             OPUser user = opUserService.login(getBaseUrl(request) + "/#/reset-password/", code, request, response);
             if (user.getAuthorities().contains(OPAuthority.OP_ADMIN)) {
-                OPUser adminUser = opUserService.getPrincipal().orElseThrow(() -> new OPException(OPException.ERROR_LOGIN));
-                if (StringUtils.isEmpty(adminUser.getOpConfig().getClientJWKS()))
+                OPConfig adminOpConfig = opUserService.getAdminOpConfig(user).orElseThrow(() -> new OPException(OPException.ERROR_LOGIN));
+                if (StringUtils.isEmpty(adminOpConfig.getClientJWKS()))
                     response.sendRedirect("/#/settings");
                 else
                     response.sendRedirect("/#/reset-password/");
@@ -83,7 +87,7 @@ public class OpenidAccountResource {
                 response.sendRedirect("/#/reset-password/");
             }
         } catch (OPException e) {
-            response.sendRedirect("/#/error");
+            response.sendRedirect("/#/error?detailMessage="+e.getMessage());
         }
     }
 
@@ -116,12 +120,12 @@ public class OpenidAccountResource {
 
     @RequestMapping(value = "/openid/reset_password/init",
         method = RequestMethod.POST,
-        produces = MediaType.TEXT_PLAIN_VALUE)
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @Timed
-    public ResponseEntity<?> requestPasswordReset(@RequestBody ResetPasswordDTO resetPasswordDTO, HttpServletRequest request) throws OPException {
+    public ResponseEntity<String> requestPasswordReset(@RequestBody ResetPasswordDTO resetPasswordDTO, HttpServletRequest request) throws OPException {
         User user = opUserService.requestPasswordReset(resetPasswordDTO);
         mailService.sendPasswordResetMail(user, getBaseUrl(request), resetPasswordDTO.getCompanyShortName());
-        return new ResponseEntity<>("e-mail was sent", HttpStatus.OK);
+        return new ResponseEntity<String>("e-mail was sent", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/openid/reset_password/finish",

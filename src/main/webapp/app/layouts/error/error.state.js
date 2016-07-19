@@ -18,7 +18,9 @@
                 },
                 views: {
                     'content@': {
-                        templateUrl: 'app/layouts/error/error.html'
+                        templateUrl: 'app/layouts/error/error.html',
+                        controller: 'ErrorController',
+                        controllerAs: 'vm'
                     }
                 },
                 resolve: {

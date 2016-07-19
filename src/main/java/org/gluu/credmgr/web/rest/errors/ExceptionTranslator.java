@@ -73,7 +73,9 @@ public class ExceptionTranslator {
     }
 
     @ExceptionHandler(OPException.class)
-    public ResponseEntity<ErrorDTO> processOPException(OPException exception) {
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDTO processOPException(OPException exception) {
         BodyBuilder builder;
         switch (exception.getMessage()) {
 
@@ -102,7 +104,7 @@ public class ExceptionTranslator {
                 break;
 
         }
-        return builder.body(new ErrorDTO(exception.getMessage()));
+        return new ErrorDTO(exception.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

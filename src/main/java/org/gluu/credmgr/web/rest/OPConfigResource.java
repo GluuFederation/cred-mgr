@@ -24,6 +24,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api")
 public class OPConfigResource {
+    //TODO: deactivate buttons on form submit
+    //TODO: handle error messages
+    //TODO: karma tests
     //TODO: crud operations also should affect scim user
     private final Logger log = LoggerFactory.getLogger(OPConfigResource.class);
 

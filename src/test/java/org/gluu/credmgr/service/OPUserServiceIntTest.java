@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -100,8 +101,8 @@ public class OPUserServiceIntTest extends OPCommonTest {
         registrationDTO.setCompanyShortName(registrationDTO.getCompanyShortName() + "test");
         try {
             opUserService.createOPAdminInformation(registrationDTO).getAdminScimId();
-        } catch (OPException e) {
-            Assert.assertEquals(OPException.ERROR_EMAIL_OR_LOGIN_ALREADY_EXISTS, e.getMessage());
+        } catch (Exception e) {
+            Assert.assertTrue(e instanceof DataIntegrityViolationException);
         }
         opConfigRepository.delete(opConfig.getId());
     }

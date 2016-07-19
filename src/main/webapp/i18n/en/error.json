@@ -1,6 +1,21 @@
 {
     "error": {
         "title": "Error page!",
-        "403": "You are not authorized to access the page."
+        "403": "You are not authorized to access the page.",
+        "retrieveOpenidConfiguration": "Can't retrieve openid configuration",
+        "retrieveClientInfo": "Can't retrieve client info",
+        "registerClient": "Can't register",
+        "retrieveToken": "Can't retrieve token",
+        "retrieveUserInfo": "Can't retrieve user",
+        "createScimUser": "Can't create user",
+        "updateScimUser": "Can't update user",
+        "findScimUser": "Can't find user",
+        "deleteScimUser": "Can't delete user",
+        "retrieveOPConfig": "Can't retrieve opConfig",
+        "emailLoginAlreadyExists": "Email or login already exists",
+        "activateOPAdmin": "Can't activate op admin",
+        "retrieveLogoutUri": "Can't retrieve logout uri",
+        "login": "Can't login",
+        "passwordChange": "Can't change password"
     }
 }

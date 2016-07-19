@@ -3,7 +3,6 @@ package org.gluu.credmgr.service;
 import gluu.scim.client.ScimResponse;
 import gluu.scim2.client.Scim2Client;
 import gluu.scim2.client.util.Util;
-import org.apache.commons.io.IOUtils;
 import org.gluu.credmgr.service.error.OPException;
 import org.gluu.oxtrust.model.scim2.ListResponse;
 import org.gluu.oxtrust.model.scim2.User;
@@ -20,7 +19,7 @@ public class ScimService {
 
     private static final String DOMAIN_SUFFIX = "/identity/seam/resource/restv1";
     private static final String UMA_CONFIGURATION = "/.well-known/uma-configuration";
-    private static final String GLUU_IDP_ORG_JWKS_FILE_NAME = "scim-rp-openid-keys.json";
+    private static final String GLUU_IDP_ORG_JWKS_FILE_NAME = "scim-rp.jks";
 
     @Value("${credmgr.gluuIdpOrg.host}")
     private String gluuIdpOrgHost;
@@ -35,7 +34,7 @@ public class ScimService {
 
     @PostConstruct
     public void initIt() throws IOException {
-        final String umaAatClientJwks = IOUtils.toString(getClass().getClassLoader().getResourceAsStream(GLUU_IDP_ORG_JWKS_FILE_NAME));
+        final String umaAatClientJwks = getClass().getClassLoader().getResource(GLUU_IDP_ORG_JWKS_FILE_NAME).getFile();
         gluuIdpOrgScim2Client = getScimClient(gluuIdpOrgHost, gluuIdpOrgUmaAatClientId, umaAatClientJwks, gluuIdpOrgUmaAatClientKeyId);
     }
 
@@ -88,7 +87,7 @@ public class ScimService {
     }
 
     public Scim2Client getScimClient(String host, String umaAatClientId, String umaAatClientJwks, String umaAatClientKeyId) {
-        return Scim2Client.umaInstance(host + DOMAIN_SUFFIX, host + UMA_CONFIGURATION, umaAatClientId, umaAatClientJwks, umaAatClientKeyId);
+        return Scim2Client.umaInstance(host + DOMAIN_SUFFIX, host + UMA_CONFIGURATION, umaAatClientId, umaAatClientJwks, "secret", umaAatClientKeyId);
     }
 
     private User createPersonCommon(User user, Scim2Client client) throws OPException {

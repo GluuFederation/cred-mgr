@@ -52,6 +52,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers("/api/openid/reset_password/init").permitAll()
             .antMatchers("/api/openid/reset_password/finish").permitAll()
             .antMatchers("/api/openid/account").permitAll()
+            .antMatchers("/api/openid/logout-redirect").permitAll()
             .antMatchers("/api/openid/login-redirect").permitAll()
             .antMatchers("/api/openid/login-uri").permitAll()
             .antMatchers("/api/openid/activate").permitAll()

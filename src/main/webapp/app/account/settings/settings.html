@@ -7,7 +7,7 @@
                 <strong>Settings saved!</strong>
             </div>
 
-           <jhi-alert-error></jhi-alert-error>
+            <jhi-alert-error></jhi-alert-error>
 
             <form name="form" role="form" novalidate ng-submit="vm.save()" show-validation autocomplete="off">
 
@@ -17,19 +17,19 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="control-label" for="host" translate="settings.form.host">First Name</label>
+                    <label class="control-label" for="host" translate="settings.form.host">Gluu server url</label>
                     <input type="text" class="form-control" id="host" name="host"
                            placeholder="{{'settings.form.host.placeholder' | translate}}"
                            ng-model="vm.opConfig.host" ng-minlength=1 ng-maxlength=50 required maxlength="50">
                     <div ng-show="form.host.$dirty && form.host.$invalid">
                         <p class="help-block"
                            ng-show="form.host.$error.required" translate="settings.messages.validate.host.required">
-                            Your first name is required.
+                            Your server url e.g. 'https://gluu.server.org'
                         </p>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label" for="clientId" translate="settings.form.clientId">Last Name</label>
+                    <label class="control-label" for="clientId" translate="settings.form.clientId">Client Id</label>
                     <input type="text" class="form-control" id="clientId" name="clientId"
                            placeholder="{{'settings.form.clientId.placeholder' | translate}}"
                            ng-model="vm.opConfig.clientId" required>
@@ -37,12 +37,55 @@
                         <p class="help-block"
                            ng-show="form.clientId.$error.required"
                            translate="settings.messages.validate.clientId.required">
-                            Your last name is required.
+                            Your client_id e.g. '@!C0B0.XXXX.XXXX.XXXX!XXXX!XXXX.XXXX!XXXX!XXXX.3ECC'
                         </p>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label" for="clientJWKS" translate="settings.form.clientJWKS">E-mail</label>
+                    <label class="control-label" for="clientSecret" translate="settings.form.clientSecret">Client
+                        Secret</label>
+                    <input type="text" class="form-control" id="clientSecret" name="clientSecret"
+                           placeholder="{{'settings.form.clientSecret.placeholder' | translate}}"
+                           ng-model="vm.opConfig.clientSecret" required>
+                    <div ng-show="form.clientSecret.$dirty && form.clientSecret.$invalid">
+                        <p class="help-block"
+                           ng-show="form.clientSecret.$error.required"
+                           translate="settings.messages.validate.clientSecret.required">
+                            Your client_secret e.g. '5225b8b4-xxxx-xxxx-xxxx-e8f23e6cb90d'
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="umaAatClientId" translate="settings.form.umaAatClientId">Client
+                        Secret</label>
+                    <input type="text" class="form-control" id="umaAatClientId" name="umaAatClientId"
+                           placeholder="{{'settings.form.umaAatClientId.placeholder' | translate}}"
+                           ng-model="vm.opConfig.umaAatClientId" required>
+                    <div ng-show="form.umaAatClientId.$dirty && form.umaAatClientId.$invalid">
+                        <p class="help-block"
+                           ng-show="form.umaAatClientId.$error.required"
+                           translate="settings.messages.validate.umaAatClientId.required">
+                            Your umaAatClientId e.g. '@!DBEC.XXXX.XXXX.XXXX!XXXX!XXXX.XXXX!XXXX!XXXX.7C8E'
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="umaAatClientKeyId" translate="settings.form.umaAatClientKeyId">Client
+                        Secret</label>
+                    <input type="text" class="form-control" id="umaAatClientKeyId" name="umaAatClientKeyId"
+                           placeholder="{{'settings.form.umaAatClientKeyId.placeholder' | translate}}"
+                           ng-model="vm.opConfig.umaAatClientKeyId" required>
+                    <div ng-show="form.umaAatClientKeyId.$dirty && form.umaAatClientKeyId.$invalid">
+                        <p class="help-block"
+                           ng-show="form.umaAatClientKeyId.$error.required"
+                           translate="settings.messages.validate.umaAatClientKeyId.required">
+                            Your umaAatClientKeyId
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="clientJWKS" translate="settings.form.clientJWKS">Client
+                        JWKS</label>
                     <textarea type="clientJWKS" class="form-control" id="clientJWKS" name="clientJWKS"
                               placeholder="{{'settings.form.clientJWKS.placeholder' | translate}}"
                               ng-model="vm.opConfig.clientJWKS" required
@@ -60,6 +103,7 @@
                 <div class="alert alert-info">
                     <strong translate="settings.admin.configuration">ADMIN CREDENTIAL WEBSITE CONFIGURATION</strong>
                 </div>
+
                 <div class="form-group">
                     <label class="control-label" for="enableAdminPage"
                            translate="settings.form.enableAdminPage">Last
@@ -68,6 +112,23 @@
                            name="enableAdminPage"
                            placeholder="{{'settings.form.enableAdminPage.placeholder' | translate}}"
                            ng-model="vm.opConfig.enableAdminPage"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="adminRequiredAuthenticationLevel"
+                           translate="settings.form.adminRequiredAuthenticationLevel">Client
+                        Secret</label>
+                    <input type="text" class="form-control" id="adminRequiredAuthenticationLevel"
+                           name="adminRequiredAuthenticationLevel"
+                           placeholder="{{'settings.form.adminRequiredAuthenticationLevel.placeholder' | translate}}"
+                           ng-model="vm.opConfig.adminRequiredAuthenticationLevel" required>
+                    <div
+                        ng-show="form.adminRequiredAuthenticationLevel.$dirty && form.adminRequiredAuthenticationLevel.$invalid">
+                        <p class="help-block"
+                           ng-show="form.adminRequiredAuthenticationLevel.$error.required"
+                           translate="settings.messages.validate.adminRequiredAuthenticationLevel.required">
+                            Required authentication level for access to this admin panel
+                        </p>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label" for="requiredClaim" translate="settings.form.requiredClaim">Last
@@ -115,8 +176,235 @@
                            placeholder="{{'settings.form.enableEmailManagement.placeholder' | translate}}"
                            ng-model="vm.opConfig.enableEmailManagement"/>
                 </div>
+                <div class="form-group">
+                    <label class="control-label" for="enableMobileManagement"
+                           translate="settings.form.enableMobileManagement">Last
+                        Name</label>
+                    <input type="checkbox" class="form-control" id="enableMobileManagement"
+                           name="enableMobileManagement"
+                           placeholder="{{'settings.form.enableMobileManagement.placeholder' | translate}}"
+                           ng-model="vm.opConfig.enableMobileManagement"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="enableSocialManagement"
+                           translate="settings.form.enableSocialManagement">Last
+                        Name</label>
+                    <input type="checkbox" class="form-control" id="enableSocialManagement"
+                           name="enableSocialManagement"
+                           placeholder="{{'settings.form.enableSocialManagement.placeholder' | translate}}"
+                           ng-model="vm.opConfig.enableSocialManagement"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="enableU2FManagement"
+                           translate="settings.form.enableU2FManagement">Last
+                        Name</label>
+                    <input type="checkbox" class="form-control" id="enableU2FManagement"
+                           name="enableU2FManagement"
+                           placeholder="{{'settings.form.enableU2FManagement.placeholder' | translate}}"
+                           ng-model="vm.opConfig.enableU2FManagement"/>
+                </div>
 
-                <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary" translate="settings.form.button">Save</button>
+                <hr>
+                <div class="alert alert-info">
+                    <strong translate="settings.social.configuration">ADMIN CREDENTIAL WEBSITE CONFIGURATION</strong>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="enableGoogleLogin"
+                           translate="settings.form.enableGoogleLogin">Last
+                        Name</label>
+                    <input type="checkbox" class="form-control" id="enableGoogleLogin"
+                           name="google"
+                           placeholder="{{'settings.form.enableGoogleLogin.placeholder' | translate}}"
+                           ng-model="vm.opConfig.enableGoogleLogin"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="enableFacebookLogin"
+                           translate="settings.form.enableFacebookLogin">Last
+                        Name</label>
+                    <input type="checkbox" class="form-control" id="enableFacebookLogin"
+                           name="facebook"
+                           placeholder="{{'settings.form.enableFacebookLogin.placeholder' | translate}}"
+                           ng-model="vm.opConfig.facebook"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="enableTwitterLogin"
+                           translate="settings.form.enableTwitterLogin">Last
+                        Name</label>
+                    <input type="checkbox" class="form-control" id="enableTwitterLogin"
+                           name="enableTwitterLogin"
+                           placeholder="{{'settings.form.enableTwitterLogin.placeholder' | translate}}"
+                           ng-model="vm.opConfig.enableTwitterLogin"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="enableLinkedInLogin"
+                           translate="settings.form.enableLinkedInLogin">Last
+                        Name</label>
+                    <input type="checkbox" class="form-control" id="enableLinkedInLogin"
+                           name="enableLinkedInLogin"
+                           placeholder="{{'settings.form.enableLinkedInLogin.placeholder' | translate}}"
+                           ng-model="vm.opConfig.enableLinkedInLogin"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="enableWindowsLiveLogin"
+                           translate="settings.form.enableWindowsLiveLogin">Last
+                        Name</label>
+                    <input type="checkbox" class="form-control" id="enableWindowsLiveLogin"
+                           name="enableWindowsLiveLogin"
+                           placeholder="{{'settings.form.enableWindowsLiveLogin.placeholder' | translate}}"
+                           ng-model="vm.opConfig.enableWindowsLiveLogin"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="enableGithubLogin"
+                           translate="settings.form.enableGithubLogin">Last
+                        Name</label>
+                    <input type="checkbox" class="form-control" id="enableGithubLogin"
+                           name="enableGithubLogin"
+                           placeholder="{{'settings.form.enableGithubLogin.placeholder' | translate}}"
+                           ng-model="vm.opConfig.enableGithubLogin"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="enableDropboxLogin"
+                           translate="settings.form.enableDropboxLogin">Last
+                        Name</label>
+                    <input type="checkbox" class="form-control" id="enableDropboxLogin"
+                           name="enableDropboxLogin"
+                           placeholder="{{'settings.form.enableDropboxLogin.placeholder' | translate}}"
+                           ng-model="vm.opConfig.enableDropboxLogin"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="enableYahooLogin"
+                           translate="settings.form.enableYahooLogin">Last
+                        Name</label>
+                    <input type="checkbox" class="form-control" id="enableYahooLogin"
+                           name="enableYahooLogin"
+                           placeholder="{{'settings.form.enableYahooLogin.placeholder' | translate}}"
+                           ng-model="vm.opConfig.enableYahooLogin"/>
+                </div>
+
+                <hr>
+                <div class="alert alert-info">
+                    <strong translate="settings.email.configuration">ADMIN CREDENTIAL WEBSITE CONFIGURATION</strong>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="smtpHost" translate="settings.form.smtpHost">Last
+                        Name</label>
+                    <input type="text" class="form-control" id="smtpHost" name="smtpHost"
+                           placeholder="{{'settings.form.smtpHost.placeholder' | translate}}"
+                           ng-model="vm.opConfig.smtpHost" required>
+                    <div ng-show="form.smtpHost.$dirty && form.smtpHost.$invalid">
+                        <p class="help-block"
+                           ng-show="form.smtpHost.$error.required"
+                           translate="settings.messages.validate.smtpHost.required">
+                            Your last name is required.
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="smtpPort" translate="settings.form.smtpPort">Last
+                        Name</label>
+                    <input type="text" class="form-control" id="smtpPort" name="smtpPort"
+                           placeholder="{{'settings.form.smtpPort.placeholder' | translate}}"
+                           ng-model="vm.opConfig.smtpPort" required>
+                    <div ng-show="form.smtpPort.$dirty && form.smtpPort.$invalid">
+                        <p class="help-block"
+                           ng-show="form.smtpPort.$error.required"
+                           translate="settings.messages.validate.smtpPort.required">
+                            Your last name is required.
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="smtpUsername" translate="settings.form.smtpUsername">Last
+                        Name</label>
+                    <input type="text" class="form-control" id="smtpUsername" name="smtpUsername"
+                           placeholder="{{'settings.form.smtpUsername.placeholder' | translate}}"
+                           ng-model="vm.opConfig.smtpUsername" required>
+                    <div ng-show="form.smtpUsername.$dirty && form.smtpUsername.$invalid">
+                        <p class="help-block"
+                           ng-show="form.smtpUsername.$error.required"
+                           translate="settings.messages.validate.smtpUsername.required">
+                            Your last name is required.
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="smtpPassword" translate="settings.form.smtpPassword">Last
+                        Name</label>
+                    <input type="text" class="form-control" id="smtpPassword" name="smtpPassword"
+                           placeholder="{{'settings.form.smtpPassword.placeholder' | translate}}"
+                           ng-model="vm.opConfig.smtpPassword" required>
+                    <div ng-show="form.smtpPassword.$dirty && form.smtpPassword.$invalid">
+                        <p class="help-block"
+                           ng-show="form.smtpPassword.$error.required"
+                           translate="settings.messages.validate.smtpPassword.required">
+                            Your last name is required.
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="smtpUseSSL"
+                           translate="settings.form.smtpUseSSL">Last
+                        Name</label>
+                    <input type="checkbox" class="form-control" id="smtpUseSSL"
+                           name="smtpUseSSL"
+                           placeholder="{{'settings.form.smtpUseSSL.placeholder' | translate}}"
+                           ng-model="vm.opConfig.smtpUseSSL"/>
+                </div>
+                <hr>
+                <div class="alert alert-info">
+                    <strong translate="settings.twilio.configuration">ADMIN CREDENTIAL WEBSITE
+                        CONFIGURATION</strong>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="twilioSID" translate="settings.form.twilioSID">Last
+                        Name</label>
+                    <input type="text" class="form-control" id="twilioSID" name="twilioSID"
+                           placeholder="{{'settings.form.twilioSID.placeholder' | translate}}"
+                           ng-model="vm.opConfig.twilioSID" required>
+                    <div ng-show="form.twilioSID.$dirty && form.twilioSID.$invalid">
+                        <p class="help-block"
+                           ng-show="form.twilioSID.$error.required"
+                           translate="settings.messages.validate.twilioSID.required">
+                            Your last name is required.
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="twilioToken" translate="settings.form.twilioToken">Last
+                        Name</label>
+                    <input type="text" class="form-control" id="twilioToken" name="twilioToken"
+                           placeholder="{{'settings.form.twilioToken.placeholder' | translate}}"
+                           ng-model="vm.opConfig.twilioToken" required>
+                    <div ng-show="form.twilioToken.$dirty && form.twilioToken.$invalid">
+                        <p class="help-block"
+                           ng-show="form.twilioToken.$error.required"
+                           translate="settings.messages.validate.twilioToken.required">
+                            Your last name is required.
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="twilioFromNumber" translate="settings.form.twilioFromNumber">Last
+                        Name</label>
+                    <input type="text" class="form-control" id="twilioFromNumber" name="twilioFromNumber"
+                           placeholder="{{'settings.form.twilioFromNumber.placeholder' | translate}}"
+                           ng-model="vm.opConfig.twilioFromNumber" required>
+                    <div ng-show="form.twilioFromNumber.$dirty && form.twilioFromNumber.$invalid">
+                        <p class="help-block"
+                           ng-show="form.twilioFromNumber.$error.required"
+                           translate="settings.messages.validate.twilioFromNumber.required">
+                            Your last name is required.
+                        </p>
+                    </div>
+                </div>
+
+
+                <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary"
+                        translate="settings.form.button">Save
+                </button>
             </form>
         </div>
     </div>

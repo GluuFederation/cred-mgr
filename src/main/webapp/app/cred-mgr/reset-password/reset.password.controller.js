@@ -66,7 +66,7 @@
             Auth.resetPasswordInit({
                 "email": vm.resetAccountEmail,
                 "companyShortName": companyShortName
-            }).then(function () {
+            }).then(function (response) {
                 vm.resetPasswordSuccess = 'OK';
             }).catch(function (response) {
                 vm.resetPasswordSuccess = null;
