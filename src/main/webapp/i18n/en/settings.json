@@ -17,11 +17,11 @@
             "umaAatClientId.placeholder": "Your umaAatClientId e.g. '@!DBEC.XXXX.XXXX.XXXX!XXXX!XXXX.XXXX!XXXX!XXXX.7C8E'",
             "umaAatClientKeyId": "Uma Client Key ID",
             "umaAatClientKeyId.placeholder": "Your umaAatClientKeyId",
-            "clientJWKS": "Client JWKS",
-            "clientJWKS.placeholder": "Your file on Gluu Server '/install/community-edition-setup/setup.properties.last'",
+            "clientJKS": "Client JKS",
+            "clientJKS.placeholder": "Your file on Gluu Server '/install/community-edition-setup/setup.properties.last'",
             "enableAdminPage": "Enable web admin page",
-            "adminRequiredAuthenticationLevel": "Required authentication level for access to this admin panel",
-            "adminRequiredAuthenticationLevel.placeholder": "Integer value from 0 to 10",
+            "authenticationLevel": "Required authentication level for access to this admin panel",
+            "authenticationLevel.placeholder": "Integer value from 0 to 10",
             "requiredClaim": "Required claim",
             "requiredClaim.placeholder": "Your required claim e.g. 'role'",
             "requiredClaimValue": "Required claim value",
@@ -65,7 +65,8 @@
             "success": "<strong>Settings saved!</strong>",
             "validate": {
                 "host": {
-                    "required": "Your server url is required"
+                    "required": "Your server url is required",
+                    "pattern": "This field should follow pattern '^https?://[^/]*$'."
                 },
                 "clientId": {
                     "required": "Your client_id is required"

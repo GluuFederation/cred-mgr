@@ -3,6 +3,7 @@ package org.gluu.credmgr.web.rest;
 import org.apache.commons.io.IOUtils;
 import org.gluu.credmgr.CredmgrApp;
 import org.gluu.credmgr.OPCommonTest;
+import org.gluu.credmgr.config.CredmgrProperties;
 import org.gluu.credmgr.domain.OPAuthority;
 import org.gluu.credmgr.domain.OPConfig;
 import org.gluu.credmgr.domain.OPUser;
@@ -25,7 +26,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
@@ -64,23 +64,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 public class OpenidAccountResourceIntTest extends OPCommonTest {
 
-    @Value("${credmgr.gluuIdpOrg.umaAatClientId}")
-    private String umaAatClientId;
-
-    @Value("${credmgr.gluuIdpOrg.umaAatClientKeyId}")
-    private String umaAatClientKeyId;
-
-    @Value("${credmgr.gluuIdpOrg.host}")
-    private String host;
-
-    @Value("${credmgr.gluuIdpOrg.companyShortName}")
-    private String companyShortName;
-
-    @Value("${credmgr.gluuIdpOrg.requiredOPAdminClaimValue}")
-    private String adminClaimValue;
-
-    @Value("${credmgr.gluuIdpOrg.requiredOPSuperAdminClaimValue}")
-    private String superAdminClaimValue;
+    @Inject
+    private CredmgrProperties credmgrProperties;
 
     @Inject
     private OPConfigRepository opConfigRepository;
@@ -187,7 +172,7 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
     @Test
     public void getLoginUri() throws Exception {
         OPConfig opConfig = register();
-        opConfig.setHost(host);
+        opConfig.setHost(credmgrProperties.getGluuIdpOrg().getHost());
         opConfigRepository.save(opConfig);
         String loginUri = opUserService.getLoginUri(opConfig.getCompanyShortName(), null);
 
@@ -347,9 +332,9 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
     public void requestAndFinishPasswordReset() throws Exception {
         OPConfig opConfig = register();
         opConfig.setActivated(true);
-        opConfig.setHost(host);
-        opConfig.setUmaAatClientId(umaAatClientId);
-        opConfig.setUmaAatClientKeyId(umaAatClientKeyId);
+        opConfig.setHost(credmgrProperties.getGluuIdpOrg().getHost());
+        opConfig.setUmaAatClientId(credmgrProperties.getGluuIdpOrg().getUmaAatClientId());
+        opConfig.setUmaAatClientKeyId(credmgrProperties.getGluuIdpOrg().getUmaAatClientKeyId());
         opConfig.setClientJKS(IOUtils.toString(getClass().getClassLoader().getResourceAsStream("scim-rp-openid-keys.json")));
         opConfigRepository.save(opConfig);
 
@@ -391,21 +376,21 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
 
     @Override
     public String getHost() {
-        return host;
+        return credmgrProperties.getGluuIdpOrg().getHost();
     }
 
     @Override
     public String getAdminClaimValue() {
-        return adminClaimValue;
+        return "IT Manager";
     }
 
     @Override
     public String getSuperAdminClaimValue() {
-        return superAdminClaimValue;
+        return credmgrProperties.getGluuIdpOrg().getRequiredOPSuperAdminClaimValue();
     }
 
     @Override
     public String getCompanyShortName() {
-        return companyShortName;
+        return credmgrProperties.getGluuIdpOrg().getCompanyShortName();
     }
 }

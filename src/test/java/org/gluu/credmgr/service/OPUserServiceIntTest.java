@@ -2,6 +2,7 @@ package org.gluu.credmgr.service;
 
 import org.gluu.credmgr.CredmgrApp;
 import org.gluu.credmgr.OPCommonTest;
+import org.gluu.credmgr.config.CredmgrProperties;
 import org.gluu.credmgr.domain.OPAuthority;
 import org.gluu.credmgr.domain.OPConfig;
 import org.gluu.credmgr.domain.OPUser;
@@ -14,7 +15,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -40,17 +40,8 @@ import java.util.Optional;
 @Transactional
 public class OPUserServiceIntTest extends OPCommonTest {
 
-    @Value("${credmgr.gluuIdpOrg.host}")
-    private String host;
-
-    @Value("${credmgr.gluuIdpOrg.companyShortName}")
-    private String companyShortName;
-
-    @Value("${credmgr.gluuIdpOrg.requiredOPAdminClaimValue}")
-    private String adminClaimValue;
-
-    @Value("${credmgr.gluuIdpOrg.requiredOPSuperAdminClaimValue}")
-    private String superAdminClaimValue;
+    @Inject
+    private CredmgrProperties credmgrProperties;
 
     @Inject
     private OPUserService opUserService;
@@ -138,7 +129,7 @@ public class OPUserServiceIntTest extends OPCommonTest {
         } catch (OPException e) {
             Assert.assertEquals(OPException.ERROR_RETRIEVE_OPEN_ID_CONFIGURATION, e.getMessage());
         }
-        opConfig.setHost(host);
+        opConfig.setHost(credmgrProperties.getGluuIdpOrg().getHost());
         opConfigRepository.save(opConfig);
 
         String loginUri = opUserService.getLoginUri(opConfig.getCompanyShortName(), null);
@@ -329,21 +320,21 @@ public class OPUserServiceIntTest extends OPCommonTest {
 
     @Override
     public String getHost() {
-        return host;
+        return credmgrProperties.getGluuIdpOrg().getHost();
     }
 
     @Override
     public String getAdminClaimValue() {
-        return adminClaimValue;
+        return "IT Manager";
     }
 
     @Override
     public String getSuperAdminClaimValue() {
-        return superAdminClaimValue;
+        return credmgrProperties.getGluuIdpOrg().getRequiredOPSuperAdminClaimValue();
     }
 
     @Override
     public String getCompanyShortName() {
-        return companyShortName;
+        return credmgrProperties.getGluuIdpOrg().getCompanyShortName();
     }
 }

@@ -3,13 +3,14 @@ package org.gluu.credmgr.service;
 import gluu.scim.client.ScimResponse;
 import gluu.scim2.client.Scim2Client;
 import gluu.scim2.client.util.Util;
+import org.gluu.credmgr.config.CredmgrProperties;
 import org.gluu.credmgr.service.error.OPException;
 import org.gluu.oxtrust.model.scim2.ListResponse;
 import org.gluu.oxtrust.model.scim2.User;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,21 +22,19 @@ public class ScimService {
     private static final String UMA_CONFIGURATION = "/.well-known/uma-configuration";
     private static final String GLUU_IDP_ORG_JWKS_FILE_NAME = "scim-rp.jks";
 
-    @Value("${credmgr.gluuIdpOrg.host}")
-    private String gluuIdpOrgHost;
-
-    @Value("${credmgr.gluuIdpOrg.umaAatClientId}")
-    private String gluuIdpOrgUmaAatClientId;
-
-    @Value("${credmgr.gluuIdpOrg.umaAatClientKeyId}")
-    private String gluuIdpOrgUmaAatClientKeyId;
+    @Inject
+    private CredmgrProperties credmgrProperties;
 
     private Scim2Client gluuIdpOrgScim2Client;
 
     @PostConstruct
     public void initIt() throws IOException {
-        final String umaAatClientJwks = getClass().getClassLoader().getResource(GLUU_IDP_ORG_JWKS_FILE_NAME).getFile();
-        gluuIdpOrgScim2Client = getScimClient(gluuIdpOrgHost, gluuIdpOrgUmaAatClientId, umaAatClientJwks, gluuIdpOrgUmaAatClientKeyId);
+        String umaAatClientJwks = getClass().getClassLoader().getResource(GLUU_IDP_ORG_JWKS_FILE_NAME).getFile();
+        String host = credmgrProperties.getGluuIdpOrg().getHost();
+        String umaAatClientId = credmgrProperties.getGluuIdpOrg().getUmaAatClientId();
+        String umaAatClientKeyId = credmgrProperties.getGluuIdpOrg().getUmaAatClientKeyId();
+
+        gluuIdpOrgScim2Client = getScimClient(host, umaAatClientId, umaAatClientJwks, umaAatClientKeyId);
     }
 
     public User createPerson(User user) throws OPException {

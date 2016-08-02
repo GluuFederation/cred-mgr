@@ -83,8 +83,8 @@ jhipster:
 credmgr:
     gluuIdpOrg:
         host: https://gluu.localhost.info
-        umaAatClientId: '@!DBEC.EDB3.D597.9FC1!0001!1B10.7C2A!0008!B161.7C8E'
+        umaAatClientId: '@!E0C8.52C1.C6D4.38D2!0001!FAE9.4AC2!0008!9A96.832B'
         umaAatClientKeyId:
         companyShortName: gluu
-        requiredOPAdminClaimValue: IT Manager
         requiredOPSuperAdminClaimValue: Gluu IT Manager
+    jksStorePath: /Users/eugeniuparvan/Desktop/credmgr_storage

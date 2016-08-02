@@ -8,6 +8,7 @@ import org.xdi.oxauth.model.common.GrantType;
 import org.xdi.oxauth.model.common.ResponseType;
 import org.xdi.oxauth.model.register.ApplicationType;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -59,6 +60,7 @@ public class OxauthService {
         OpenIdConfigurationResponse openIdConfiguration = getOpenIdConfiguration(gluuHost);
         AuthorizationRequest authorizationRequest = new AuthorizationRequest(responseTypes, clientId, scopes,
             redirectUri, null);
+        authorizationRequest.setAcrValues(Arrays.asList(new String[]{"basic"}));
         return openIdConfiguration.getAuthorizationEndpoint() + "?" + authorizationRequest.getQueryString();
     }
 

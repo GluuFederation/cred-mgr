@@ -97,6 +97,7 @@ public class ExceptionTranslator {
             case OPException.ERROR_RETRIEVE_USER_INFO:
             case OPException.ERROR_ACTIVATE_OP_ADMIN:
             case OPException.ERROR_LOGIN:
+            case OPException.ERROR_UPDATE_OP_CONFIG:
                 builder = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR);
                 break;
             default:

@@ -17,15 +17,15 @@
     <name>Credmgr</name>
 
     <repositories>
-        <!--<repository>-->
-        <!--<id>gluu</id>-->
-        <!--<name>Gluu repository</name>-->
-        <!--<url>http://ox.gluu.org/maven</url>-->
-        <!--</repository>-->
         <repository>
-            <id>localrepository</id>
-            <url>file:/Users/eugeniuparvan/.m2/repository</url>
+            <id>gluu</id>
+            <name>Gluu repository</name>
+            <url>http://ox.gluu.org/maven</url>
         </repository>
+        <!--<repository>-->
+        <!--<id>localrepository</id>-->
+        <!--<url>file:/Users/eugeniuparvan/.m2/repository</url>-->
+        <!--</repository>-->
     </repositories>
 
     <prerequisites>
@@ -85,7 +85,7 @@
 
         <!-- Gluu properties -->
         <oxauth.version>2.4.4-SNAPSHOT</oxauth.version>
-        <scim.client>2.4.4-SNAPSHOT</scim.client>
+        <scim.client>2.4.4</scim.client>
     </properties>
 
 
@@ -131,6 +131,11 @@
                     <groupId>javax.servlet</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.3.1</version>
         </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>

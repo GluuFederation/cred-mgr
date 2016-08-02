@@ -9,7 +9,8 @@
 
             <jhi-alert-error></jhi-alert-error>
 
-            <form name="form" role="form" novalidate ng-submit="vm.save()" show-validation autocomplete="off">
+            <form name="form" role="form" novalidate ng-submit="vm.save()" show-validation autocomplete="off"
+                  enctype="multipart/form-data">
 
                 <hr>
                 <div class="alert alert-info">
@@ -20,11 +21,17 @@
                     <label class="control-label" for="host" translate="settings.form.host">Gluu server url</label>
                     <input type="text" class="form-control" id="host" name="host"
                            placeholder="{{'settings.form.host.placeholder' | translate}}"
-                           ng-model="vm.opConfig.host" ng-minlength=1 ng-maxlength=50 required maxlength="50">
+                           ng-model="vm.opConfig.host" ng-minlength=1 ng-maxlength=50 ng-pattern="/^https?://[^/]*$/"
+                           required maxlength="50">
                     <div ng-show="form.host.$dirty && form.host.$invalid">
                         <p class="help-block"
                            ng-show="form.host.$error.required" translate="settings.messages.validate.host.required">
                             Your server url e.g. 'https://gluu.server.org'
+                        </p>
+                        <p class="help-block"
+                           ng-show="form.host.$error.pattern" translate="settings.messages.validate.host.pattern"
+                           translate-value-pattern="^https?://[^/]*$">
+                            This field should follow pattern "^https?://[^/]*$".
                         </p>
                     </div>
                 </div>
@@ -74,7 +81,7 @@
                         Secret</label>
                     <input type="text" class="form-control" id="umaAatClientKeyId" name="umaAatClientKeyId"
                            placeholder="{{'settings.form.umaAatClientKeyId.placeholder' | translate}}"
-                           ng-model="vm.opConfig.umaAatClientKeyId" required>
+                           ng-model="vm.opConfig.umaAatClientKeyId">
                     <div ng-show="form.umaAatClientKeyId.$dirty && form.umaAatClientKeyId.$invalid">
                         <p class="help-block"
                            ng-show="form.umaAatClientKeyId.$error.required"
@@ -84,16 +91,22 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="control-label" for="clientJWKS" translate="settings.form.clientJWKS">Client
+                    <label class="control-label" for="clientJKS" translate="settings.form.clientJKS">Client
                         JWKS</label>
-                    <textarea type="clientJWKS" class="form-control" id="clientJWKS" name="clientJWKS"
-                              placeholder="{{'settings.form.clientJWKS.placeholder' | translate}}"
-                              ng-model="vm.opConfig.clientJWKS" required
-                              rows="7"/>
-                    <div ng-show="form.clientJWKS.$dirty && form.clientJWKS.$invalid">
+
+                    <div class="input-group">
+                      <span class="input-group-btn">
+                        <div class="btn btn-primary" ngf-select ng-model="vm.jks" name="jks" accept=".jks"
+                             ngf-multiple="false">Select JKS
+                        </div>
+                      </span><input type="text" id="clientJKS" name="clientJKS" readonly class="form-control"
+                                    placeholder="Search for jks..."
+                                    ng-value="vm.opConfig.clientJKS" required>
+                    </div>
+                    <div ng-show="form.clientJKS.$dirty && form.clientJKS.$invalid">
                         <p class="help-block"
-                           ng-show="form.clientJWKS.$error.required"
-                           translate="settings.form.clientJWKS.required">
+                           ng-show="form.clientJKS.$error.required"
+                           translate="settings.form.clientJKS.required">
                             Your e-mail is required.
                         </p>
                     </div>
@@ -114,18 +127,18 @@
                            ng-model="vm.opConfig.enableAdminPage"/>
                 </div>
                 <div class="form-group">
-                    <label class="control-label" for="adminRequiredAuthenticationLevel"
-                           translate="settings.form.adminRequiredAuthenticationLevel">Client
+                    <label class="control-label" for="authenticationLevel"
+                           translate="settings.form.authenticationLevel">Client
                         Secret</label>
-                    <input type="text" class="form-control" id="adminRequiredAuthenticationLevel"
-                           name="adminRequiredAuthenticationLevel"
-                           placeholder="{{'settings.form.adminRequiredAuthenticationLevel.placeholder' | translate}}"
-                           ng-model="vm.opConfig.adminRequiredAuthenticationLevel" required>
+                    <input type="text" class="form-control" id="authenticationLevel"
+                           name="authenticationLevel"
+                           placeholder="{{'settings.form.authenticationLevel.placeholder' | translate}}"
+                           ng-model="vm.opConfig.authenticationLevel" required>
                     <div
-                        ng-show="form.adminRequiredAuthenticationLevel.$dirty && form.adminRequiredAuthenticationLevel.$invalid">
+                        ng-show="form.authenticationLevel.$dirty && form.authenticationLevel.$invalid">
                         <p class="help-block"
-                           ng-show="form.adminRequiredAuthenticationLevel.$error.required"
-                           translate="settings.messages.validate.adminRequiredAuthenticationLevel.required">
+                           ng-show="form.authenticationLevel.$error.required"
+                           translate="settings.messages.validate.authenticationLevel.required">
                             Required authentication level for access to this admin panel
                         </p>
                     </div>
@@ -225,7 +238,7 @@
                     <input type="checkbox" class="form-control" id="enableFacebookLogin"
                            name="facebook"
                            placeholder="{{'settings.form.enableFacebookLogin.placeholder' | translate}}"
-                           ng-model="vm.opConfig.facebook"/>
+                           ng-model="vm.opConfig.enableFacebookLogin"/>
                 </div>
                 <div class="form-group">
                     <label class="control-label" for="enableTwitterLogin"
@@ -304,7 +317,7 @@
                 <div class="form-group">
                     <label class="control-label" for="smtpPort" translate="settings.form.smtpPort">Last
                         Name</label>
-                    <input type="text" class="form-control" id="smtpPort" name="smtpPort"
+                    <input type="number" class="form-control" id="smtpPort" name="smtpPort"
                            placeholder="{{'settings.form.smtpPort.placeholder' | translate}}"
                            ng-model="vm.opConfig.smtpPort" required>
                     <div ng-show="form.smtpPort.$dirty && form.smtpPort.$invalid">

@@ -2,6 +2,7 @@ package org.gluu.credmgr.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import org.apache.commons.lang.StringUtils;
+import org.gluu.credmgr.config.CredmgrProperties;
 import org.gluu.credmgr.domain.OPAuthority;
 import org.gluu.credmgr.domain.OPConfig;
 import org.gluu.credmgr.domain.OPUser;
@@ -13,23 +14,34 @@ import org.gluu.credmgr.web.rest.dto.RegistrationDTO;
 import org.gluu.credmgr.web.rest.dto.ResetPasswordDTO;
 import org.gluu.credmgr.web.rest.dto.SingleValueDTO;
 import org.gluu.oxtrust.model.scim2.User;
+import org.springframework.context.ResourceLoaderAware;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 /**
  * Created by eugeniuparvan on 5/30/16.
  */
 @RestController
 @RequestMapping("/api")
-public class OpenidAccountResource {
+public class OpenidAccountResource implements ResourceLoaderAware {
+
+    @Inject
+    private CredmgrProperties credmgrProperties;
 
     @Inject
     private OPUserService opUserService;
@@ -37,6 +49,52 @@ public class OpenidAccountResource {
     @Inject
     private MailService mailService;
 
+    @Inject
+    private OPConfigResource opConfigResource;
+
+    private ResourceLoader resourceLoader;
+
+    @RequestMapping(value = "/openid/settings-update",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+        method = RequestMethod.POST,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    @Timed
+    public ResponseEntity<OPConfig> updateSettings(@Valid final OPConfig opConfig, @RequestParam(value = "file", required = false) final MultipartFile file) throws OPException {
+        if ((file == null || file.isEmpty()) && opConfig.getClientJKS() == null)
+            throw new OPException(OPException.ERROR_UPDATE_OP_CONFIG);
+
+        ResponseEntity<OPConfig> responseEntity;
+        try {
+            if (file != null && !file.isEmpty()) {
+                File path = new File(credmgrProperties.getJksStorePath() + "/" + opConfig.getCompanyShortName());
+                if (!path.exists())
+                    path.mkdir();
+                Files.copy(file.getInputStream(), Paths.get(path.getAbsolutePath(), file.getOriginalFilename()), StandardCopyOption.REPLACE_EXISTING);
+                opConfig.setClientJKS("/" + opConfig.getCompanyShortName() + "/" + file.getOriginalFilename());
+            }
+            responseEntity = opConfigResource.updateOPConfig(opConfig);
+        } catch (URISyntaxException | IOException | RuntimeException e) {
+            throw new OPException(OPException.ERROR_UPDATE_OP_CONFIG);
+        }
+
+        //Test
+        Resource resource = resourceLoader.getResource("file:" + Paths.get(credmgrProperties.getJksStorePath() + "/" + opConfig.getCompanyShortName(), opConfig.getClientJKS()).toString());
+        try {
+            InputStream is = resource.getInputStream();
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+            br.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return responseEntity;
+    }
 
     @RequestMapping(value = "/openid/register", method = RequestMethod.POST,
         produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE})
@@ -87,7 +145,7 @@ public class OpenidAccountResource {
                 response.sendRedirect("/#/reset-password/");
             }
         } catch (OPException e) {
-            response.sendRedirect("/#/error?detailMessage="+e.getMessage());
+            response.sendRedirect("/#/error?detailMessage=" + e.getMessage());
         }
     }
 
@@ -152,5 +210,10 @@ public class OpenidAccountResource {
             ":" +
             request.getServerPort() +
             request.getContextPath();
+    }
+
+    @Override
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
     }
 }

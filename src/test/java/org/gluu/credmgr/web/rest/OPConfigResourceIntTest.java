@@ -3,17 +3,15 @@ package org.gluu.credmgr.web.rest;
 import org.gluu.credmgr.CredmgrApp;
 import org.gluu.credmgr.domain.OPConfig;
 import org.gluu.credmgr.repository.OPConfigRepository;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.hamcrest.Matchers.hasItem;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -26,6 +24,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -47,15 +46,15 @@ public class OPConfigResourceIntTest {
     private static final String UPDATED_COMPANY_NAME = "BBBBB";
     private static final String DEFAULT_COMPANY_SHORT_NAME = "AAAAA";
     private static final String UPDATED_COMPANY_SHORT_NAME = "BBBBB";
-    private static final String DEFAULT_EMAIL = "AAAAA";
-    private static final String UPDATED_EMAIL = "BBBBB";
+    private static final String DEFAULT_EMAIL = "AAAAA@mail.com";
+    private static final String UPDATED_EMAIL = "BBBBB@mail.com";
 
     private static final Boolean DEFAULT_ACTIVATED = false;
     private static final Boolean UPDATED_ACTIVATED = true;
     private static final String DEFAULT_ACTIVATION_KEY = "AAAAA";
     private static final String UPDATED_ACTIVATION_KEY = "BBBBB";
-    private static final String DEFAULT_HOST = "AAAAA";
-    private static final String UPDATED_HOST = "BBBBB";
+    private static final String DEFAULT_HOST = "https://AAAAA";
+    private static final String UPDATED_HOST = "https://BBBBB";
     private static final String DEFAULT_CLIENT_ID = "AAAAA";
     private static final String UPDATED_CLIENT_ID = "BBBBB";
     private static final String DEFAULT_CLIENT_SECRET = "AAAAA";

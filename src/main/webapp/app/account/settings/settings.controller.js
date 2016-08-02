@@ -5,9 +5,9 @@
         .module('credmgrApp')
         .controller('SettingsController', SettingsController);
 
-    SettingsController.$inject = ['Principal', 'Auth', 'OPConfig', 'JhiLanguageService', '$window', '$translate'];
+    SettingsController.$inject = ['Upload', '$scope', 'Principal', 'Auth', 'OPConfig', 'Settings', 'JhiLanguageService', '$window', '$translate'];
 
-    function SettingsController(Principal, Auth, OPConfig, JhiLanguageService, $window, $translate) {
+    function SettingsController(Upload, $scope, Principal, Auth, OPConfig, Settings, JhiLanguageService, $window, $translate) {
         var vm = this;
 
         vm.error = null;
@@ -15,7 +15,7 @@
         vm.login = null;
         vm.success = null;
         vm.opConfig = {};
-
+        vm.jks = {};
         Principal.identity().then(function(account) {
             OPConfig.get({id: account.opConfigId}, function (opConfig) {
                 vm.opConfig = opConfig;
@@ -24,13 +24,24 @@
             });
             vm.login = account.login;
         });
+        $scope.$watch('vm.jks', function () {
+            vm.opConfig.clientJKS = vm.jks.name;
+        });
 
         function save () {
-            OPConfig.update(vm.opConfig, function () {
+            Upload.upload({
+                url: 'api/openid/settings-update',
+                data: JSON.parse(angular.toJson(vm.opConfig)),
+                file: vm.jks
+            }).progress(function (evt) {
+                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
+            }).success(function (data, status, headers, config) {
                 vm.error = null;
                 vm.success = 'OK';
                 $window.scrollTo(0, 0);
-            }, function () {
+                console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
+            }).error(function () {
                 vm.success = null;
                 vm.error = 'ERROR';
                 $window.scrollTo(0, 0);

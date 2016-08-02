@@ -17,12 +17,12 @@ public class OPException extends Exception {
 
 
     public static final String ERROR_RETRIEVE_OP_CONFIG = "error.retrieveOPConfig";
+    public static final String ERROR_UPDATE_OP_CONFIG = "error.updateOpConfig";
     public static final String ERROR_EMAIL_OR_LOGIN_ALREADY_EXISTS = "error.emailLoginAlreadyExists";
     public static final String ERROR_ACTIVATE_OP_ADMIN = "error.activateOPAdmin";
     public static final String ERROR_RETRIEVE_LOGOUT_URI = "error.retrieveLogoutUri";
     public static final String ERROR_LOGIN = "error.login";
     public static final String ERROR_PASSWORD_CHANGE = "error.passwordChange";
-
 
     public OPException(String message) {
         super(message);

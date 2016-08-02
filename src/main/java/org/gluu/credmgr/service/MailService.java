@@ -1,6 +1,7 @@
 package org.gluu.credmgr.service;
 
 import org.apache.commons.lang.CharEncoding;
+import org.gluu.credmgr.config.CredmgrProperties;
 import org.gluu.credmgr.config.JHipsterProperties;
 import org.gluu.credmgr.domain.OPConfig;
 import org.gluu.oxtrust.model.scim2.Constants;
@@ -30,13 +31,14 @@ import java.util.Locale;
 @Service
 public class MailService {
 
-    private final Logger log = LoggerFactory.getLogger(MailService.class);
-
     private static final String OP_CONFIG = "opConfig";
     private static final String BASE_URL = "baseUrl";
-
+    private final Logger log = LoggerFactory.getLogger(MailService.class);
     @Inject
     private JHipsterProperties jHipsterProperties;
+
+    @Inject
+    private CredmgrProperties credmgrProperties;
 
     @Inject
     private JavaMailSenderImpl javaMailSender;
@@ -91,7 +93,27 @@ public class MailService {
         String content = templateEngine.process("passwordResetEmail", context);
         String subject = messageSource.getMessage("email.reset.title", null, locale);
         Email email = user.getEmails().get(0);
-        sendEmail(email.getValue(), subject, content, false, true);
+
+        if (credmgrProperties.getGluuIdpOrg().getCompanyShortName().equals(companyShortName)) {
+            sendEmail(email.getValue(), subject, content, false, true);
+        } else {
+            JavaMailSenderImpl sender = createJavaMailSender(null, null, null, null);
+            sendEmailWithCustomSMTP(sender, email.getValue(), subject, content, false, true);
+        }
+    }
+
+    public void sendEmailWithCustomSMTP(JavaMailSenderImpl javaMailSenderImpl, String to, String subject, String content, boolean isMultipart, boolean isHtml) {
+
+    }
+
+    private JavaMailSenderImpl createJavaMailSender(String smtpHost, String smtpPort, String smtpUsername, String smtpPassword) {
+        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
+        javaMailSender.setHost(smtpHost);
+        javaMailSender.setPort(Integer.parseInt(smtpPort));
+        javaMailSender.setUsername(smtpUsername);
+        javaMailSender.setPassword(smtpPassword);
+        javaMailSender.setProtocol("smtp");
+        return null;
     }
 
 }

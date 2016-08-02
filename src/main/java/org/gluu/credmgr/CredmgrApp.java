@@ -1,6 +1,7 @@
 package org.gluu.credmgr;
 
 import org.gluu.credmgr.config.Constants;
+import org.gluu.credmgr.config.CredmgrProperties;
 import org.gluu.credmgr.config.DefaultProfileUtil;
 import org.gluu.credmgr.config.JHipsterProperties;
 
@@ -23,7 +24,7 @@ import java.util.Collection;
 
 @ComponentScan
 @EnableAutoConfiguration(exclude = { MetricFilterAutoConfiguration.class, MetricRepositoryAutoConfiguration.class })
-@EnableConfigurationProperties({ JHipsterProperties.class, LiquibaseProperties.class })
+@EnableConfigurationProperties({ JHipsterProperties.class, LiquibaseProperties.class, CredmgrProperties.class})
 public class CredmgrApp {
 
     private static final Logger log = LoggerFactory.getLogger(CredmgrApp.class);

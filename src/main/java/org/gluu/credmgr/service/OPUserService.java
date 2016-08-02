@@ -3,6 +3,7 @@ package org.gluu.credmgr.service;
 import gluu.scim2.client.Scim2Client;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.SerializationUtils;
+import org.gluu.credmgr.config.CredmgrProperties;
 import org.gluu.credmgr.domain.OPAuthority;
 import org.gluu.credmgr.domain.OPConfig;
 import org.gluu.credmgr.domain.OPUser;
@@ -13,7 +14,6 @@ import org.gluu.credmgr.web.rest.dto.KeyAndPasswordDTO;
 import org.gluu.credmgr.web.rest.dto.RegistrationDTO;
 import org.gluu.credmgr.web.rest.dto.ResetPasswordDTO;
 import org.gluu.oxtrust.model.scim2.*;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.DeserializationFeature;
 import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -46,22 +46,28 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class OPUserService {
 
-    @Value("${credmgr.gluuIdpOrg.companyShortName}")
-    private String companyShortName;
+    //TODO: HIGH. file upload: unique_filename, path in op_config, scheduler to delete files that are not presented in op_config
+    //TODO: HIGH. angular in settings.html
+    //TODO: HIGH. custom emails
 
-    @Value("${credmgr.gluuIdpOrg.requiredOPSuperAdminClaimValue}")
-    private String opSuperAdmin;
+    //TODO: MEDIUM. reset-password error handling when jks path is invalid
+    //TODO: MEDIUM. tests
+    //TODO: MEDIUM. twilio
+    //TODO: MEDIUM. add unit tests for new java methods
+    //TODO: MEDIUM. add new cases in OPConfigResourceIntTest with wrong patterns
 
-    @Inject
-    private ScimService scimService;
-
-    @Inject
-    private OxauthService oxauthService;
-
-    @Inject
-    private OPConfigRepository opConfigRepository;
+    //TODO: LOW. after server restarts intercept end of session
+    //TODO: LOW. change prefix to jks file to random generated number
 
     private final ObjectMapper objectMapper;
+    @Inject
+    private CredmgrProperties credmgrProperties;
+    @Inject
+    private ScimService scimService;
+    @Inject
+    private OxauthService oxauthService;
+    @Inject
+    private OPConfigRepository opConfigRepository;
 
     public OPUserService() {
         objectMapper = new ObjectMapper();
@@ -109,7 +115,6 @@ public class OPUserService {
         } catch (Exception e) {
             throw new OPException(OPException.ERROR_CREATE_SCIM_USER);
         }
-        //TODO: setActive(false);
         user.setActive(false);
 
         user = scimService.createPerson(user);
@@ -241,7 +246,7 @@ public class OPUserService {
             //Setting authorities
             List<SimpleGrantedAuthority> authorities = new ArrayList<>();
             user.getAuthorities().remove(OPAuthority.OP_ANONYMOUS);
-            if (opSuperAdmin.equals(scimRole)) {
+            if (credmgrProperties.getGluuIdpOrg().getRequiredOPSuperAdminClaimValue().equals(scimRole)) {
                 authorities.add(new SimpleGrantedAuthority(OPAuthority.OP_SUPER_ADMIN.toString()));
                 user.getAuthorities().add(OPAuthority.OP_SUPER_ADMIN);
             } else if (config.getRequiredClaimValue() != null && config.getRequiredClaimValue().equals(scimRole)) {
@@ -319,7 +324,13 @@ public class OPUserService {
      */
     public User requestPasswordReset(ResetPasswordDTO resetPasswordDTO) throws OPException {
         OPConfig opConfig = opConfigRepository.findOneByCompanyShortName(resetPasswordDTO.getCompanyShortName()).filter(OPConfig::isActivated).orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_OP_CONFIG));
-        Scim2Client scimClient = scimService.getScimClient(opConfig.getHost(), opConfig.getUmaAatClientId(), opConfig.getClientJKS(), opConfig.getUmaAatClientKeyId());
+
+        String host = opConfig.getHost();
+        String umaAatClientId = opConfig.getUmaAatClientId();
+        String jksPath = credmgrProperties.getJksStorePath() + opConfig.getClientJKS();
+        String umaAatClientKeyId = opConfig.getUmaAatClientKeyId();
+        Scim2Client scimClient = scimService.getScimClient(host, umaAatClientId, jksPath, umaAatClientKeyId);
+
         User user = scimService.searchUsers("mail eq \"" + resetPasswordDTO.getEmail() + "\"", scimClient).stream().findFirst().orElseThrow(() -> new OPException(OPException.ERROR_FIND_SCIM_USER));
         user.addExtension(Optional.of(user.getExtensions())
             .map(extensions -> extensions.get(Constants.USER_EXT_SCHEMA_ID))
@@ -338,7 +349,13 @@ public class OPUserService {
      */
     public void completePasswordReset(KeyAndPasswordDTO keyAndPasswordDTO) throws OPException {
         OPConfig opConfig = opConfigRepository.findOneByCompanyShortName(keyAndPasswordDTO.getCompanyShortName()).filter(OPConfig::isActivated).orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_OP_CONFIG));
-        Scim2Client scimClient = scimService.getScimClient(opConfig.getHost(), opConfig.getUmaAatClientId(), opConfig.getClientJKS(), opConfig.getUmaAatClientKeyId());
+
+        String host = opConfig.getHost();
+        String umaAatClientId = opConfig.getUmaAatClientId();
+        String jksPath = credmgrProperties.getJksStorePath() + opConfig.getClientJKS();
+        String umaAatClientKeyId = opConfig.getUmaAatClientKeyId();
+        Scim2Client scimClient = scimService.getScimClient(host, umaAatClientId, jksPath, umaAatClientKeyId);
+
         User scimUser = scimService.searchUsers("resetKey eq \"" + keyAndPasswordDTO.getKey() + "\"", scimClient).stream()
             .filter(user -> {
                 ZonedDateTime oneDayAgo = ZonedDateTime.now().minusHours(24);
@@ -372,6 +389,6 @@ public class OPUserService {
     }
 
     private Optional<OPConfig> getDefaultConfig() {
-        return opConfigRepository.findOneByCompanyShortName(companyShortName);
+        return opConfigRepository.findOneByCompanyShortName(credmgrProperties.getGluuIdpOrg().getCompanyShortName());
     }
 }
