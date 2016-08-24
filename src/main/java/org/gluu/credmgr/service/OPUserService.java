@@ -325,19 +325,14 @@ public class OPUserService {
     public User requestPasswordReset(ResetPasswordDTO resetPasswordDTO) throws OPException {
         OPConfig opConfig = opConfigRepository.findOneByCompanyShortName(resetPasswordDTO.getCompanyShortName()).filter(OPConfig::isActivated).orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_OP_CONFIG));
 
-        String host = opConfig.getHost();
-        String umaAatClientId = opConfig.getUmaAatClientId();
-        String jksPath = credmgrProperties.getJksStorePath() + opConfig.getClientJKS();
-        String umaAatClientKeyId = opConfig.getUmaAatClientKeyId();
-        Scim2Client scimClient = scimService.getScimClient(host, umaAatClientId, jksPath, umaAatClientKeyId);
-
+        Scim2Client scimClient = getScimClient(opConfig);
         User user = scimService.searchUsers("mail eq \"" + resetPasswordDTO.getEmail() + "\"", scimClient).stream().findFirst().orElseThrow(() -> new OPException(OPException.ERROR_FIND_SCIM_USER));
         user.addExtension(Optional.of(user.getExtensions())
             .map(extensions -> extensions.get(Constants.USER_EXT_SCHEMA_ID))
             .map(extension -> new Extension.Builder(extension))
             .map(eBuilder -> eBuilder.setField("resetKey", RandomUtil.generateResetKey()).setField("resetDate", ZonedDateTime.now().toString()).build())
             .orElse(null));
-        user = scimService.updatePerson(user, user.getId());
+        user = scimService.updatePerson(user, user.getId(), scimClient);
         return user;
     }
 
@@ -350,21 +345,16 @@ public class OPUserService {
     public void completePasswordReset(KeyAndPasswordDTO keyAndPasswordDTO) throws OPException {
         OPConfig opConfig = opConfigRepository.findOneByCompanyShortName(keyAndPasswordDTO.getCompanyShortName()).filter(OPConfig::isActivated).orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_OP_CONFIG));
 
-        String host = opConfig.getHost();
-        String umaAatClientId = opConfig.getUmaAatClientId();
-        String jksPath = credmgrProperties.getJksStorePath() + opConfig.getClientJKS();
-        String umaAatClientKeyId = opConfig.getUmaAatClientKeyId();
-        Scim2Client scimClient = scimService.getScimClient(host, umaAatClientId, jksPath, umaAatClientKeyId);
-
+        Scim2Client scimClient = getScimClient(opConfig);
         User scimUser = scimService.searchUsers("resetKey eq \"" + keyAndPasswordDTO.getKey() + "\"", scimClient).stream()
             .filter(user -> {
                 ZonedDateTime oneDayAgo = ZonedDateTime.now().minusHours(24);
                 String resetDate = user.getExtension(Constants.USER_EXT_SCHEMA_ID).getField("resetDate", ExtensionFieldType.STRING);
                 return ZonedDateTime.parse(resetDate).isAfter(oneDayAgo);
-            }).findFirst().get();
+            }).findFirst().orElseThrow(() -> new OPException(OPException.ERROR_FIND_SCIM_USER));
         scimUser.setPassword(keyAndPasswordDTO.getNewPassword());
         scimUser.addExtension(new Extension.Builder(scimUser.getExtension(Constants.USER_EXT_SCHEMA_ID)).setField("resetKey", "empty").setField("resetDate", "empty").build());
-        scimService.updatePerson(scimUser, scimUser.getId());
+        scimService.updatePerson(scimUser, scimUser.getId(), scimClient);
     }
 
     public Optional<OPUser> getPrincipal() {
@@ -386,6 +376,18 @@ public class OPUserService {
 
     public Optional<OPConfig> getAdminOpConfig(OPUser user) {
         return Optional.ofNullable(opConfigRepository.findOne(user.getOpConfigId()));
+    }
+
+    private Scim2Client getScimClient(OPConfig opConfig) {
+        if (credmgrProperties.getGluuIdpOrg().getCompanyShortName().equals(opConfig.getCompanyShortName())) {
+            return scimService.getScimClient();
+        } else {
+            String host = opConfig.getHost();
+            String umaAatClientId = opConfig.getUmaAatClientId();
+            String jksPath = credmgrProperties.getJksStorePath() + opConfig.getClientJKS();
+            String umaAatClientKeyId = opConfig.getUmaAatClientKeyId();
+            return scimService.getScimClient(host, umaAatClientId, jksPath, umaAatClientKeyId);
+        }
     }
 
     private Optional<OPConfig> getDefaultConfig() {

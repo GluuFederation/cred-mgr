@@ -16,6 +16,7 @@
         vm.success = null;
         vm.opConfig = {};
         vm.jks = {};
+
         Principal.identity().then(function(account) {
             OPConfig.get({id: account.opConfigId}, function (opConfig) {
                 vm.opConfig = opConfig;
@@ -25,7 +26,8 @@
             vm.login = account.login;
         });
         $scope.$watch('vm.jks', function () {
-            vm.opConfig.clientJKS = vm.jks.name;
+            if (vm.jks.name != undefined && vm.jks.name != null)
+                vm.opConfig.clientJKS = vm.jks.name;
         });
 
         function save () {

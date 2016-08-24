@@ -17,13 +17,13 @@
                     <strong translate="settings.server.configuration">SERVER CONFIGURATION</strong>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" ng-class="{ 'has-error' : form.host.$invalid}">
                     <label class="control-label" for="host" translate="settings.form.host">Gluu server url</label>
                     <input type="text" class="form-control" id="host" name="host"
                            placeholder="{{'settings.form.host.placeholder' | translate}}"
                            ng-model="vm.opConfig.host" ng-minlength=1 ng-maxlength=50 ng-pattern="/^https?://[^/]*$/"
                            required maxlength="50">
-                    <div ng-show="form.host.$dirty && form.host.$invalid">
+                    <div ng-show="form.host.$invalid">
                         <p class="help-block"
                            ng-show="form.host.$error.required" translate="settings.messages.validate.host.required">
                             Your server url e.g. 'https://gluu.server.org'
@@ -35,12 +35,12 @@
                         </p>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group" ng-class="{ 'has-error' : form.clientId.$invalid}">
                     <label class="control-label" for="clientId" translate="settings.form.clientId">Client Id</label>
                     <input type="text" class="form-control" id="clientId" name="clientId"
                            placeholder="{{'settings.form.clientId.placeholder' | translate}}"
                            ng-model="vm.opConfig.clientId" required>
-                    <div ng-show="form.clientId.$dirty && form.clientId.$invalid">
+                    <div ng-show="form.clientId.$invalid">
                         <p class="help-block"
                            ng-show="form.clientId.$error.required"
                            translate="settings.messages.validate.clientId.required">
@@ -48,13 +48,14 @@
                         </p>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group"
+                     ng-class="{ 'has-error' : form.clientSecret.$invalid}">
                     <label class="control-label" for="clientSecret" translate="settings.form.clientSecret">Client
                         Secret</label>
                     <input type="text" class="form-control" id="clientSecret" name="clientSecret"
                            placeholder="{{'settings.form.clientSecret.placeholder' | translate}}"
                            ng-model="vm.opConfig.clientSecret" required>
-                    <div ng-show="form.clientSecret.$dirty && form.clientSecret.$invalid">
+                    <div ng-show="form.clientSecret.$invalid">
                         <p class="help-block"
                            ng-show="form.clientSecret.$error.required"
                            translate="settings.messages.validate.clientSecret.required">
@@ -62,13 +63,14 @@
                         </p>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group"
+                     ng-class="{ 'has-error' : form.umaAatClientId.$invalid}">
                     <label class="control-label" for="umaAatClientId" translate="settings.form.umaAatClientId">Client
                         Secret</label>
                     <input type="text" class="form-control" id="umaAatClientId" name="umaAatClientId"
                            placeholder="{{'settings.form.umaAatClientId.placeholder' | translate}}"
                            ng-model="vm.opConfig.umaAatClientId" required>
-                    <div ng-show="form.umaAatClientId.$dirty && form.umaAatClientId.$invalid">
+                    <div ng-show="form.umaAatClientId.$invalid">
                         <p class="help-block"
                            ng-show="form.umaAatClientId.$error.required"
                            translate="settings.messages.validate.umaAatClientId.required">
@@ -82,7 +84,7 @@
                     <input type="text" class="form-control" id="umaAatClientKeyId" name="umaAatClientKeyId"
                            placeholder="{{'settings.form.umaAatClientKeyId.placeholder' | translate}}"
                            ng-model="vm.opConfig.umaAatClientKeyId">
-                    <div ng-show="form.umaAatClientKeyId.$dirty && form.umaAatClientKeyId.$invalid">
+                    <div ng-show="form.umaAatClientKeyId.$invalid">
                         <p class="help-block"
                            ng-show="form.umaAatClientKeyId.$error.required"
                            translate="settings.messages.validate.umaAatClientKeyId.required">
@@ -90,23 +92,24 @@
                         </p>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group"
+                     ng-class="{ 'has-error' : form.jks.$invalid}">
                     <label class="control-label" for="clientJKS" translate="settings.form.clientJKS">Client
                         JWKS</label>
 
                     <div class="input-group">
                       <span class="input-group-btn">
-                        <div class="btn btn-primary" ngf-select ng-model="vm.jks" name="jks" accept=".jks"
-                             ngf-multiple="false">Select JKS
+                        <div class="btn btn-primary" ngf-select ng-model="vm.jks" id="jks" name="jks" accept=".jks"
+                             ngf-multiple="false" ng-required="!vm.opConfig.clientJKS">Select JKS
                         </div>
                       </span><input type="text" id="clientJKS" name="clientJKS" readonly class="form-control"
                                     placeholder="Search for jks..."
-                                    ng-value="vm.opConfig.clientJKS" required>
+                                    ng-value="vm.opConfig.clientJKS">
                     </div>
-                    <div ng-show="form.clientJKS.$dirty && form.clientJKS.$invalid">
+                    <div ng-show="form.jks.$invalid">
                         <p class="help-block"
-                           ng-show="form.clientJKS.$error.required"
-                           translate="settings.form.clientJKS.required">
+                           ng-show="form.jks.$error.required"
+                           translate="settings.messages.validate.clientJKS.required">
                             Your e-mail is required.
                         </p>
                     </div>
@@ -124,9 +127,9 @@
                     <input type="checkbox" class="form-control" id="enableAdminPage"
                            name="enableAdminPage"
                            placeholder="{{'settings.form.enableAdminPage.placeholder' | translate}}"
-                           ng-model="vm.opConfig.enableAdminPage"/>
+                           ng-model="vm.opConfig.enableAdminPage" disabled/>
                 </div>
-                <div class="form-group">
+                <div class="form-group" ng-class="{ 'has-error' : form.jks.$invalid}">
                     <label class="control-label" for="authenticationLevel"
                            translate="settings.form.authenticationLevel">Client
                         Secret</label>
@@ -134,8 +137,7 @@
                            name="authenticationLevel"
                            placeholder="{{'settings.form.authenticationLevel.placeholder' | translate}}"
                            ng-model="vm.opConfig.authenticationLevel" required>
-                    <div
-                        ng-show="form.authenticationLevel.$dirty && form.authenticationLevel.$invalid">
+                    <div ng-show="form.authenticationLevel.$invalid">
                         <p class="help-block"
                            ng-show="form.authenticationLevel.$error.required"
                            translate="settings.messages.validate.authenticationLevel.required">
@@ -143,13 +145,13 @@
                         </p>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group" ng-class="{ 'has-error' : form.jks.$invalid}">
                     <label class="control-label" for="requiredClaim" translate="settings.form.requiredClaim">Last
                         Name</label>
                     <input type="text" class="form-control" id="requiredClaim" name="requiredClaim"
                            placeholder="{{'settings.form.requiredClaim.placeholder' | translate}}"
                            ng-model="vm.opConfig.requiredClaim" required>
-                    <div ng-show="form.requiredClaim.$dirty && form.requiredClaim.$invalid">
+                    <div ng-show="form.requiredClaim.$invalid">
                         <p class="help-block"
                            ng-show="form.requiredClaim.$error.required"
                            translate="settings.messages.validate.requiredClaim.required">
@@ -157,13 +159,13 @@
                         </p>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group" ng-class="{ 'has-error' : form.jks.$invalid}">
                     <label class="control-label" for="requiredClaimValue" translate="settings.form.requiredClaimValue">Last
                         Name</label>
                     <input type="text" class="form-control" id="requiredClaimValue" name="requiredClaimValue"
                            placeholder="{{'settings.form.requiredClaimValue.placeholder' | translate}}"
                            ng-model="vm.opConfig.requiredClaimValue" required>
-                    <div ng-show="form.requiredClaimValue.$dirty && form.requiredClaimValue.$invalid">
+                    <div ng-show="form.requiredClaimValue.$invalid">
                         <p class="help-block"
                            ng-show="form.requiredClaimValue.$error.required"
                            translate="settings.messages.validate.requiredClaimValue.required">
@@ -227,6 +229,7 @@
                            translate="settings.form.enableGoogleLogin">Last
                         Name</label>
                     <input type="checkbox" class="form-control" id="enableGoogleLogin"
+                           ng-disabled="!vm.opConfig.enableSocialManagement"
                            name="google"
                            placeholder="{{'settings.form.enableGoogleLogin.placeholder' | translate}}"
                            ng-model="vm.opConfig.enableGoogleLogin"/>
@@ -236,6 +239,7 @@
                            translate="settings.form.enableFacebookLogin">Last
                         Name</label>
                     <input type="checkbox" class="form-control" id="enableFacebookLogin"
+                           ng-disabled="!vm.opConfig.enableSocialManagement"
                            name="facebook"
                            placeholder="{{'settings.form.enableFacebookLogin.placeholder' | translate}}"
                            ng-model="vm.opConfig.enableFacebookLogin"/>
@@ -245,6 +249,7 @@
                            translate="settings.form.enableTwitterLogin">Last
                         Name</label>
                     <input type="checkbox" class="form-control" id="enableTwitterLogin"
+                           ng-disabled="!vm.opConfig.enableSocialManagement"
                            name="enableTwitterLogin"
                            placeholder="{{'settings.form.enableTwitterLogin.placeholder' | translate}}"
                            ng-model="vm.opConfig.enableTwitterLogin"/>
@@ -254,6 +259,7 @@
                            translate="settings.form.enableLinkedInLogin">Last
                         Name</label>
                     <input type="checkbox" class="form-control" id="enableLinkedInLogin"
+                           ng-disabled="!vm.opConfig.enableSocialManagement"
                            name="enableLinkedInLogin"
                            placeholder="{{'settings.form.enableLinkedInLogin.placeholder' | translate}}"
                            ng-model="vm.opConfig.enableLinkedInLogin"/>
@@ -263,6 +269,7 @@
                            translate="settings.form.enableWindowsLiveLogin">Last
                         Name</label>
                     <input type="checkbox" class="form-control" id="enableWindowsLiveLogin"
+                           ng-disabled="!vm.opConfig.enableSocialManagement"
                            name="enableWindowsLiveLogin"
                            placeholder="{{'settings.form.enableWindowsLiveLogin.placeholder' | translate}}"
                            ng-model="vm.opConfig.enableWindowsLiveLogin"/>
@@ -272,6 +279,7 @@
                            translate="settings.form.enableGithubLogin">Last
                         Name</label>
                     <input type="checkbox" class="form-control" id="enableGithubLogin"
+                           ng-disabled="!vm.opConfig.enableSocialManagement"
                            name="enableGithubLogin"
                            placeholder="{{'settings.form.enableGithubLogin.placeholder' | translate}}"
                            ng-model="vm.opConfig.enableGithubLogin"/>
@@ -281,6 +289,7 @@
                            translate="settings.form.enableDropboxLogin">Last
                         Name</label>
                     <input type="checkbox" class="form-control" id="enableDropboxLogin"
+                           ng-disabled="!vm.opConfig.enableSocialManagement"
                            name="enableDropboxLogin"
                            placeholder="{{'settings.form.enableDropboxLogin.placeholder' | translate}}"
                            ng-model="vm.opConfig.enableDropboxLogin"/>
@@ -290,6 +299,7 @@
                            translate="settings.form.enableYahooLogin">Last
                         Name</label>
                     <input type="checkbox" class="form-control" id="enableYahooLogin"
+                           ng-disabled="!vm.opConfig.enableSocialManagement"
                            name="enableYahooLogin"
                            placeholder="{{'settings.form.enableYahooLogin.placeholder' | translate}}"
                            ng-model="vm.opConfig.enableYahooLogin"/>
@@ -300,13 +310,14 @@
                     <strong translate="settings.email.configuration">ADMIN CREDENTIAL WEBSITE CONFIGURATION</strong>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" ng-class="{ 'has-error' : form.smtpHost.$invalid}">
                     <label class="control-label" for="smtpHost" translate="settings.form.smtpHost">Last
                         Name</label>
                     <input type="text" class="form-control" id="smtpHost" name="smtpHost"
+                           ng-disabled="!vm.opConfig.enableEmailManagement"
                            placeholder="{{'settings.form.smtpHost.placeholder' | translate}}"
-                           ng-model="vm.opConfig.smtpHost" required>
-                    <div ng-show="form.smtpHost.$dirty && form.smtpHost.$invalid">
+                           ng-model="vm.opConfig.smtpHost" ng-required="vm.opConfig.enableEmailManagement">
+                    <div ng-show="form.smtpHost.$invalid">
                         <p class="help-block"
                            ng-show="form.smtpHost.$error.required"
                            translate="settings.messages.validate.smtpHost.required">
@@ -314,13 +325,14 @@
                         </p>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group" ng-class="{ 'has-error' : form.smtpPort.$invalid}">
                     <label class="control-label" for="smtpPort" translate="settings.form.smtpPort">Last
                         Name</label>
-                    <input type="number" class="form-control" id="smtpPort" name="smtpPort"
+                    <input type="text" class="form-control" id="smtpPort" name="smtpPort"
+                           ng-disabled="!vm.opConfig.enableEmailManagement"
                            placeholder="{{'settings.form.smtpPort.placeholder' | translate}}"
-                           ng-model="vm.opConfig.smtpPort" required>
-                    <div ng-show="form.smtpPort.$dirty && form.smtpPort.$invalid">
+                           ng-model="vm.opConfig.smtpPort" valid-number ng-required="vm.opConfig.enableEmailManagement">
+                    <div ng-show="form.smtpPort.$invalid">
                         <p class="help-block"
                            ng-show="form.smtpPort.$error.required"
                            translate="settings.messages.validate.smtpPort.required">
@@ -328,13 +340,15 @@
                         </p>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group"
+                     ng-class="{ 'has-error' : form.smtpUsername.$invalid}">
                     <label class="control-label" for="smtpUsername" translate="settings.form.smtpUsername">Last
                         Name</label>
                     <input type="text" class="form-control" id="smtpUsername" name="smtpUsername"
+                           ng-disabled="!vm.opConfig.enableEmailManagement"
                            placeholder="{{'settings.form.smtpUsername.placeholder' | translate}}"
-                           ng-model="vm.opConfig.smtpUsername" required>
-                    <div ng-show="form.smtpUsername.$dirty && form.smtpUsername.$invalid">
+                           ng-model="vm.opConfig.smtpUsername" ng-required="vm.opConfig.enableEmailManagement">
+                    <div ng-show="form.smtpUsername.$invalid">
                         <p class="help-block"
                            ng-show="form.smtpUsername.$error.required"
                            translate="settings.messages.validate.smtpUsername.required">
@@ -342,13 +356,15 @@
                         </p>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group"
+                     ng-class="{ 'has-error' : form.smtpPassword.$invalid}">
                     <label class="control-label" for="smtpPassword" translate="settings.form.smtpPassword">Last
                         Name</label>
                     <input type="text" class="form-control" id="smtpPassword" name="smtpPassword"
+                           ng-disabled="!vm.opConfig.enableEmailManagement"
                            placeholder="{{'settings.form.smtpPassword.placeholder' | translate}}"
-                           ng-model="vm.opConfig.smtpPassword" required>
-                    <div ng-show="form.smtpPassword.$dirty && form.smtpPassword.$invalid">
+                           ng-model="vm.opConfig.smtpPassword" ng-required="vm.opConfig.enableEmailManagement">
+                    <div ng-show="form.smtpPassword.$invalid">
                         <p class="help-block"
                            ng-show="form.smtpPassword.$error.required"
                            translate="settings.messages.validate.smtpPassword.required">
@@ -361,6 +377,7 @@
                            translate="settings.form.smtpUseSSL">Last
                         Name</label>
                     <input type="checkbox" class="form-control" id="smtpUseSSL"
+                           ng-disabled="!vm.opConfig.enableEmailManagement"
                            name="smtpUseSSL"
                            placeholder="{{'settings.form.smtpUseSSL.placeholder' | translate}}"
                            ng-model="vm.opConfig.smtpUseSSL"/>
@@ -371,13 +388,15 @@
                         CONFIGURATION</strong>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group"
+                     ng-class="{ 'has-error' : form.twilioSID.$invalid}">
                     <label class="control-label" for="twilioSID" translate="settings.form.twilioSID">Last
                         Name</label>
                     <input type="text" class="form-control" id="twilioSID" name="twilioSID"
+                           ng-disabled="!vm.opConfig.enableMobileManagement"
                            placeholder="{{'settings.form.twilioSID.placeholder' | translate}}"
-                           ng-model="vm.opConfig.twilioSID" required>
-                    <div ng-show="form.twilioSID.$dirty && form.twilioSID.$invalid">
+                           ng-model="vm.opConfig.twilioSID" ng-required="vm.opConfig.enableMobileManagement">
+                    <div ng-show="form.twilioSID.$invalid">
                         <p class="help-block"
                            ng-show="form.twilioSID.$error.required"
                            translate="settings.messages.validate.twilioSID.required">
@@ -385,13 +404,15 @@
                         </p>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group"
+                     ng-class="{ 'has-error' : form.twilioToken.$invalid}">
                     <label class="control-label" for="twilioToken" translate="settings.form.twilioToken">Last
                         Name</label>
                     <input type="text" class="form-control" id="twilioToken" name="twilioToken"
+                           ng-disabled="!vm.opConfig.enableMobileManagement"
                            placeholder="{{'settings.form.twilioToken.placeholder' | translate}}"
-                           ng-model="vm.opConfig.twilioToken" required>
-                    <div ng-show="form.twilioToken.$dirty && form.twilioToken.$invalid">
+                           ng-model="vm.opConfig.twilioToken" ng-required="vm.opConfig.enableMobileManagement">
+                    <div ng-show="form.twilioToken.$invalid">
                         <p class="help-block"
                            ng-show="form.twilioToken.$error.required"
                            translate="settings.messages.validate.twilioToken.required">
@@ -399,13 +420,15 @@
                         </p>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group"
+                     ng-class="{ 'has-error' : form.twilioFromNumber.$invalid}">
                     <label class="control-label" for="twilioFromNumber" translate="settings.form.twilioFromNumber">Last
                         Name</label>
                     <input type="text" class="form-control" id="twilioFromNumber" name="twilioFromNumber"
+                           ng-disabled="!vm.opConfig.enableMobileManagement"
                            placeholder="{{'settings.form.twilioFromNumber.placeholder' | translate}}"
-                           ng-model="vm.opConfig.twilioFromNumber" required>
-                    <div ng-show="form.twilioFromNumber.$dirty && form.twilioFromNumber.$invalid">
+                           ng-model="vm.opConfig.twilioFromNumber" ng-required="vm.opConfig.enableMobileManagement">
+                    <div ng-show="form.twilioFromNumber.$invalid">
                         <p class="help-block"
                            ng-show="form.twilioFromNumber.$error.required"
                            translate="settings.messages.validate.twilioFromNumber.required">

@@ -20,7 +20,6 @@
         vm.updatePasswordError = null;
         vm.updatePasswordSuccess = null;
 
-        vm.errorEmailNotExists = null;
         vm.requestReset = null;
         vm.resetAccount = {};
 
@@ -56,7 +55,7 @@
         };
         function requestReset() {
             vm.resetPasswordError = null;
-            vm.errorEmailNotExists = null;
+            vm.resetPasswordSuccess = null;
 
             var companyShortName = null;
             if (vm.isAuthenticated())
@@ -70,11 +69,10 @@
                 vm.resetPasswordSuccess = 'OK';
             }).catch(function (response) {
                 vm.resetPasswordSuccess = null;
-                if (response.status === 400 && response.data === 'e-mail address not registered') {
-                    vm.errorEmailNotExists = 'ERROR';
-                } else {
+                if (response.data != null)
+                    vm.resetPasswordError = response.data.message;
+                else
                     vm.resetPasswordError = 'ERROR';
-                }
             });
         };
     }

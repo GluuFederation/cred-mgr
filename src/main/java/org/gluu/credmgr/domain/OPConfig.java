@@ -79,46 +79,46 @@ public class OPConfig implements Serializable {
     private String requiredClaimValue;
 
     @Column(name = "enable_password_management")
-    private Boolean enablePasswordManagement;
+    private Boolean enablePasswordManagement = false;
 
     @Column(name = "enable_admin_page")
-    private Boolean enableAdminPage;
+    private Boolean enableAdminPage = false;
 
     @Column(name = "enable_email_management")
-    private Boolean enableEmailManagement;
+    private Boolean enableEmailManagement = false;
 
     @Column(name = "enable_mobile_management")
-    private Boolean enableMobileManagement;
+    private Boolean enableMobileManagement = false;
 
     @Column(name = "enable_social_management")
-    private Boolean enableSocialManagement;
+    private Boolean enableSocialManagement = false;
 
     @Column(name = "enable_u_2_f_management")
-    private Boolean enableU2FManagement;
+    private Boolean enableU2FManagement = false;
 
     @Column(name = "enable_google_login")
-    private Boolean enableGoogleLogin;
+    private Boolean enableGoogleLogin = false;
 
     @Column(name = "enable_facebook_login")
-    private Boolean enableFacebookLogin;
+    private Boolean enableFacebookLogin = false;
 
     @Column(name = "enable_twitter_login")
-    private Boolean enableTwitterLogin;
+    private Boolean enableTwitterLogin = false;
 
     @Column(name = "enable_linked_in_login")
-    private Boolean enableLinkedInLogin;
+    private Boolean enableLinkedInLogin = false;
 
     @Column(name = "enable_windows_live_login")
-    private Boolean enableWindowsLiveLogin;
+    private Boolean enableWindowsLiveLogin = false;
 
     @Column(name = "enable_github_login")
-    private Boolean enableGithubLogin;
+    private Boolean enableGithubLogin = false;
 
     @Column(name = "enable_dropbox_login")
-    private Boolean enableDropboxLogin;
+    private Boolean enableDropboxLogin = false;
 
     @Column(name = "enable_yahoo_login")
-    private Boolean enableYahooLogin;
+    private Boolean enableYahooLogin = false;
 
     @Column(name = "smtp_host")
     private String smtpHost;

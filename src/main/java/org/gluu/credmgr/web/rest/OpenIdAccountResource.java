@@ -6,6 +6,7 @@ import org.gluu.credmgr.config.CredmgrProperties;
 import org.gluu.credmgr.domain.OPAuthority;
 import org.gluu.credmgr.domain.OPConfig;
 import org.gluu.credmgr.domain.OPUser;
+import org.gluu.credmgr.repository.OPConfigRepository;
 import org.gluu.credmgr.service.MailService;
 import org.gluu.credmgr.service.OPUserService;
 import org.gluu.credmgr.service.error.OPException;
@@ -15,7 +16,6 @@ import org.gluu.credmgr.web.rest.dto.ResetPasswordDTO;
 import org.gluu.credmgr.web.rest.dto.SingleValueDTO;
 import org.gluu.oxtrust.model.scim2.User;
 import org.springframework.context.ResourceLoaderAware;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,7 +27,8 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -52,6 +53,9 @@ public class OpenidAccountResource implements ResourceLoaderAware {
     @Inject
     private OPConfigResource opConfigResource;
 
+    @Inject
+    private OPConfigRepository opConfigRepository;
+
     private ResourceLoader resourceLoader;
 
     @RequestMapping(value = "/openid/settings-update",
@@ -75,22 +79,6 @@ public class OpenidAccountResource implements ResourceLoaderAware {
             responseEntity = opConfigResource.updateOPConfig(opConfig);
         } catch (URISyntaxException | IOException | RuntimeException e) {
             throw new OPException(OPException.ERROR_UPDATE_OP_CONFIG);
-        }
-
-        //Test
-        Resource resource = resourceLoader.getResource("file:" + Paths.get(credmgrProperties.getJksStorePath() + "/" + opConfig.getCompanyShortName(), opConfig.getClientJKS()).toString());
-        try {
-            InputStream is = resource.getInputStream();
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
-            String line;
-            while ((line = br.readLine()) != null) {
-                System.out.println(line);
-            }
-            br.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         return responseEntity;
@@ -118,13 +106,13 @@ public class OpenidAccountResource implements ResourceLoaderAware {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping("/openid/login-uri")
+    @RequestMapping(value = "/openid/login-uri", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SingleValueDTO> getLoginUri(HttpServletRequest request, @RequestParam(value = "companyShortName") String companyShortName) throws OPException {
         String loginUrl = opUserService.getLoginUri(companyShortName, getBaseUrl(request) + "/api/openid/login-redirect");
         return new ResponseEntity<SingleValueDTO>(new SingleValueDTO(loginUrl), HttpStatus.OK);
     }
 
-    @RequestMapping("/openid/logout-uri")
+    @RequestMapping(value = "/openid/logout-uri", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SingleValueDTO> getLogoutUri(HttpServletRequest request) throws OPException {
         String logoutUrl = opUserService.getLogoutUri(getBaseUrl(request) + "/api/openid/logout-redirect");
         return new ResponseEntity<SingleValueDTO>(new SingleValueDTO(logoutUrl), HttpStatus.OK);
@@ -167,7 +155,7 @@ public class OpenidAccountResource implements ResourceLoaderAware {
 
     @RequestMapping(value = "/openid/change_password",
         method = RequestMethod.POST,
-        produces = MediaType.TEXT_PLAIN_VALUE)
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @Timed
     public ResponseEntity<?> changePassword(@RequestBody String password) throws OPException {
         if (!checkPasswordLength(password))
@@ -182,13 +170,14 @@ public class OpenidAccountResource implements ResourceLoaderAware {
     @Timed
     public ResponseEntity<String> requestPasswordReset(@RequestBody ResetPasswordDTO resetPasswordDTO, HttpServletRequest request) throws OPException {
         User user = opUserService.requestPasswordReset(resetPasswordDTO);
-        mailService.sendPasswordResetMail(user, getBaseUrl(request), resetPasswordDTO.getCompanyShortName());
-        return new ResponseEntity<String>("e-mail was sent", HttpStatus.OK);
+        OPConfig opConfig = opConfigRepository.findOneByCompanyShortName(resetPasswordDTO.getCompanyShortName()).orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_OP_CONFIG));
+        mailService.sendPasswordResetMail(user, getBaseUrl(request), opConfig);
+        return new ResponseEntity<String>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/openid/reset_password/finish",
         method = RequestMethod.POST,
-        produces = MediaType.TEXT_PLAIN_VALUE)
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @Timed
     public ResponseEntity<String> finishPasswordReset(@RequestBody KeyAndPasswordDTO keyAndPassword) throws OPException {
         if (!checkPasswordLength(keyAndPassword.getNewPassword()))

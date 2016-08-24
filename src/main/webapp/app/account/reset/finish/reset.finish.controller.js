@@ -38,9 +38,12 @@
                     companyShortName: $stateParams.csn
                 }).then(function () {
                     vm.success = 'OK';
-                }).catch(function () {
+                }).catch(function (response) {
                     vm.success = null;
-                    vm.error = 'ERROR';
+                    if(response.data != null)
+                        vm.error = response.data.message;
+                    else
+                        vm.error = 'ERROR';
                 });
             }
         }

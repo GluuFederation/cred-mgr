@@ -74,18 +74,41 @@
                 "clientSecret": {
                     "required": "Your client_secret is required"
                 },
-                "clientJWKS": {
-                    "required": "Your client_jwks is required"
+                "umaAatClientId": {
+                    "required": "Uma aat client id is required"
                 },
-                "firstname": {
-                    "required": "Your first name is required.",
-                    "minlength": "Your first name is required to be at least 1 character",
-                    "maxlength": "Your first name cannot be longer than 50 characters"
+                "clientJKS": {
+                    "required": "Client JKS is required"
                 },
-                "lastname": {
-                    "required": "Your last name is required.",
-                    "minlength": "Your last name is required to be at least 1 character",
-                    "maxlength": "Your last name cannot be longer than 50 characters"
+                "authenticationLevel": {
+                    "required": "Authentication level is required"
+                },
+                "requiredClaim": {
+                    "required": "Claim is required"
+                },
+                "requiredClaimValue": {
+                    "required": "Claim value is required"
+                },
+                "smtpHost": {
+                    "required": "Smtp host is required"
+                },
+                "smtpPort": {
+                    "required": "Smtp port is required"
+                },
+                "smtpUsername": {
+                    "required": "Smtp username is required"
+                },
+                "smtpPassword": {
+                    "required": "Smtp password is required"
+                },
+                "twilioSID": {
+                    "required": "Twilio sid is required"
+                },
+                "twilioToken": {
+                    "required": "Twilio token is required"
+                },
+                "twilioFromNumber": {
+                    "required": "Twilio fromNumber is required"
                 }
             }
         }

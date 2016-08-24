@@ -11,9 +11,15 @@
                 <p translate="reset.finish.messages.info">Choose a new password</p>
             </div>
 
-            <div class="alert alert-danger" ng-show="vm.error">
-                <p translate="reset.finish.messages.error">Your password couldn't be reset. Remember a password request is only valid for 24 hours.</p>
+            <div ng-switch="vm.error" ng-show="vm.error">
+                <div class="alert alert-danger" ng-switch-when="error.findScimUser">
+                    <p translate="reset.finish.messages.error.findScimUser">Your password couldn't be reset. Remember a password request is only valid for 24 hours.</p>
+                </div>
+                <div class="alert alert-danger" ng-switch-default translate="reset.finish.messages.error">
+                    General error
+                </div>
             </div>
+
 
             <div class="alert alert-success" ng-show="vm.success">
                 <div ng-switch="vm.isAuthenticated()">

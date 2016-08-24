@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 @Service
 public class ScimService {
 
-    private static final String DOMAIN_SUFFIX = "/identity/seam/resource/restv1";
-    private static final String UMA_CONFIGURATION = "/.well-known/uma-configuration";
-    private static final String GLUU_IDP_ORG_JWKS_FILE_NAME = "scim-rp.jks";
+    public static final String DOMAIN_SUFFIX = "/identity/seam/resource/restv1";
+    public static final String UMA_CONFIGURATION = "/.well-known/uma-configuration";
+    public static final String GLUU_IDP_ORG_JWKS_FILE_NAME = "scim-rp.jks";
 
     @Inject
     private CredmgrProperties credmgrProperties;
@@ -83,6 +83,10 @@ public class ScimService {
 
     public boolean deletePerson(String uid, Scim2Client scimClient) throws OPException {
         return deletePersonCommon(uid, scimClient);
+    }
+
+    public Scim2Client getScimClient() {
+        return gluuIdpOrgScim2Client;
     }
 
     public Scim2Client getScimClient(String host, String umaAatClientId, String umaAatClientJks, String umaAatClientKeyId) {
