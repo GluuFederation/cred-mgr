@@ -98,44 +98,41 @@ Please follow these steps to configure your `cred-mgr` app and your `gluu` serve
 8. login into Gluu Server(oxTrust CE) and navigate to Configuration > Organization Configuration > Enable SCIM Support.
 
 9. Navigate to `https://${your.gluu.server.host.name}/oxauth-rp/home.htm` and register client with the following params:
-```
-Registration Endpoint: https:/${your.gluu.server.host.name}/oxauth/seam/resource/restv1/oxauth/register
-Redirect URIs: https://127.0.0.1:9000/api/openid/login-redirect
-Post Logout Redirect URIs: https://127.0.0.1:9000/api/openid/logout-redirect
-Response Types: CODE
-Grant Types: AUTHORIZATION_CODE
-Application Type: WEB
-```
+    * Registration Endpoint: `https:/${your.gluu.server.host.name}/oxauth/seam/resource/restv1/oxauth/register`
+    * Redirect URIs: `https://127.0.0.1:9000/api/openid/login-redirect`
+    * Post Logout Redirect URIs: `https://127.0.0.1:9000/api/openid/logout-redirect`
+    * Response Types: `CODE`
+    * Grant Types: `AUTHORIZATION_CODE`
+    * Application Type: `WEB`
+
 10. Copy client_id and client_secret from Registration Response panel and update first record from op_config table e.g
 `UPDATE op_config SET client_id=‘your_client_id’, client_secret='your_client_secret’, host='https://your.gluu.server.host.name.without.last.slash’, email='gluu@mail.com' WHERE id=1;`
 
 11. Navigate to `https://${your.gluu.server.host.name}/identity/attribute/inventory` and add new Attributes:
-
-```
-Name: opRole
-DisplayName: opRole
-Type: Text
-Multivalued: False
-oxAuth claim name: opRole
-SCIM Atribute: True
-Description: opRole
-—————————————
-Name: resetDate
-DisplayName: resetDate
-Type: Text
-Multivalued: False
-oxAuth claim name: resetDate
-SCIM Atribute: True
-Description: resetDate
-—————————————
-Name: resetKey
-DisplayName: resetKey
-Type: Text
-Multivalued: False
-oxAuth claim name: resetKey
-SCIM Atribute: True
-Description: resetKey
-```
+    * opRole
+        * Name: opRole
+        * DisplayName: opRole
+        * Type: Text
+        * Multivalued: False
+        * oxAuth claim name: opRole
+        * SCIM Atribute: True
+        * Description: opRole
+    * resetDate
+        * Name: resetDate
+        * DisplayName: resetDate
+        * Type: Text
+        * Multivalued: False
+        * oxAuth claim name: resetDate
+        * SCIM Atribute: True
+        * Description: resetDate
+    * resetKey
+        * Name: resetKey
+        * DisplayName: resetKey
+        * Type: Text
+        * Multivalued: False
+        * oxAuth claim name: resetKey
+        * SCIM Atribute: True
+        * Description: resetKey
 
 12. Go to your project directory, open terminal, type: `gulp` and hit enter.
 
