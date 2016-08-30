@@ -4,6 +4,7 @@ package org.gluu.credmgr.web.rest.dto;
  * Created by eugeniuparvan on 6/18/16.
  */
 public class ResetPasswordDTO {
+    private String mobile;
     private String email;
     private String companyShortName;
 
@@ -23,4 +24,11 @@ public class ResetPasswordDTO {
         this.companyShortName = companyShortName;
     }
 
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
 }

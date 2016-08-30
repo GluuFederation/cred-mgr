@@ -6,7 +6,9 @@ import gluu.scim2.client.util.Util;
 import org.gluu.credmgr.config.CredmgrProperties;
 import org.gluu.credmgr.service.error.OPException;
 import org.gluu.oxtrust.model.scim2.ListResponse;
+import org.gluu.oxtrust.model.scim2.Resource;
 import org.gluu.oxtrust.model.scim2.User;
+import org.gluu.oxtrust.model.scim2.fido.FidoDevice;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -67,6 +69,25 @@ public class ScimService {
 
     public List<User> searchUsers(String filter, Scim2Client scimClient) throws OPException {
         return searchUsersCommon(filter, scimClient);
+    }
+
+    public void unregisterFido(String userId) throws OPException {
+        unregisterFido(userId, gluuIdpOrgScim2Client);
+    }
+
+    public void unregisterFido(String userId, Scim2Client scimClient) throws OPException {
+        try {
+            ScimResponse response = scimClient.searchFidoDevices(userId, "id pr", 1, 20, "id", "ascending", null);
+            ListResponse listResponse = Util.toListResponseFidoDevice(response);
+            if (listResponse.getResources().size() > 0) {
+                for (Resource resource : listResponse.getResources()) {
+                    FidoDevice fidoDevice = (FidoDevice) resource;
+                    scimClient.deleteFidoDevice(fidoDevice.getId());
+                }
+            }
+        } catch (Exception e) {
+            throw new OPException(OPException.ERROR_DELETE_FIDO_DEVICE);
+        }
     }
 
     public User retrievePerson(String uid) throws OPException {

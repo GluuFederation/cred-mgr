@@ -5,9 +5,9 @@
         .module('credmgrApp')
         .controller('SettingsController', SettingsController);
 
-    SettingsController.$inject = ['Upload', '$scope', 'Principal', 'Auth', 'OPConfig', 'Settings', 'JhiLanguageService', '$window', '$translate'];
+    SettingsController.$inject = ['Upload', '$scope', 'Principal', 'OPConfig', '$window'];
 
-    function SettingsController(Upload, $scope, Principal, Auth, OPConfig, Settings, JhiLanguageService, $window, $translate) {
+    function SettingsController(Upload, $scope, Principal, OPConfig, $window) {
         var vm = this;
 
         vm.error = null;

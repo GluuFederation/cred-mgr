@@ -85,7 +85,7 @@
 
         <!-- Gluu properties -->
         <oxauth.version>2.4.4-SNAPSHOT</oxauth.version>
-        <scim.client>2.4.4</scim.client>
+        <scim.client>2.4.5-SNAPSHOT</scim.client>
     </properties>
 
 
@@ -131,6 +131,12 @@
                     <groupId>javax.servlet</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.twilio.sdk</groupId>
+            <artifactId>twilio-java-sdk</artifactId>
+            <version>5.10.0</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>

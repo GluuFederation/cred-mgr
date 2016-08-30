@@ -87,6 +87,7 @@ public class ExceptionTranslator {
                 break;
             case OPException.ERROR_UPDATE_SCIM_USER:
             case OPException.ERROR_DELETE_SCIM_USER:
+            case OPException.ERROR_DELETE_FIDO_DEVICE:
             case OPException.ERROR_RETRIEVE_LOGOUT_URI:
             case OPException.ERROR_RETRIEVE_OPEN_ID_CONFIGURATION:
             case OPException.ERROR_RETRIEVE_CLIENT_INFO:
@@ -96,6 +97,7 @@ public class ExceptionTranslator {
             case OPException.ERROR_ACTIVATE_OP_ADMIN:
             case OPException.ERROR_LOGIN:
             case OPException.ERROR_UPDATE_OP_CONFIG:
+            case OPException.ERROR_SEND_SMS:
                 builder = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR);
                 break;
             default:

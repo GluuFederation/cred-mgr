@@ -129,14 +129,14 @@
                            placeholder="{{'settings.form.enableAdminPage.placeholder' | translate}}"
                            ng-model="vm.opConfig.enableAdminPage" disabled/>
                 </div>
-                <div class="form-group" ng-class="{ 'has-error' : form.jks.$invalid}">
+                <div class="form-group" ng-class="{ 'has-error' : form.authenticationLevel.$invalid}">
                     <label class="control-label" for="authenticationLevel"
                            translate="settings.form.authenticationLevel">Client
                         Secret</label>
                     <input type="text" class="form-control" id="authenticationLevel"
                            name="authenticationLevel"
                            placeholder="{{'settings.form.authenticationLevel.placeholder' | translate}}"
-                           ng-model="vm.opConfig.authenticationLevel" required>
+                           ng-model="vm.opConfig.authenticationLevel" valid-number required>
                     <div ng-show="form.authenticationLevel.$invalid">
                         <p class="help-block"
                            ng-show="form.authenticationLevel.$error.required"
@@ -145,7 +145,7 @@
                         </p>
                     </div>
                 </div>
-                <div class="form-group" ng-class="{ 'has-error' : form.jks.$invalid}">
+                <div class="form-group" ng-class="{ 'has-error' : form.authenticationLevel.$invalid}">
                     <label class="control-label" for="requiredClaim" translate="settings.form.requiredClaim">Last
                         Name</label>
                     <input type="text" class="form-control" id="requiredClaim" name="requiredClaim"
@@ -159,7 +159,7 @@
                         </p>
                     </div>
                 </div>
-                <div class="form-group" ng-class="{ 'has-error' : form.jks.$invalid}">
+                <div class="form-group" ng-class="{ 'has-error' : form.requiredClaimValue.$invalid}">
                     <label class="control-label" for="requiredClaimValue" translate="settings.form.requiredClaimValue">Last
                         Name</label>
                     <input type="text" class="form-control" id="requiredClaimValue" name="requiredClaimValue"

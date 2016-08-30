@@ -8,6 +8,7 @@ import org.gluu.credmgr.domain.OPConfig;
 import org.gluu.credmgr.domain.OPUser;
 import org.gluu.credmgr.repository.OPConfigRepository;
 import org.gluu.credmgr.service.MailService;
+import org.gluu.credmgr.service.MobileService;
 import org.gluu.credmgr.service.OPUserService;
 import org.gluu.credmgr.service.error.OPException;
 import org.gluu.credmgr.web.rest.dto.KeyAndPasswordDTO;
@@ -49,6 +50,9 @@ public class OpenidAccountResource implements ResourceLoaderAware {
 
     @Inject
     private MailService mailService;
+
+    @Inject
+    private MobileService mobileService;
 
     @Inject
     private OPConfigResource opConfigResource;
@@ -164,14 +168,31 @@ public class OpenidAccountResource implements ResourceLoaderAware {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/openid/fido/unregister",
+        method = RequestMethod.POST,
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Timed
+    public ResponseEntity<?> unregisterFIDO() throws OPException {
+        opUserService.unregisterFido();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
     @RequestMapping(value = "/openid/reset_password/init",
         method = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @Timed
     public ResponseEntity<String> requestPasswordReset(@RequestBody ResetPasswordDTO resetPasswordDTO, HttpServletRequest request) throws OPException {
-        User user = opUserService.requestPasswordReset(resetPasswordDTO);
         OPConfig opConfig = opConfigRepository.findOneByCompanyShortName(resetPasswordDTO.getCompanyShortName()).orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_OP_CONFIG));
-        mailService.sendPasswordResetMail(user, getBaseUrl(request), opConfig);
+        User user;
+        String baseUrl = getBaseUrl(request);
+        if (resetPasswordDTO.getEmail() != null) {
+            user = opUserService.requestPasswordResetWithEmail(resetPasswordDTO);
+            mailService.sendPasswordResetMail(user, baseUrl, opConfig);
+        } else if (resetPasswordDTO.getMobile() != null) {
+            user = opUserService.requestPasswordResetWithMobile(resetPasswordDTO);
+            mobileService.sendPasswordResetSMS(user, baseUrl, opConfig);
+        }
         return new ResponseEntity<String>(HttpStatus.OK);
     }
 

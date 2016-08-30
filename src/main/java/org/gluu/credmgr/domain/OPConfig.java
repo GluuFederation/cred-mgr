@@ -133,7 +133,7 @@ public class OPConfig implements Serializable {
     private String smtpPassword;
 
     @Column(name = "smtp_use_ssl")
-    private Boolean smtpUseSSL;
+    private Boolean smtpUseSSL = false;
 
     @Column(name = "twilio_sid")
     private String twilioSID;

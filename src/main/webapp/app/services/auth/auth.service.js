@@ -5,13 +5,14 @@
         .module('credmgrApp')
         .factory('Auth', Auth);
 
-    Auth.$inject = ['$rootScope', '$state', '$sessionStorage', '$q', '$translate', 'Principal', 'AuthServerProvider', 'Account', 'LoginService', 'Register', 'Activate', 'Password', 'PasswordResetInit', 'PasswordResetFinish'];
+    Auth.$inject = ['$rootScope', '$state', '$sessionStorage', '$q', '$translate', 'Principal', 'AuthServerProvider', 'Account', 'LoginService', 'Register', 'Activate', 'Password', 'Fido', 'PasswordResetInit', 'PasswordResetFinish'];
 
-    function Auth($rootScope, $state, $sessionStorage, $q, $translate, Principal, AuthServerProvider, Account, LoginService, Register, Activate, Password, PasswordResetInit, PasswordResetFinish) {
+    function Auth($rootScope, $state, $sessionStorage, $q, $translate, Principal, AuthServerProvider, Account, LoginService, Register, Activate, Password, Fido, PasswordResetInit, PasswordResetFinish) {
         var service = {
             activateAccount: activateAccount,
             authorize: authorize,
             changePassword: changePassword,
+            unregisterFido: unregisterFido,
             createAccount: createAccount,
             getPreviousState: getPreviousState,
             login: login,
@@ -80,6 +81,16 @@
             var cb = callback || angular.noop;
 
             return Password.save(newPassword, function () {
+                return cb();
+            }, function (err) {
+                return cb(err);
+            }).$promise;
+        }
+
+        function unregisterFido(callback) {
+            var cb = callback || angular.noop;
+
+            return Fido.save(function () {
                 return cb();
             }, function (err) {
                 return cb(err);

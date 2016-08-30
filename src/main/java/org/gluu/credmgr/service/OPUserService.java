@@ -14,8 +14,6 @@ import org.gluu.credmgr.web.rest.dto.KeyAndPasswordDTO;
 import org.gluu.credmgr.web.rest.dto.RegistrationDTO;
 import org.gluu.credmgr.web.rest.dto.ResetPasswordDTO;
 import org.gluu.oxtrust.model.scim2.*;
-import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.DeserializationFeature;
-import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -46,20 +44,19 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class OPUserService {
 
-    //TODO: HIGH. file upload: unique_filename, path in op_config, scheduler to delete files that are not presented in op_config
-    //TODO: HIGH. angular in settings.html
-    //TODO: HIGH. custom emails
+    //TODO: HIGH. Why scim returns empty phone numbers list?
+    //TODO: scheduler to delete op admins that are not presented in db
 
     //TODO: MEDIUM. reset-password error handling when jks path is invalid
     //TODO: MEDIUM. tests
-    //TODO: MEDIUM. twilio
     //TODO: MEDIUM. add unit tests for new java methods
     //TODO: MEDIUM. add new cases in OPConfigResourceIntTest with wrong patterns
 
+    //TODO: LOW. Auto logout when gluu server session is ended.
     //TODO: LOW. after server restarts intercept end of session
-    //TODO: LOW. change prefix to jks file to random generated number
+    //TODO: LOW. change prefix on jks file to random generated number
+    //TODO: LOW. reset.password.html phone number twilio validation(serverside)
 
-    private final ObjectMapper objectMapper;
     @Inject
     private CredmgrProperties credmgrProperties;
     @Inject
@@ -68,11 +65,6 @@ public class OPUserService {
     private OxauthService oxauthService;
     @Inject
     private OPConfigRepository opConfigRepository;
-
-    public OPUserService() {
-        objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
 
     /**
      * Registering new user with OP_ADMIN role
@@ -322,7 +314,7 @@ public class OPUserService {
      *                      OPException.ERROR_FIND_SCIM_USER
      *                      OPException.ERROR_UPDATE_SCIM_USER
      */
-    public User requestPasswordReset(ResetPasswordDTO resetPasswordDTO) throws OPException {
+    public User requestPasswordResetWithEmail(ResetPasswordDTO resetPasswordDTO) throws OPException {
         OPConfig opConfig = opConfigRepository.findOneByCompanyShortName(resetPasswordDTO.getCompanyShortName()).filter(OPConfig::isActivated).orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_OP_CONFIG));
 
         Scim2Client scimClient = getScimClient(opConfig);
@@ -332,6 +324,31 @@ public class OPUserService {
             .map(extension -> new Extension.Builder(extension))
             .map(eBuilder -> eBuilder.setField("resetKey", RandomUtil.generateResetKey()).setField("resetDate", ZonedDateTime.now().toString()).build())
             .orElse(null));
+
+        user.setPassword(null);
+        user = scimService.updatePerson(user, user.getId(), scimClient);
+        return user;
+    }
+
+    /**
+     * @param resetPasswordDTO
+     * @return
+     * @throws OPException: OPException.ERROR_RETRIEVE_OP_CONFIG
+     *                      OPException.ERROR_FIND_SCIM_USER
+     *                      OPException.ERROR_UPDATE_SCIM_USER
+     */
+    public User requestPasswordResetWithMobile(ResetPasswordDTO resetPasswordDTO) throws OPException {
+        OPConfig opConfig = opConfigRepository.findOneByCompanyShortName(resetPasswordDTO.getCompanyShortName()).filter(OPConfig::isActivated).orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_OP_CONFIG));
+
+        Scim2Client scimClient = getScimClient(opConfig);
+        User user = scimService.searchUsers("phoneNumberVerified eq \"" + resetPasswordDTO.getMobile() + "\"", scimClient).stream().findFirst().orElseThrow(() -> new OPException(OPException.ERROR_FIND_SCIM_USER));
+        user.addExtension(Optional.of(user.getExtensions())
+            .map(extensions -> extensions.get(Constants.USER_EXT_SCHEMA_ID))
+            .map(extension -> new Extension.Builder(extension))
+            .map(eBuilder -> eBuilder.setField("resetKey", RandomUtil.generateResetKey()).setField("resetDate", ZonedDateTime.now().toString()).build())
+            .orElse(null));
+
+        user.setPassword(null);
         user = scimService.updatePerson(user, user.getId(), scimClient);
         return user;
     }
@@ -376,6 +393,12 @@ public class OPUserService {
 
     public Optional<OPConfig> getAdminOpConfig(OPUser user) {
         return Optional.ofNullable(opConfigRepository.findOne(user.getOpConfigId()));
+    }
+
+    public void unregisterFido() throws OPException {
+        OPUser principal = getPrincipal().orElseThrow(() -> new OPException(OPException.ERROR_DELETE_FIDO_DEVICE));
+        Scim2Client scimClient = getScimClient(principal.getOpConfig());
+        scimService.unregisterFido(principal.getScimId(), scimClient);
     }
 
     private Scim2Client getScimClient(OPConfig opConfig) {
