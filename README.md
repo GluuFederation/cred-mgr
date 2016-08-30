@@ -79,25 +79,25 @@ To setup this project in Jenkins, use the following configuration:
 
 ## Configuring cred-mgr
 
-Please follow these steps to configure your cred-mgr and your gluu server:
+Please follow these steps to configure your `cred-mgr` app and your `gluu` server:
 
-1) export ssl certificate from chrome (e.g. `gluu.localhost.info.cer`).
+1. export ssl certificate from chrome (e.g. `gluu.localhost.info.cer`).
 
-2) remove old imported certificate from java keystore: `sudo keytool -delete -noprompt -alias gluu.localhost.info  -keystore cacerts -storepass changeit`.
+2. remove old imported certificate from java keystore: `sudo keytool -delete -noprompt -alias gluu.localhost.info  -keystore cacerts -storepass changeit`.
 
-3) add new certificate to java keystore: `sudo keytool -import -alias gluu.localhost.info -file gluu.localhost.info.cer -keystore cacerts -storepass changeit`.
+3. add new certificate to java keystore: `sudo keytool -import -alias gluu.localhost.info -file gluu.localhost.info.cer -keystore cacerts -storepass changeit`.
 
-4) replace `cred-mgr/src/main/resources/scim-rp.jks` and `cred-mgr/src/test/resources/scim-rp.jks` with `/opt/gluu-server-2.4.4/install/community-edition-setup/output/scim-rp.jks`.
+4. replace `cred-mgr/src/main/resources/scim-rp.jks` and `cred-mgr/src/test/resources/scim-rp.jks` with `/opt/gluu-server-2.4.4/install/community-edition-setup/output/scim-rp.jks`.
 
-5) replace property `umaAatClientId` from `cred-mgr/src/main/resources/config/application-dev.yml`  and `cred-mgr/src/test/resources/config/application.yml` with one from `/install/community-edition-setup/setup.properties.last` e.g. `cat setup.properties.last | grep "scim_rp_client_id"`.
+5. replace property `umaAatClientId` from `cred-mgr/src/main/resources/config/application-dev.yml`  and `cred-mgr/src/test/resources/config/application.yml` with one from `/install/community-edition-setup/setup.properties.last` e.g. `cat setup.properties.last | grep "scim_rp_client_id"`.
 
-6) drop, then create `credmgr` database.
+6. drop, then create `credmgr` database.
 
-7) run credmgr app.
+7. run credmgr app.
 
-8) login into Gluu Server(oxTrust CE) and navigate to Configuration > Organization Configuration > Enable SCIM Support.
+8. login into Gluu Server(oxTrust CE) and navigate to Configuration > Organization Configuration > Enable SCIM Support.
 
-9) Navigate to `https://${your.gluu.server.host.name}/oxauth-rp/home.htm` and register client with the following params:
+9. Navigate to `https://${your.gluu.server.host.name}/oxauth-rp/home.htm` and register client with the following params:
 ```
 Registration Endpoint: https:/${your.gluu.server.host.name}/oxauth/seam/resource/restv1/oxauth/register
 Redirect URIs: https://127.0.0.1:9000/api/openid/login-redirect
@@ -106,10 +106,10 @@ Response Types: CODE
 Grant Types: AUTHORIZATION_CODE
 Application Type: WEB
 ```
-10) Copy client_id and client_secret from Registration Response panel and update first record from op_config table e.g
+10. Copy client_id and client_secret from Registration Response panel and update first record from op_config table e.g
 `UPDATE op_config SET client_id=‘your_client_id’, client_secret='your_client_secret’, host='https://your.gluu.server.host.name.without.last.slash’, email='gluu@mail.com' WHERE id=1;`
 
-11) Navigate to `https://${your.gluu.server.host.name}/identity/attribute/inventory` and add new Attributes:
+11. Navigate to `https://${your.gluu.server.host.name}/identity/attribute/inventory` and add new Attributes:
 
 ```
 Name: opRole
@@ -137,9 +137,9 @@ SCIM Atribute: True
 Description: resetKey
 ```
 
-12) Go to your project directory, open terminal, type: `gulp` and hit enter.
+12. Go to your project directory, open terminal, type: `gulp` and hit enter.
 
-13) Important: navigate to `https://127.0.0.1:9000/#/` instead of `https://localhost:9000/#/`.
+13. Important: navigate to `https://127.0.0.1:9000/#/` instead of `https://localhost:9000/#/`.
 
-14) Now you can log in into cred-mgr app, create new admins and reset your credentials.
+14. Now you can log in into cred-mgr app, create new admins and reset your credentials.
 
