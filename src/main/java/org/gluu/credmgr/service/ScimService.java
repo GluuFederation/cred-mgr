@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,7 +32,8 @@ public class ScimService {
 
     @PostConstruct
     public void initIt() throws IOException {
-        String umaAatClientJwks = getClass().getClassLoader().getResource(GLUU_IDP_ORG_JWKS_FILE_NAME).getFile();
+        File jksFile = new File(credmgrProperties.getJksStorePath() + "/" + credmgrProperties.getGluuIdpOrg().getCompanyShortName() + "/" + GLUU_IDP_ORG_JWKS_FILE_NAME);
+        String umaAatClientJwks = jksFile.getAbsolutePath();
         String host = credmgrProperties.getGluuIdpOrg().getHost();
         String umaAatClientId = credmgrProperties.getGluuIdpOrg().getUmaAatClientId();
         String umaAatClientKeyId = credmgrProperties.getGluuIdpOrg().getUmaAatClientKeyId();
@@ -79,7 +81,7 @@ public class ScimService {
         try {
             ScimResponse response = scimClient.searchFidoDevices(userId, "id pr", 1, 20, "id", "ascending", null);
             ListResponse listResponse = Util.toListResponseFidoDevice(response);
-            if (listResponse.getResources().size() > 0) {
+            if (listResponse != null && listResponse.getResources() != null && listResponse.getResources().size() > 0) {
                 for (Resource resource : listResponse.getResources()) {
                     FidoDevice fidoDevice = (FidoDevice) resource;
                     scimClient.deleteFidoDevice(fidoDevice.getId());

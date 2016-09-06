@@ -20,7 +20,7 @@ spring:
         url: jdbc:postgresql://localhost:5432/credmgr
         name:
         username: credmgr
-        password:
+        password: postgres
     jpa:
         database-platform: org.gluu.credmgr.domain.util.FixedPostgreSQL82Dialect
         database: POSTGRESQL
@@ -47,7 +47,7 @@ server:
         key-store-password: mypassword
         key-store-type: PKCS12
         key-alias: tomcat
-    port: 443
+    port: 8443
     compression:
         enabled: true
         mime-types: text/html,text/xml,text/plain,text/css, application/javascript, application/json
@@ -99,9 +99,9 @@ jhipster:
 # ===================================================================
 credmgr:
     gluuIdpOrg:
-        host: https://gluu.localhost.info
-        umaAatClientId: '@!E0C8.52C1.C6D4.38D2!0001!FAE9.4AC2!0008!9A96.832B'
+        host: https://67.205.140.235
+        umaAatClientId: '@!E899.BC3E.54E2.8103!0001!03FC.9C47!0008!2112.F810'
         umaAatClientKeyId:
         companyShortName: gluu
         requiredOPSuperAdminClaimValue: Gluu IT Manager
-    jksStorePath: /Users/eugeniuparvan/Desktop/credmgr_storage
+    jksStorePath: /root/credmgr_storage

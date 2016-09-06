@@ -23,12 +23,13 @@ public class MobileService {
     public void sendPasswordResetSMS(User user, String baseUrl, OPConfig opConfig) throws OPException {
         try {
             String resetKey = user.getExtensions().get(Constants.USER_EXT_SCHEMA_ID).getField("resetKey", ExtensionFieldType.STRING);
+            String phoneNumber = user.getExtension(Constants.USER_EXT_SCHEMA_ID).getField("resetPhoneNumber", ExtensionFieldType.STRING);
             String companyShortName = opConfig.getCompanyShortName();
             TwilioRestClient client = new TwilioRestClient(opConfig.getTwilioSID(), opConfig.getTwilioToken());
 
             // Build the parameters
             List<NameValuePair> params = new ArrayList<NameValuePair>();
-            params.add(new BasicNameValuePair("To", user.getPhoneNumbers().get(0).getValue()));
+            params.add(new BasicNameValuePair("To", phoneNumber));
             params.add(new BasicNameValuePair("From", opConfig.getTwilioFromNumber()));
             params.add(new BasicNameValuePair("Body", "Proceed to reset your password: " + baseUrl + "/#/reset/finish?key=" + resetKey + "&csn=" + companyShortName));
 

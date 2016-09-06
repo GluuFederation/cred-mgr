@@ -341,7 +341,7 @@ public class OPUserService {
         OPConfig opConfig = opConfigRepository.findOneByCompanyShortName(resetPasswordDTO.getCompanyShortName()).filter(OPConfig::isActivated).orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_OP_CONFIG));
 
         Scim2Client scimClient = getScimClient(opConfig);
-        User user = scimService.searchUsers("phoneNumberVerified eq \"" + resetPasswordDTO.getMobile() + "\"", scimClient).stream().findFirst().orElseThrow(() -> new OPException(OPException.ERROR_FIND_SCIM_USER));
+        User user = scimService.searchUsers("resetPhoneNumber eq \"" + resetPasswordDTO.getMobile() + "\"", scimClient).stream().findFirst().orElseThrow(() -> new OPException(OPException.ERROR_FIND_SCIM_USER));
         user.addExtension(Optional.of(user.getExtensions())
             .map(extensions -> extensions.get(Constants.USER_EXT_SCHEMA_ID))
             .map(extension -> new Extension.Builder(extension))
