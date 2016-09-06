@@ -87,7 +87,7 @@ Please follow these steps to configure your `cred-mgr` app and your `gluu` serve
 
 3. add new certificate to java keystore: `sudo keytool -import -alias gluu.localhost.info -file gluu.localhost.info.cer -keystore cacerts -storepass changeit`.
 
-4. create folder for jks storage using path/name provided from `credmgr.jksStorePath` property (cred-mgr/src/main/resources/config/application-dev.yml), then inside created folder create new one with name `gluu` and put there your jks file from `/opt/gluu-server-2.4.4/install/community-edition-setup/output/scim-rp.jks`. So you'll have ${credmgr.jksStorePath}/gluu/scim-rp.jks
+4. create folder for jks storage using path/name provided from `credmgr.jksStorePath` property (`cred-mgr/src/main/resources/config/application-dev.yml`), then inside created folder create new one with name `gluu` and put there your jks file from `/opt/gluu-server-2.4.4/install/community-edition-setup/output/scim-rp.jks`. So you'll have `${credmgr.jksStorePath}/gluu/scim-rp.jks`.
 
 5. replace property `umaAatClientId` from `cred-mgr/src/main/resources/config/application-dev.yml`  and `cred-mgr/src/test/resources/config/application.yml` with one from `/install/community-edition-setup/setup.properties.last` e.g. `cat setup.properties.last | grep "scim_rp_client_id"`.
 
@@ -133,7 +133,7 @@ Please follow these steps to configure your `cred-mgr` app and your `gluu` serve
         * oxAuth claim name: resetKey
         * SCIM Atribute: True
         * Description: resetKey
-     * resetPhoneNumber
+    * resetPhoneNumber
         * Name: resetPhoneNumber
         * DisplayName: resetPhoneNumber
         * Type: Text
