@@ -1,6 +1,5 @@
 package org.gluu.credmgr.web.rest;
 
-import org.apache.commons.io.IOUtils;
 import org.gluu.credmgr.CredmgrApp;
 import org.gluu.credmgr.OPCommonTest;
 import org.gluu.credmgr.config.CredmgrProperties;
@@ -12,15 +11,9 @@ import org.gluu.credmgr.service.MailService;
 import org.gluu.credmgr.service.OPUserService;
 import org.gluu.credmgr.service.OxauthService;
 import org.gluu.credmgr.service.ScimService;
-import org.gluu.credmgr.web.rest.dto.KeyAndPasswordDTO;
-import org.gluu.credmgr.web.rest.dto.RegistrationDTO;
 import org.gluu.credmgr.web.rest.dto.ResetPasswordDTO;
-import org.gluu.oxtrust.model.scim2.Constants;
-import org.gluu.oxtrust.model.scim2.ExtensionFieldType;
-import org.gluu.oxtrust.model.scim2.User;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,17 +30,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.NestedServletException;
 import org.xdi.oxauth.client.TokenResponse;
 import org.xdi.oxauth.client.UserInfoResponse;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -61,7 +49,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringApplicationConfiguration(classes = CredmgrApp.class)
 @WebAppConfiguration
 @IntegrationTest
-@Transactional
 public class OpenidAccountResourceIntTest extends OPCommonTest {
 
     @Inject
@@ -113,70 +100,11 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
 
 
     @Test
-    public void registerAccount() throws Exception {
-        int databaseSizeBeforeCreate = opConfigRepository.findAll().size();
-
-        RegistrationDTO registrationDTO = getRegistrationDTO();
-        restOpenidAccountConfigMockMvc.perform(post("/api/openid/register")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(registrationDTO)))
-            .andExpect(status().isOk());
-
-        List<OPConfig> opConfigs = opConfigRepository.findAll();
-        assertThat(opConfigs).hasSize(databaseSizeBeforeCreate + 1);
-        OPConfig opConfig = opConfigs.get(opConfigs.size() - 1);
-        assertThat(opConfig.getAdminScimId()).isNotEmpty();
-        assertThat(opConfig.getCompanyName()).isNotEmpty();
-        assertThat(opConfig.getCompanyShortName()).isNotEmpty();
-        assertThat(opConfig.getEmail()).isNotEmpty();
-        assertThat(opConfig.getActivationKey()).isNotEmpty();
-        assertThat(opConfig.isActivated()).isFalse();
-
-        opConfigRepository.delete(opConfig.getId());
-
-        assertThat(scimService.deletePerson(opConfig.getAdminScimId())).isTrue();
-
-        registrationDTO.setEmail("wrong_email");
-        try {
-            restOpenidAccountConfigMockMvc.perform(post("/api/openid/register")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(registrationDTO)))
-                .andExpect(status().isInternalServerError());
-            Assert.fail();
-        } catch (NestedServletException e) {
-            assertThat(e).isNotNull();
-        }
-    }
-
-    @Test
-    public void activateAccount() throws Exception {
-        OPConfig opConfig = register();
-
-        assertThat(opConfig.getActivationKey()).isNotNull();
-        assertThat(opConfig.isActivated()).isFalse();
-        restOpenidAccountConfigMockMvc.perform(get("/api/openid/activate").param("key", opConfig.getActivationKey()))
-            .andExpect(status().isOk());
-
-        OPConfig config = opConfigRepository.findOne(opConfig.getId());
-        assertThat(config.getActivationKey()).isNull();
-        assertThat(config.isActivated()).isTrue();
-
-        try {
-            restOpenidAccountConfigMockMvc.perform(get("/api/openid/activate").param("key", "not_existed_key"))
-                .andExpect(status().isOk());
-        } catch (NestedServletException e) {
-            assertThat(e).isNotNull();
-        }
-    }
-
-    @Test
     public void getLoginUri() throws Exception {
-        OPConfig opConfig = register();
-        opConfig.setHost(credmgrProperties.getGluuIdpOrg().getHost());
-        opConfigRepository.save(opConfig);
-        String loginUri = opUserService.getLoginUri(opConfig.getCompanyShortName(), null);
+        OPConfig opConfig = opConfigRepository.get();
+        String loginUri = opUserService.getLoginUri(null);
 
-        restOpenidAccountConfigMockMvc.perform(get("/api/openid/login-uri").param("companyShortName", opConfig.getCompanyShortName()))
+        restOpenidAccountConfigMockMvc.perform(get("/api/openid/login-uri"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
             .andExpect(jsonPath("$.value").value(Matchers.startsWith(loginUri)));
@@ -219,9 +147,6 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
         Mockito.when(oxauthServiceMock.getToken(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(tokenResponse);
 
         UserInfoResponse userInfoResponse = new UserInfoResponse(200);
-        Map<String, List<String>> claims = new HashMap<>();
-        claims.put("inum", Arrays.asList(opConfig.getAdminScimId()));
-        userInfoResponse.setClaims(claims);
         Mockito.when(oxauthServiceMock.getUserInfo(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(userInfoResponse);
 
         ReflectionTestUtils.setField(unwrapOPUserService(), "oxauthService", oxauthServiceMock);
@@ -244,9 +169,6 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
         Mockito.when(oxauthServiceMock.getToken(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(tokenResponse);
 
         UserInfoResponse userInfoResponse = new UserInfoResponse(200);
-        Map<String, List<String>> claims = new HashMap<>();
-        claims.put("inum", Arrays.asList(opConfig.getAdminScimId()));
-        userInfoResponse.setClaims(claims);
         Mockito.when(oxauthServiceMock.getUserInfo(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(userInfoResponse);
 
         ReflectionTestUtils.setField(unwrapOPUserService(), "oxauthService", oxauthServiceMock);
@@ -298,22 +220,6 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
     }
 
     @Test
-    public void getSuperAdminAccount() throws Exception {
-        registerAndLoginSuperAdmin();
-        OPUser opUser = opUserService.getPrincipal().get();
-        restOpenidAccountConfigMockMvc.perform(get("/api/openid/account"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.scimId").value(opUser.getScimId()))
-            .andExpect(jsonPath("$.login").value(opUser.getLogin()))
-            .andExpect(jsonPath("$.host").value(opUser.getHost()))
-            .andExpect(jsonPath("$.idToken").value(opUser.getIdToken()))
-            .andExpect(jsonPath("$.langKey").value(opUser.getLangKey()))
-            .andExpect(jsonPath("$.authorities").value(Matchers.hasItem(OPAuthority.OP_SUPER_ADMIN.toString())));
-
-    }
-
-    @Test
     public void changePassword() throws Exception {
         registerAndLoginUser();
         restOpenidAccountConfigMockMvc.perform(post("/api/openid/change_password").contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -330,32 +236,24 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
 
     @Test
     public void requestAndFinishPasswordReset() throws Exception {
-        OPConfig opConfig = register();
-        opConfig.setActivated(true);
-        opConfig.setHost(credmgrProperties.getGluuIdpOrg().getHost());
-        opConfig.setUmaAatClientId(credmgrProperties.getGluuIdpOrg().getUmaAatClientId());
-        opConfig.setUmaAatClientKeyId(credmgrProperties.getGluuIdpOrg().getUmaAatClientKeyId());
-        opConfig.setClientJKS(IOUtils.toString(getClass().getClassLoader().getResourceAsStream("scim-rp-openid-keys.json")));
-        opConfigRepository.save(opConfig);
+        OPConfig opConfig = opConfigRepository.get();
 
         ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO();
-        resetPasswordDTO.setEmail(opConfig.getEmail());
-        resetPasswordDTO.setCompanyShortName(opConfig.getCompanyShortName());
         restOpenidAccountConfigMockMvc.perform(post("/api/openid/reset_password/init").contentType(TestUtil.APPLICATION_JSON_UTF8)
             .content(TestUtil.convertObjectToJsonBytes(resetPasswordDTO)));
 
-        User user = scimService.retrievePerson(opConfig.getAdminScimId());
-        String resetKey = user.getExtension(Constants.USER_EXT_SCHEMA_ID).getField("resetKey", ExtensionFieldType.STRING);
-        assertThat(resetKey).isNotEmpty();
-        assertThat(user.getExtension(Constants.USER_EXT_SCHEMA_ID).getField("resetDate", ExtensionFieldType.STRING)).isNotEmpty();
-
-
-        KeyAndPasswordDTO keyAndPasswordDTO = new KeyAndPasswordDTO();
-        keyAndPasswordDTO.setCompanyShortName(opConfig.getCompanyShortName());
-        keyAndPasswordDTO.setKey(resetKey);
-        keyAndPasswordDTO.setNewPassword("helloworld");
-        restOpenidAccountConfigMockMvc.perform(post("/api/openid/reset_password/finish").contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(keyAndPasswordDTO))).andExpect(status().isOk());
+//        User user = scimService.retrievePerson(opConfig.getAdminScimId());
+//        String resetKey = user.getExtension(Constants.USER_EXT_SCHEMA_ID).getField("resetKey", ExtensionFieldType.STRING);
+//        assertThat(resetKey).isNotEmpty();
+//        assertThat(user.getExtension(Constants.USER_EXT_SCHEMA_ID).getField("resetDate", ExtensionFieldType.STRING)).isNotEmpty();
+//
+//
+//        KeyAndPasswordDTO keyAndPasswordDTO = new KeyAndPasswordDTO();
+//        keyAndPasswordDTO.setCompanyShortName(opConfig.getCompanyShortName());
+//        keyAndPasswordDTO.setKey(resetKey);
+//        keyAndPasswordDTO.setNewPassword("helloworld");
+//        restOpenidAccountConfigMockMvc.perform(post("/api/openid/reset_password/finish").contentType(TestUtil.APPLICATION_JSON_UTF8)
+//            .content(TestUtil.convertObjectToJsonBytes(keyAndPasswordDTO))).andExpect(status().isOk());
 
     }
 
@@ -372,25 +270,5 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
     @Override
     public ScimService getScimService() {
         return scimService;
-    }
-
-    @Override
-    public String getHost() {
-        return credmgrProperties.getGluuIdpOrg().getHost();
-    }
-
-    @Override
-    public String getAdminClaimValue() {
-        return "IT Manager";
-    }
-
-    @Override
-    public String getSuperAdminClaimValue() {
-        return credmgrProperties.getGluuIdpOrg().getRequiredOPSuperAdminClaimValue();
-    }
-
-    @Override
-    public String getCompanyShortName() {
-        return credmgrProperties.getGluuIdpOrg().getCompanyShortName();
     }
 }

@@ -1,16 +1,17 @@
-(function() {
+/**
+ * Created by eugeniuparvan on 9/8/16.
+ */
+(function () {
     'use strict';
+
     angular
         .module('credmgrApp')
-        .factory('OPConfig', OPConfig);
+        .factory('ResetOptions', ResetOptions);
 
-    OPConfig.$inject = ['$resource'];
+    ResetOptions.$inject = ['$resource'];
 
-    function OPConfig ($resource) {
-        var resourceUrl =  'api/o-p-configs/:id';
-
-        return $resource(resourceUrl, {}, {
-            'query': { method: 'GET', isArray: true},
+    function ResetOptions($resource) {
+        var service = $resource('api/openid/reset/options', {}, {
             'get': {
                 method: 'GET',
                 transformResponse: function (data) {
@@ -19,8 +20,9 @@
                     }
                     return data;
                 }
-            },
-            'update': { method:'PUT' }
+            }
         });
+
+        return service;
     }
 })();

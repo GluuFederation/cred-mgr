@@ -97,15 +97,9 @@
                     <label class="control-label" for="clientJKS" translate="settings.form.clientJKS">Client
                         JWKS</label>
 
-                    <div class="input-group">
-                      <span class="input-group-btn">
-                        <div class="btn btn-primary" ngf-select ng-model="vm.jks" id="jks" name="jks" accept=".jks"
-                             ngf-multiple="false" ng-required="!vm.opConfig.clientJKS">Select JKS
-                        </div>
-                      </span><input type="text" id="clientJKS" name="clientJKS" readonly class="form-control"
-                                    placeholder="Search for jks..."
-                                    ng-value="vm.opConfig.clientJKS">
-                    </div>
+                    <input type="text" class="form-control" id="clientJKS" name="clientJKS"
+                           placeholder="{{'settings.form.clientJKS.placeholder' | translate}}"
+                           ng-model="vm.opConfig.clientJKS" required>
                     <div ng-show="form.jks.$invalid">
                         <p class="help-block"
                            ng-show="form.jks.$error.required"
@@ -120,15 +114,15 @@
                     <strong translate="settings.admin.configuration">ADMIN CREDENTIAL WEBSITE CONFIGURATION</strong>
                 </div>
 
-                <div class="form-group">
-                    <label class="control-label" for="enableAdminPage"
-                           translate="settings.form.enableAdminPage">Last
-                        Name</label>
-                    <input type="checkbox" class="form-control" id="enableAdminPage"
-                           name="enableAdminPage"
-                           placeholder="{{'settings.form.enableAdminPage.placeholder' | translate}}"
-                           ng-model="vm.opConfig.enableAdminPage" disabled/>
-                </div>
+                <!--<div class="form-group">-->
+                <!--<label class="control-label" for="enableAdminPage"-->
+                <!--translate="settings.form.enableAdminPage">Last-->
+                <!--Name</label>-->
+                <!--<input type="checkbox" class="form-control" id="enableAdminPage"-->
+                <!--name="enableAdminPage"-->
+                <!--placeholder="{{'settings.form.enableAdminPage.placeholder' | translate}}"-->
+                <!--ng-model="vm.opConfig.enableAdminPage" disabled/>-->
+                <!--</div>-->
                 <div class="form-group" ng-class="{ 'has-error' : form.authenticationLevel.$invalid}">
                     <label class="control-label" for="authenticationLevel"
                            translate="settings.form.authenticationLevel">Client
@@ -173,15 +167,15 @@
                         </p>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="control-label" for="enablePasswordManagement"
-                           translate="settings.form.enablePasswordManagement">Last
-                        Name</label>
-                    <input type="checkbox" class="form-control" id="enablePasswordManagement"
-                           name="enablePasswordManagement"
-                           placeholder="{{'settings.form.enablePasswordManagement.placeholder' | translate}}"
-                           ng-model="vm.opConfig.enablePasswordManagement"/>
-                </div>
+                <!--<div class="form-group">-->
+                <!--<label class="control-label" for="enablePasswordManagement"-->
+                <!--translate="settings.form.enablePasswordManagement">Last-->
+                <!--Name</label>-->
+                <!--<input type="checkbox" class="form-control" id="enablePasswordManagement"-->
+                <!--name="enablePasswordManagement"-->
+                <!--placeholder="{{'settings.form.enablePasswordManagement.placeholder' | translate}}"-->
+                <!--ng-model="vm.opConfig.enablePasswordManagement"/>-->
+                <!--</div>-->
                 <div class="form-group">
                     <label class="control-label" for="enableEmailManagement"
                            translate="settings.form.enableEmailManagement">Last
@@ -200,110 +194,110 @@
                            placeholder="{{'settings.form.enableMobileManagement.placeholder' | translate}}"
                            ng-model="vm.opConfig.enableMobileManagement"/>
                 </div>
-                <div class="form-group">
-                    <label class="control-label" for="enableSocialManagement"
-                           translate="settings.form.enableSocialManagement">Last
-                        Name</label>
-                    <input type="checkbox" class="form-control" id="enableSocialManagement"
-                           name="enableSocialManagement"
-                           placeholder="{{'settings.form.enableSocialManagement.placeholder' | translate}}"
-                           ng-model="vm.opConfig.enableSocialManagement"/>
-                </div>
-                <div class="form-group">
-                    <label class="control-label" for="enableU2FManagement"
-                           translate="settings.form.enableU2FManagement">Last
-                        Name</label>
-                    <input type="checkbox" class="form-control" id="enableU2FManagement"
-                           name="enableU2FManagement"
-                           placeholder="{{'settings.form.enableU2FManagement.placeholder' | translate}}"
-                           ng-model="vm.opConfig.enableU2FManagement"/>
-                </div>
+                <!--<div class="form-group">-->
+                <!--<label class="control-label" for="enableSocialManagement"-->
+                <!--translate="settings.form.enableSocialManagement">Last-->
+                <!--Name</label>-->
+                <!--<input type="checkbox" class="form-control" id="enableSocialManagement"-->
+                <!--name="enableSocialManagement"-->
+                <!--placeholder="{{'settings.form.enableSocialManagement.placeholder' | translate}}"-->
+                <!--ng-model="vm.opConfig.enableSocialManagement"/>-->
+                <!--</div>-->
+                <!--<div class="form-group">-->
+                <!--<label class="control-label" for="enableU2FManagement"-->
+                <!--translate="settings.form.enableU2FManagement">Last-->
+                <!--Name</label>-->
+                <!--<input type="checkbox" class="form-control" id="enableU2FManagement"-->
+                <!--name="enableU2FManagement"-->
+                <!--placeholder="{{'settings.form.enableU2FManagement.placeholder' | translate}}"-->
+                <!--ng-model="vm.opConfig.enableU2FManagement"/>-->
+                <!--</div>-->
 
-                <hr>
-                <div class="alert alert-info">
-                    <strong translate="settings.social.configuration">ADMIN CREDENTIAL WEBSITE CONFIGURATION</strong>
-                </div>
+                <!--<hr>-->
+                <!--<div class="alert alert-info">-->
+                <!--<strong translate="settings.social.configuration">ADMIN CREDENTIAL WEBSITE CONFIGURATION</strong>-->
+                <!--</div>-->
 
-                <div class="form-group">
-                    <label class="control-label" for="enableGoogleLogin"
-                           translate="settings.form.enableGoogleLogin">Last
-                        Name</label>
-                    <input type="checkbox" class="form-control" id="enableGoogleLogin"
-                           ng-disabled="!vm.opConfig.enableSocialManagement"
-                           name="google"
-                           placeholder="{{'settings.form.enableGoogleLogin.placeholder' | translate}}"
-                           ng-model="vm.opConfig.enableGoogleLogin"/>
-                </div>
-                <div class="form-group">
-                    <label class="control-label" for="enableFacebookLogin"
-                           translate="settings.form.enableFacebookLogin">Last
-                        Name</label>
-                    <input type="checkbox" class="form-control" id="enableFacebookLogin"
-                           ng-disabled="!vm.opConfig.enableSocialManagement"
-                           name="facebook"
-                           placeholder="{{'settings.form.enableFacebookLogin.placeholder' | translate}}"
-                           ng-model="vm.opConfig.enableFacebookLogin"/>
-                </div>
-                <div class="form-group">
-                    <label class="control-label" for="enableTwitterLogin"
-                           translate="settings.form.enableTwitterLogin">Last
-                        Name</label>
-                    <input type="checkbox" class="form-control" id="enableTwitterLogin"
-                           ng-disabled="!vm.opConfig.enableSocialManagement"
-                           name="enableTwitterLogin"
-                           placeholder="{{'settings.form.enableTwitterLogin.placeholder' | translate}}"
-                           ng-model="vm.opConfig.enableTwitterLogin"/>
-                </div>
-                <div class="form-group">
-                    <label class="control-label" for="enableLinkedInLogin"
-                           translate="settings.form.enableLinkedInLogin">Last
-                        Name</label>
-                    <input type="checkbox" class="form-control" id="enableLinkedInLogin"
-                           ng-disabled="!vm.opConfig.enableSocialManagement"
-                           name="enableLinkedInLogin"
-                           placeholder="{{'settings.form.enableLinkedInLogin.placeholder' | translate}}"
-                           ng-model="vm.opConfig.enableLinkedInLogin"/>
-                </div>
-                <div class="form-group">
-                    <label class="control-label" for="enableWindowsLiveLogin"
-                           translate="settings.form.enableWindowsLiveLogin">Last
-                        Name</label>
-                    <input type="checkbox" class="form-control" id="enableWindowsLiveLogin"
-                           ng-disabled="!vm.opConfig.enableSocialManagement"
-                           name="enableWindowsLiveLogin"
-                           placeholder="{{'settings.form.enableWindowsLiveLogin.placeholder' | translate}}"
-                           ng-model="vm.opConfig.enableWindowsLiveLogin"/>
-                </div>
-                <div class="form-group">
-                    <label class="control-label" for="enableGithubLogin"
-                           translate="settings.form.enableGithubLogin">Last
-                        Name</label>
-                    <input type="checkbox" class="form-control" id="enableGithubLogin"
-                           ng-disabled="!vm.opConfig.enableSocialManagement"
-                           name="enableGithubLogin"
-                           placeholder="{{'settings.form.enableGithubLogin.placeholder' | translate}}"
-                           ng-model="vm.opConfig.enableGithubLogin"/>
-                </div>
-                <div class="form-group">
-                    <label class="control-label" for="enableDropboxLogin"
-                           translate="settings.form.enableDropboxLogin">Last
-                        Name</label>
-                    <input type="checkbox" class="form-control" id="enableDropboxLogin"
-                           ng-disabled="!vm.opConfig.enableSocialManagement"
-                           name="enableDropboxLogin"
-                           placeholder="{{'settings.form.enableDropboxLogin.placeholder' | translate}}"
-                           ng-model="vm.opConfig.enableDropboxLogin"/>
-                </div>
-                <div class="form-group">
-                    <label class="control-label" for="enableYahooLogin"
-                           translate="settings.form.enableYahooLogin">Last
-                        Name</label>
-                    <input type="checkbox" class="form-control" id="enableYahooLogin"
-                           ng-disabled="!vm.opConfig.enableSocialManagement"
-                           name="enableYahooLogin"
-                           placeholder="{{'settings.form.enableYahooLogin.placeholder' | translate}}"
-                           ng-model="vm.opConfig.enableYahooLogin"/>
-                </div>
+                <!--<div class="form-group">-->
+                <!--<label class="control-label" for="enableGoogleLogin"-->
+                <!--translate="settings.form.enableGoogleLogin">Last-->
+                <!--Name</label>-->
+                <!--<input type="checkbox" class="form-control" id="enableGoogleLogin"-->
+                <!--ng-disabled="!vm.opConfig.enableSocialManagement"-->
+                <!--name="google"-->
+                <!--placeholder="{{'settings.form.enableGoogleLogin.placeholder' | translate}}"-->
+                <!--ng-model="vm.opConfig.enableGoogleLogin"/>-->
+                <!--</div>-->
+                <!--<div class="form-group">-->
+                <!--<label class="control-label" for="enableFacebookLogin"-->
+                <!--translate="settings.form.enableFacebookLogin">Last-->
+                <!--Name</label>-->
+                <!--<input type="checkbox" class="form-control" id="enableFacebookLogin"-->
+                <!--ng-disabled="!vm.opConfig.enableSocialManagement"-->
+                <!--name="facebook"-->
+                <!--placeholder="{{'settings.form.enableFacebookLogin.placeholder' | translate}}"-->
+                <!--ng-model="vm.opConfig.enableFacebookLogin"/>-->
+                <!--</div>-->
+                <!--<div class="form-group">-->
+                <!--<label class="control-label" for="enableTwitterLogin"-->
+                <!--translate="settings.form.enableTwitterLogin">Last-->
+                <!--Name</label>-->
+                <!--<input type="checkbox" class="form-control" id="enableTwitterLogin"-->
+                <!--ng-disabled="!vm.opConfig.enableSocialManagement"-->
+                <!--name="enableTwitterLogin"-->
+                <!--placeholder="{{'settings.form.enableTwitterLogin.placeholder' | translate}}"-->
+                <!--ng-model="vm.opConfig.enableTwitterLogin"/>-->
+                <!--</div>-->
+                <!--<div class="form-group">-->
+                <!--<label class="control-label" for="enableLinkedInLogin"-->
+                <!--translate="settings.form.enableLinkedInLogin">Last-->
+                <!--Name</label>-->
+                <!--<input type="checkbox" class="form-control" id="enableLinkedInLogin"-->
+                <!--ng-disabled="!vm.opConfig.enableSocialManagement"-->
+                <!--name="enableLinkedInLogin"-->
+                <!--placeholder="{{'settings.form.enableLinkedInLogin.placeholder' | translate}}"-->
+                <!--ng-model="vm.opConfig.enableLinkedInLogin"/>-->
+                <!--</div>-->
+                <!--<div class="form-group">-->
+                <!--<label class="control-label" for="enableWindowsLiveLogin"-->
+                <!--translate="settings.form.enableWindowsLiveLogin">Last-->
+                <!--Name</label>-->
+                <!--<input type="checkbox" class="form-control" id="enableWindowsLiveLogin"-->
+                <!--ng-disabled="!vm.opConfig.enableSocialManagement"-->
+                <!--name="enableWindowsLiveLogin"-->
+                <!--placeholder="{{'settings.form.enableWindowsLiveLogin.placeholder' | translate}}"-->
+                <!--ng-model="vm.opConfig.enableWindowsLiveLogin"/>-->
+                <!--</div>-->
+                <!--<div class="form-group">-->
+                <!--<label class="control-label" for="enableGithubLogin"-->
+                <!--translate="settings.form.enableGithubLogin">Last-->
+                <!--Name</label>-->
+                <!--<input type="checkbox" class="form-control" id="enableGithubLogin"-->
+                <!--ng-disabled="!vm.opConfig.enableSocialManagement"-->
+                <!--name="enableGithubLogin"-->
+                <!--placeholder="{{'settings.form.enableGithubLogin.placeholder' | translate}}"-->
+                <!--ng-model="vm.opConfig.enableGithubLogin"/>-->
+                <!--</div>-->
+                <!--<div class="form-group">-->
+                <!--<label class="control-label" for="enableDropboxLogin"-->
+                <!--translate="settings.form.enableDropboxLogin">Last-->
+                <!--Name</label>-->
+                <!--<input type="checkbox" class="form-control" id="enableDropboxLogin"-->
+                <!--ng-disabled="!vm.opConfig.enableSocialManagement"-->
+                <!--name="enableDropboxLogin"-->
+                <!--placeholder="{{'settings.form.enableDropboxLogin.placeholder' | translate}}"-->
+                <!--ng-model="vm.opConfig.enableDropboxLogin"/>-->
+                <!--</div>-->
+                <!--<div class="form-group">-->
+                <!--<label class="control-label" for="enableYahooLogin"-->
+                <!--translate="settings.form.enableYahooLogin">Last-->
+                <!--Name</label>-->
+                <!--<input type="checkbox" class="form-control" id="enableYahooLogin"-->
+                <!--ng-disabled="!vm.opConfig.enableSocialManagement"-->
+                <!--name="enableYahooLogin"-->
+                <!--placeholder="{{'settings.form.enableYahooLogin.placeholder' | translate}}"-->
+                <!--ng-model="vm.opConfig.enableYahooLogin"/>-->
+                <!--</div>-->
 
                 <hr>
                 <div class="alert alert-info">
@@ -372,16 +366,16 @@
                         </p>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="control-label" for="smtpUseSSL"
-                           translate="settings.form.smtpUseSSL">Last
-                        Name</label>
-                    <input type="checkbox" class="form-control" id="smtpUseSSL"
-                           ng-disabled="!vm.opConfig.enableEmailManagement"
-                           name="smtpUseSSL"
-                           placeholder="{{'settings.form.smtpUseSSL.placeholder' | translate}}"
-                           ng-model="vm.opConfig.smtpUseSSL"/>
-                </div>
+                <!--<div class="form-group">-->
+                <!--<label class="control-label" for="smtpUseSSL"-->
+                <!--translate="settings.form.smtpUseSSL">Last-->
+                <!--Name</label>-->
+                <!--<input type="checkbox" class="form-control" id="smtpUseSSL"-->
+                <!--ng-disabled="!vm.opConfig.enableEmailManagement"-->
+                <!--name="smtpUseSSL"-->
+                <!--placeholder="{{'settings.form.smtpUseSSL.placeholder' | translate}}"-->
+                <!--ng-model="vm.opConfig.smtpUseSSL"/>-->
+                <!--</div>-->
                 <hr>
                 <div class="alert alert-info">
                     <strong translate="settings.twilio.configuration">ADMIN CREDENTIAL WEBSITE

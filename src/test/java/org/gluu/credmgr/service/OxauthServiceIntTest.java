@@ -1,7 +1,7 @@
 package org.gluu.credmgr.service;
 
 import org.gluu.credmgr.CredmgrApp;
-import org.gluu.credmgr.config.CredmgrProperties;
+import org.gluu.credmgr.repository.OPConfigRepository;
 import org.gluu.credmgr.service.error.OPException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,14 +25,14 @@ public class OxauthServiceIntTest {
     private final Logger log = LoggerFactory.getLogger(OxauthServiceIntTest.class);
 
     @Inject
-    private CredmgrProperties credmgrProperties;
+    private OPConfigRepository opConfigRepository;
 
     @Inject
     private OxauthService oxauthService;
 
     @Test
-    public void getOpenIdConfigurationTest() {
-        String host = credmgrProperties.getGluuIdpOrg().getHost();
+    public void getOpenIdConfigurationTest() throws OPException {
+        String host = opConfigRepository.get().getHost();
         try {
             oxauthService.getOpenIdConfiguration(host);
         } catch (OPException e) {
@@ -48,8 +48,8 @@ public class OxauthServiceIntTest {
 
 
     @Test
-    public void getAuthorizationUriTest() {
-        String host = credmgrProperties.getGluuIdpOrg().getHost();
+    public void getAuthorizationUriTest() throws OPException {
+        String host = opConfigRepository.get().getHost();
         try {
             String authorizationUri = oxauthService.getAuthorizationUri(host, null, null, null, null);
             Assert.assertNotNull(authorizationUri);
@@ -59,8 +59,8 @@ public class OxauthServiceIntTest {
     }
 
     @Test
-    public void getLogoutUriTest() {
-        String host = credmgrProperties.getGluuIdpOrg().getHost();
+    public void getLogoutUriTest() throws OPException {
+        String host = opConfigRepository.get().getHost();
         try {
             String logoutUri = oxauthService.getLogoutUri(host, null, null);
             Assert.assertNotNull(logoutUri);

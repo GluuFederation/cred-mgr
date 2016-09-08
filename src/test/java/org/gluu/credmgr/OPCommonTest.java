@@ -7,9 +7,7 @@ import org.gluu.credmgr.service.OxauthService;
 import org.gluu.credmgr.service.ScimService;
 import org.gluu.credmgr.service.error.OPException;
 import org.gluu.credmgr.web.rest.dto.RegistrationDTO;
-import org.gluu.oxtrust.model.scim2.Constants;
-import org.gluu.oxtrust.model.scim2.Extension;
-import org.gluu.oxtrust.model.scim2.User;
+import org.gluu.oxtrust.model.scim2.*;
 import org.mockito.Mockito;
 import org.springframework.aop.framework.Advised;
 import org.springframework.aop.support.AopUtils;
@@ -18,12 +16,15 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.xdi.oxauth.client.TokenResponse;
 import org.xdi.oxauth.client.UserInfoResponse;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by eugeniuparvan on 6/13/16.
  */
 public abstract class OPCommonTest {
+
+    protected OxauthService oxauthServiceOriginal;
 
     public abstract OPUserService getOPUserService();
 
@@ -31,66 +32,63 @@ public abstract class OPCommonTest {
 
     public abstract ScimService getScimService();
 
-    public abstract String getHost();
+    protected OPConfig register() throws OPException {
+        OPConfig opConfig = getOPConfigRepository().get();
 
-    public abstract String getAdminClaimValue();
-
-    public abstract String getSuperAdminClaimValue();
-
-    public abstract String getCompanyShortName();
-
-    protected OxauthService oxauthServiceOriginal;
-
-    protected RegistrationDTO getRegistrationDTO() {
         RegistrationDTO registrationDTO = new RegistrationDTO();
         registrationDTO.setCompanyName("Company name");
-        registrationDTO.setCompanyShortName("Company short name" + new Date().getTime());
         registrationDTO.setEmail("company@mail.com");
         registrationDTO.setFirstName("firstname");
         registrationDTO.setLastName("lastname");
         registrationDTO.setPassword("password");
-        return registrationDTO;
-    }
 
-    protected OPConfig register() throws OPException {
-        RegistrationDTO registrationDTO = getRegistrationDTO();
-        OPConfig opConfig = getOPUserService().createOPAdminInformation(registrationDTO);
+        User user = new User();
+        user.setUserName("testUser");
+        user.setPassword(registrationDTO.getPassword());
+        user.setDisplayName(registrationDTO.getCompanyName());
+        user.setNickName("");
+        user.setProfileUrl("");
+        user.setLocale("en");
+        user.setPreferredLanguage("US_en");
+        user.setTitle("");
+
+        Name name = new Name();
+        name.setGivenName(registrationDTO.getFirstName());
+        name.setFamilyName(registrationDTO.getLastName());
+        user.setName(name);
+
+        Email email = new Email();
+        email.setType(Email.Type.WORK);
+        email.setPrimary(true);
+        email.setValue(registrationDTO.getEmail());
+        email.setDisplay(registrationDTO.getEmail());
+        email.setOperation("CREATE");
+        email.setReference("");
+        user.setEmails(Arrays.asList(new Email[]{email}));
+
+        try {
+            Extension.Builder extensionBuilder = new Extension.Builder(Constants.USER_EXT_SCHEMA_ID);
+            extensionBuilder.setField(opConfig.getRequiredClaim(), opConfig.getRequiredClaimValue());
+            user.addExtension(extensionBuilder.build());
+        } catch (Exception e) {
+            throw new OPException(OPException.ERROR_CREATE_SCIM_USER);
+        }
+        user.setActive(false);
+
+        getScimService().createPerson(user);
+
         return opConfig;
     }
 
     protected OPConfig registerAndPreLoginUser() throws OPException {
-        OPConfig opConfig = register();
-        opConfig.setHost(getHost());
-
-        getOPConfigRepository().save(opConfig);
-        getOPUserService().getLoginUri(opConfig.getCompanyShortName(), null);
+        OPConfig opConfig = getOPConfigRepository().get();
+        getOPUserService().getLoginUri(null);
         return opConfig;
     }
 
     protected OPConfig registerAndPreLoginAdmin() throws OPException {
-        OPConfig opConfig = register();
-        opConfig.setHost(getHost());
-        opConfig.setRequiredClaim("opRole");
-        opConfig.setRequiredClaimValue(getAdminClaimValue());
-        getOPConfigRepository().save(opConfig);
-        getOPUserService().getLoginUri(opConfig.getCompanyShortName(), null);
-        return opConfig;
-    }
-
-    protected OPConfig registerAndPreLoginSuperAdmin() throws OPException {
-        OPConfig opConfig = register();
-        opConfig.setHost(getHost());
-        opConfig.setRequiredClaim("opRole");
-        opConfig.setRequiredClaimValue(getSuperAdminClaimValue());
-        User user = getScimService().retrievePerson(opConfig.getAdminScimId());
-        user.addExtension(Optional.of(user.getExtensions())
-            .map(extensions -> extensions.get(Constants.USER_EXT_SCHEMA_ID))
-            .map(extension -> new Extension.Builder(extension))
-            .map(eBuilder -> eBuilder.setField("opRole", getSuperAdminClaimValue()).build())
-            .orElse(null));
-        getScimService().updatePerson(user, user.getId());
-        getOPConfigRepository().save(opConfig);
-        getOPUserService().getLoginUri(opConfig.getCompanyShortName(), null);
+        OPConfig opConfig = getOPConfigRepository().get();
+        getOPUserService().getLoginUri(null);
         return opConfig;
     }
 
@@ -102,34 +100,8 @@ public abstract class OPCommonTest {
         return loginCommon(registerAndPreLoginAdmin());
     }
 
-    protected OPConfig registerAndLoginAdminGluuAccount() throws Exception {
-        OPConfig newConfig = register();
-        newConfig.setHost(getHost());
-        newConfig.setEmail("company@mail.com");
-        newConfig.setRequiredClaim("opRole");
-        newConfig.setRequiredClaimValue(getAdminClaimValue());
-        getOPConfigRepository().save(newConfig);
-
-        getOPConfigRepository().findOneByCompanyShortName(getCompanyShortName()).map(opConfig -> {
-            opConfig.setHost(getHost());
-            opConfig.setEmail("gluu@mail.com");
-            opConfig.setCompanyShortName(getCompanyShortName());
-            opConfig.setRequiredClaim("opRole");
-            opConfig.setRequiredClaimValue(getAdminClaimValue());
-            return getOPConfigRepository().save(opConfig);
-        });
-        getOPUserService().getLoginUri(getCompanyShortName(), null);
-
-        return loginCommon(newConfig);
-    }
-
-    protected OPConfig registerAndLoginSuperAdmin() throws Exception {
-        return loginCommon(registerAndPreLoginSuperAdmin());
-    }
-
     protected void cleanUp() throws OPException {
         cleanScimUsers();
-        cleanOPConfigs();
         cleanAuthentications();
     }
 
@@ -137,13 +109,6 @@ public abstract class OPCommonTest {
         List<User> users = getScimService().searchUsers("mail eq \"company@mail.com\"");
         for (User user : users)
             getScimService().deletePerson(user.getId());
-    }
-
-    protected void cleanOPConfigs() {
-        try {
-            getOPConfigRepository().deleteAll();
-        } catch (Exception e) {
-        }
     }
 
     protected void cleanAuthentications() {
@@ -167,9 +132,9 @@ public abstract class OPCommonTest {
         Mockito.when(oxauthServiceMock.getToken(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(tokenResponse);
 
         UserInfoResponse userInfoResponse = new UserInfoResponse(200);
-        Map<String, List<String>> claims = new HashMap<>();
-        claims.put("inum", Arrays.asList(opConfig.getAdminScimId()));
-        userInfoResponse.setClaims(claims);
+//        Map<String, List<String>> claims = new HashMap<>();
+//        claims.put("inum", Arrays.asList(opConfig.getAdminScimId()));
+//        userInfoResponse.setClaims(claims);
         Mockito.when(oxauthServiceMock.getUserInfo(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(userInfoResponse);
 
         ReflectionTestUtils.setField(unwrapOPUserService(), "oxauthService", oxauthServiceMock);

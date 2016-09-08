@@ -10,7 +10,6 @@ public class RegistrationDTO {
     private String email;
     private String password;
     private String companyName;
-    private String companyShortName;
 
     public String getFirstName() {
         return firstName;
@@ -52,11 +51,4 @@ public class RegistrationDTO {
         this.companyName = companyName;
     }
 
-    public String getCompanyShortName() {
-        return companyShortName;
-    }
-
-    public void setCompanyShortName(String companyShortName) {
-        this.companyShortName = companyShortName;
-    }
 }

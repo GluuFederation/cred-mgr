@@ -17,20 +17,6 @@ spring:
             enabled: true
         livereload:
             enabled: false # we use gulp + BrowserSync for livereload
-    datasource:
-        url: jdbc:postgresql://localhost:5432/credmgr
-        name:
-        username: credmgr
-        password: postgres
-    jpa:
-        database-platform: org.gluu.credmgr.domain.util.FixedPostgreSQL82Dialect
-        database: POSTGRESQL
-        show_sql: true
-        properties:
-            hibernate.cache.use_second_level_cache: true
-            hibernate.cache.use_query_cache: false
-            hibernate.generate_statistics: true
-            hibernate.cache.region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
     mail:
         host: mailtrap.io
         port: 25
@@ -56,10 +42,6 @@ server:
 # ===================================================================
 
 jhipster:
-    cache: # Hibernate 2nd level cache, used by CacheConfiguration
-        timeToLiveSeconds: 3600
-        ehcache:
-            maxBytesLocalHeap: 16M
     security:
         rememberMe:
             # security key (this key should be unique for your application, and kept secret)
@@ -93,13 +75,8 @@ jhipster:
 # cred-mgr specific properties
 # ===================================================================
 credmgr:
-    gluuIdpOrg:
-        host: https://gluu.localhost.info
-        umaAatClientId: '@!E0C8.52C1.C6D4.38D2!0001!FAE9.4AC2!0008!9A96.832B'
-        umaAatClientKeyId:
-        companyShortName: gluu
-        requiredOPSuperAdminClaimValue: Gluu IT Manager
-    jksStorePath: /Users/eugeniuparvan/Desktop/credmgr_storage
+    jksFile: /Users/eugeniuparvan/Desktop/credmgr_storage/scim-rp.jks
+    configFile:  /Users/eugeniuparvan/Desktop/credmgr_config/config.json
 
 
 

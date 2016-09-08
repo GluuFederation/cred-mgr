@@ -8,29 +8,26 @@
         .module('credmgrApp')
         .controller('ResetPasswordController', ResetPasswordController);
 
-    ResetPasswordController.$inject = ['Auth', 'Principal', 'LoginService', '$scope', '$state'];
+    ResetPasswordController.$inject = ['Auth', 'Principal', 'LoginService', 'ResetOptions', '$scope', '$state'];
 
-    function ResetPasswordController(Auth, Principal, LoginService, $scope, $state) {
+    function ResetPasswordController(Auth, Principal, LoginService, ResetOptions, $scope, $state) {
         var vm = this;
 
         vm.account = null;
         vm.isAuthenticated = Principal.isAuthenticated;
         vm.login = LoginService.open;
 
-        vm.resetOptions = [
-            {
-                code: "email", name: "reset-password.reset.request.email.title"
-            }, {
-                code: "mobile", name: "reset-password.reset.request.mobile.title"
-            }];
+        vm.resetOptions = [];
+        vm.noConfigForReset = false;
+        vm.errorRetrievingResetOptions = false;
         vm.onResetOptionChanged = onResetOptionChanged;
         vm.selectedResetOption = {};
         vm.resetPasswordError = null;
         vm.resetPasswordSuccess = null;
         vm.resetAccountEmail = null;
         vm.resetAccountMobile = null;
-        vm.resetAccountCompanyShortName = null;
         vm.resetAccount = {};
+        vm.disableResetPasswordBtn = false;
         vm.onRequestResetSubmit = onRequestResetSubmit;
 
         vm.unregisterFidoError = null;
@@ -44,6 +41,28 @@
         vm.doNotMatch = false;
         vm.onChangePasswordSubmit = onChangePasswordSubmit;
 
+        ResetOptions.get(
+            function (response) {
+                vm.resetOptions = [];
+                if (response.email == false && response.mobile == false) {
+                    vm.noConfigForReset = true;
+                }
+                else {
+                    if (response.email == true) {
+                        vm.resetOptions.push({code: "email", name: "reset-password.reset.request.email.title"});
+                    }
+                    if (response.mobile == true) {
+                        vm.resetOptions.push({code: "mobile", name: "reset-password.reset.request.mobile.title"});
+                    }
+                    vm.selectedResetOption = vm.resetOptions[0];
+                    vm.noConfigForReset = false;
+                }
+                vm.errorRetrievingResetOptions = false;
+            },
+            function (data) {
+                vm.errorRetrievingResetOptions = true;
+            }
+        );
 
         Principal.identity().then(function (account) {
             vm.account = account;
@@ -76,20 +95,16 @@
         function onRequestResetSubmit() {
             vm.resetPasswordError = null;
             vm.resetPasswordSuccess = null;
-
-            var companyShortName = null;
-            if (vm.isAuthenticated())
-                companyShortName = vm.account.opConfig.companyShortName;
-            else
-                companyShortName = vm.resetAccountCompanyShortName;
+            vm.disableResetPasswordBtn = true;
             Auth.resetPasswordInit({
                 "email": vm.resetAccountEmail,
-                "mobile": vm.resetAccountMobile,
-                "companyShortName": companyShortName
+                "mobile": vm.resetAccountMobile
             }).then(function (response) {
                 vm.resetPasswordSuccess = 'OK';
+                vm.disableResetPasswordBtn = false;
             }).catch(function (response) {
                 vm.resetPasswordSuccess = null;
+                vm.disableResetPasswordBtn = false;
                 if (response.data != null)
                     vm.resetPasswordError = response.data.message;
                 else

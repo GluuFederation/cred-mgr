@@ -16,20 +16,6 @@ spring:
             enabled: false
         livereload:
             enabled: false
-    datasource:
-        url: jdbc:postgresql://localhost:5432/credmgr
-        name:
-        username: credmgr
-        password:
-    jpa:
-        database-platform: org.gluu.credmgr.domain.util.FixedPostgreSQL82Dialect
-        database: POSTGRESQL
-        show_sql: false
-        properties:
-            hibernate.cache.use_second_level_cache: true
-            hibernate.cache.use_query_cache: false
-            hibernate.generate_statistics: false
-            hibernate.cache.region.factory_class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
     mail:
         host: mailtrap.io
         port: 25
@@ -61,10 +47,6 @@ jhipster:
     http:
         cache: # Used by the CachingHttpHeadersFilter
             timeToLiveInDays: 1461
-    cache: # Hibernate 2nd level cache, used by CacheConfiguration
-        timeToLiveSeconds: 3600
-        ehcache:
-            maxBytesLocalHeap: 256M
     security:
         rememberMe:
             # security key (this key should be unique for your application, and kept secret)
@@ -98,10 +80,4 @@ jhipster:
 # cred-mgr specific properties
 # ===================================================================
 credmgr:
-    gluuIdpOrg:
-        host: https://gluu.localhost.info
-        umaAatClientId: '@!E0C8.52C1.C6D4.38D2!0001!FAE9.4AC2!0008!9A96.832B'
-        umaAatClientKeyId:
-        companyShortName: gluu
-        requiredOPSuperAdminClaimValue: Gluu IT Manager
     jksStorePath: /Users/eugeniuparvan/Desktop/credmgr_storage

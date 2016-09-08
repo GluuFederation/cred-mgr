@@ -11,13 +11,19 @@
     Settings.$inject = ['$resource'];
 
     function Settings($resource) {
-        var service = $resource('api/openid/settings-update', {}, {
+        var service = $resource('api/openid/settings', {}, {
             'update': {
-                method: 'PUT',
-                headers: {'Content-Type': undefined, enctype: 'multipart/form-data'},
-                params: {},
-                isArray: false
-            }
+                method: 'PUT'
+            },
+            'get': {
+                method: 'GET',
+                transformResponse: function (data) {
+                    if (data) {
+                        data = angular.fromJson(data);
+                    }
+                    return data;
+                }
+            },
         });
 
         return service;

@@ -12,7 +12,7 @@
             parent: 'admin',
             url: '/metrics',
             data: {
-                authorities: ['OP_SUPER_ADMIN'],
+                authorities: ['OP_ADMIN'],
                 pageTitle: 'metrics.title'
             },
             views: {

@@ -34,8 +34,7 @@
             } else {
                 Auth.resetPasswordFinish({
                     key: $stateParams.key,
-                    newPassword: vm.resetAccount.password,
-                    companyShortName: $stateParams.csn
+                    newPassword: vm.resetAccount.password
                 }).then(function () {
                     vm.success = 'OK';
                 }).catch(function (response) {

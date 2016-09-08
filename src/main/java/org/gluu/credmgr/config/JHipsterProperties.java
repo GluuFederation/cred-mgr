@@ -1,9 +1,8 @@
 package org.gluu.credmgr.config;
 
-import javax.validation.constraints.NotNull;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.web.cors.CorsConfiguration;
+
 
 
 /**
@@ -20,8 +19,6 @@ public class JHipsterProperties {
 
     private final Http http = new Http();
 
-    private final Cache cache = new Cache();
-
     private final Mail mail = new Mail();
 
     private final Security security = new Security();
@@ -34,16 +31,14 @@ public class JHipsterProperties {
 
     private final Ribbon ribbon = new Ribbon();
 
+    private final Logging logging = new Logging();
+
     public Async getAsync() {
         return async;
     }
 
     public Http getHttp() {
         return http;
-    }
-
-    public Cache getCache() {
-        return cache;
     }
 
     public Mail getMail() {
@@ -68,6 +63,10 @@ public class JHipsterProperties {
 
     public Ribbon getRibbon() {
         return ribbon;
+    }
+
+    public Logging getLogging() {
+        return logging;
     }
 
     public static class Async {
@@ -125,38 +124,6 @@ public class JHipsterProperties {
         }
     }
 
-    public static class Cache {
-
-        private int timeToLiveSeconds = 3600;
-
-        private final Ehcache ehcache = new Ehcache();
-
-        public int getTimeToLiveSeconds() {
-            return timeToLiveSeconds;
-        }
-
-        public void setTimeToLiveSeconds(int timeToLiveSeconds) {
-            this.timeToLiveSeconds = timeToLiveSeconds;
-        }
-
-        public Ehcache getEhcache() {
-            return ehcache;
-        }
-
-        public static class Ehcache {
-
-            private String maxBytesLocalHeap = "16M";
-
-            public String getMaxBytesLocalHeap() {
-                return maxBytesLocalHeap;
-            }
-
-            public void setMaxBytesLocalHeap(String maxBytesLocalHeap) {
-                this.maxBytesLocalHeap = maxBytesLocalHeap;
-            }
-        }
-    }
-
     public static class Mail {
 
         private String from = "credmgr@localhost";
@@ -180,7 +147,6 @@ public class JHipsterProperties {
 
         public static class RememberMe {
 
-            @NotNull
             private String key;
 
             public String getKey() {
@@ -436,10 +402,6 @@ public class JHipsterProperties {
         }
     }
 
-    private final Logging logging = new Logging();
-
-    public Logging getLogging() { return logging; }
-
     public static class Logging {
 
         private final Logstash logstash = new Logstash();
@@ -482,10 +444,10 @@ public class JHipsterProperties {
         public String[] getDisplayOnActiveProfiles() {
             return displayOnActiveProfiles;
         }
-        
+
         public void setDisplayOnActiveProfiles(String[] displayOnActiveProfiles) {
             this.displayOnActiveProfiles = displayOnActiveProfiles;
         }
-    }  
+    }
 
 }

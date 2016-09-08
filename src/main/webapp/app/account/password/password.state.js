@@ -12,7 +12,7 @@
             parent: 'account',
             url: '/password',
             data: {
-                authorities: ['OP_ADMIN', 'OP_SUPER_ADMIN'],
+                authorities: ['OP_ADMIN'],
                 pageTitle: 'global.menu.account.password'
             },
             views: {

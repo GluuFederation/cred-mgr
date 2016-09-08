@@ -2,7 +2,6 @@ package org.gluu.credmgr.web.rest.errors;
 
 import org.gluu.credmgr.service.error.OPException;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity.BodyBuilder;
@@ -23,13 +22,6 @@ import java.util.List;
  */
 @ControllerAdvice
 public class ExceptionTranslator {
-
-    @ExceptionHandler(ConcurrencyFailureException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ResponseBody
-    public ErrorDTO processConcurencyError(ConcurrencyFailureException ex) {
-        return new ErrorDTO(ErrorConstants.ERR_CONCURRENCY_FAILURE);
-    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

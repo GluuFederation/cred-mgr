@@ -1,2 +1,0 @@
-id;admin_scim_id;company_name;company_short_name;email;activated;activation_key;host;client_id;client_secret;required_claim;required_claim_value
-1;;Gluu Inc.;gluu;change@email.com;1;;change_host;change_client_id;change_client_secret;opRole;IT Manager

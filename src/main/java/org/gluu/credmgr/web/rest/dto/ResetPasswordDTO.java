@@ -6,7 +6,6 @@ package org.gluu.credmgr.web.rest.dto;
 public class ResetPasswordDTO {
     private String mobile;
     private String email;
-    private String companyShortName;
 
     public String getEmail() {
         return email;
@@ -14,14 +13,6 @@ public class ResetPasswordDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getCompanyShortName() {
-        return companyShortName;
-    }
-
-    public void setCompanyShortName(String companyShortName) {
-        this.companyShortName = companyShortName;
     }
 
     public String getMobile() {

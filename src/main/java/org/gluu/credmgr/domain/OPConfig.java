@@ -1,210 +1,83 @@
 package org.gluu.credmgr.domain;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * A OPConfig.
  */
-@Entity
-@Table(name = "op_config")
-@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class OPConfig implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private volatile String host;
 
-    @NotNull
-    @Column(name = "admin_scim_id", nullable = false)
-    private String adminScimId;
+    private volatile String clientId;
 
-    @NotNull
-    @Column(name = "company_name", nullable = false)
-    private String companyName;
+    private volatile String clientSecret;
 
-    @NotNull
-    @Column(name = "company_short_name", nullable = false)
-    private String companyShortName;
+    private volatile String umaAatClientId;
 
-    @NotNull
-    @Pattern(regexp = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$")
-    @Column(name = "email", nullable = false)
-    private String email;
+    private volatile String umaAatClientKeyId;
 
-    @NotNull
-    @Column(name = "activated", nullable = false)
-    private Boolean activated;
+    private volatile String clientJKS;
 
-    @Column(name = "activation_key")
-    private String activationKey;
+    private volatile Integer authenticationLevel;
 
-    @Pattern(regexp = "^https?:\\/\\/[^\\/]*$")
-    @Column(name = "host")
-    private String host;
+    private volatile String requiredOpenIdScope;
 
-    @Column(name = "client_id")
-    private String clientId;
+    private volatile String requiredClaim;
 
-    @Column(name = "client_secret")
-    private String clientSecret;
+    private volatile String requiredClaimValue;
 
-    @Column(name = "uma_aat_client_id")
-    private String umaAatClientId;
+    private volatile Boolean enablePasswordManagement = false;
 
-    @Column(name = "uma_aat_client_key_id")
-    private String umaAatClientKeyId;
+    private volatile Boolean enableAdminPage = false;
 
-    @Column(name = "client_jks")
-    private String clientJKS;
+    private volatile Boolean enableEmailManagement = false;
 
-    @Column(name = "authentication_level")
-    private Integer authenticationLevel;
+    private volatile Boolean enableMobileManagement = false;
 
-    @Column(name = "required_open_id_scope")
-    private String requiredOpenIdScope;
+    private volatile Boolean enableSocialManagement = false;
 
-    @Column(name = "required_claim")
-    private String requiredClaim;
+    private volatile Boolean enableU2FManagement = false;
 
-    @Column(name = "required_claim_value")
-    private String requiredClaimValue;
+    private volatile Boolean enableGoogleLogin = false;
 
-    @Column(name = "enable_password_management")
-    private Boolean enablePasswordManagement = false;
+    private volatile Boolean enableFacebookLogin = false;
 
-    @Column(name = "enable_admin_page")
-    private Boolean enableAdminPage = false;
+    private volatile Boolean enableTwitterLogin = false;
 
-    @Column(name = "enable_email_management")
-    private Boolean enableEmailManagement = false;
+    private volatile Boolean enableLinkedInLogin = false;
 
-    @Column(name = "enable_mobile_management")
-    private Boolean enableMobileManagement = false;
+    private volatile Boolean enableWindowsLiveLogin = false;
 
-    @Column(name = "enable_social_management")
-    private Boolean enableSocialManagement = false;
+    private volatile Boolean enableGithubLogin = false;
 
-    @Column(name = "enable_u_2_f_management")
-    private Boolean enableU2FManagement = false;
+    private volatile Boolean enableDropboxLogin = false;
 
-    @Column(name = "enable_google_login")
-    private Boolean enableGoogleLogin = false;
+    private volatile Boolean enableYahooLogin = false;
 
-    @Column(name = "enable_facebook_login")
-    private Boolean enableFacebookLogin = false;
+    private volatile String smtpHost;
 
-    @Column(name = "enable_twitter_login")
-    private Boolean enableTwitterLogin = false;
+    private volatile String smtpPort;
 
-    @Column(name = "enable_linked_in_login")
-    private Boolean enableLinkedInLogin = false;
+    private volatile String smtpUsername;
 
-    @Column(name = "enable_windows_live_login")
-    private Boolean enableWindowsLiveLogin = false;
+    private volatile String smtpPassword;
 
-    @Column(name = "enable_github_login")
-    private Boolean enableGithubLogin = false;
+    private volatile Boolean smtpUseSSL = false;
 
-    @Column(name = "enable_dropbox_login")
-    private Boolean enableDropboxLogin = false;
+    private volatile String twilioSID;
 
-    @Column(name = "enable_yahoo_login")
-    private Boolean enableYahooLogin = false;
+    private volatile String twilioToken;
 
-    @Column(name = "smtp_host")
-    private String smtpHost;
-
-    @Column(name = "smtp_port")
-    private String smtpPort;
-
-    @Column(name = "smtp_username")
-    private String smtpUsername;
-
-    @Column(name = "smtp_password")
-    private String smtpPassword;
-
-    @Column(name = "smtp_use_ssl")
-    private Boolean smtpUseSSL = false;
-
-    @Column(name = "twilio_sid")
-    private String twilioSID;
-
-    @Column(name = "twilio_token")
-    private String twilioToken;
-
-    @Column(name = "twilio_from_number")
-    private String twilioFromNumber;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getAdminScimId() {
-        return adminScimId;
-    }
-
-    public void setAdminScimId(String adminScimId) {
-        this.adminScimId = adminScimId;
-    }
-
-    public String getCompanyName() {
-        return companyName;
-    }
-
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
-
-    public String getCompanyShortName() {
-        return companyShortName;
-    }
-
-    public void setCompanyShortName(String companyShortName) {
-        this.companyShortName = companyShortName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Boolean isActivated() {
-        return activated;
-    }
-
-    public void setActivated(Boolean activated) {
-        this.activated = activated;
-    }
-
-    public String getActivationKey() {
-        return activationKey;
-    }
-
-    public void setActivationKey(String activationKey) {
-        this.activationKey = activationKey;
-    }
+    private volatile String twilioFromNumber;
 
     public String getHost() {
         return host;
     }
 
-    public void setHost(String host) {
+    public synchronized void setHost(String host) {
         this.host = host;
     }
 
@@ -212,7 +85,7 @@ public class OPConfig implements Serializable {
         return clientId;
     }
 
-    public void setClientId(String clientId) {
+    public synchronized void setClientId(String clientId) {
         this.clientId = clientId;
     }
 
@@ -220,7 +93,7 @@ public class OPConfig implements Serializable {
         return clientSecret;
     }
 
-    public void setClientSecret(String clientSecret) {
+    public synchronized void setClientSecret(String clientSecret) {
         this.clientSecret = clientSecret;
     }
 
@@ -228,7 +101,7 @@ public class OPConfig implements Serializable {
         return umaAatClientId;
     }
 
-    public void setUmaAatClientId(String umaAatClientId) {
+    public synchronized void setUmaAatClientId(String umaAatClientId) {
         this.umaAatClientId = umaAatClientId;
     }
 
@@ -236,7 +109,7 @@ public class OPConfig implements Serializable {
         return umaAatClientKeyId;
     }
 
-    public void setUmaAatClientKeyId(String umaAatClientKeyId) {
+    public synchronized void setUmaAatClientKeyId(String umaAatClientKeyId) {
         this.umaAatClientKeyId = umaAatClientKeyId;
     }
 
@@ -244,7 +117,7 @@ public class OPConfig implements Serializable {
         return clientJKS;
     }
 
-    public void setClientJKS(String clientJKS) {
+    public synchronized void setClientJKS(String clientJKS) {
         this.clientJKS = clientJKS;
     }
 
@@ -252,7 +125,7 @@ public class OPConfig implements Serializable {
         return authenticationLevel;
     }
 
-    public void setAuthenticationLevel(Integer authenticationLevel) {
+    public synchronized void setAuthenticationLevel(Integer authenticationLevel) {
         this.authenticationLevel = authenticationLevel;
     }
 
@@ -260,7 +133,7 @@ public class OPConfig implements Serializable {
         return requiredOpenIdScope;
     }
 
-    public void setRequiredOpenIdScope(String requiredOpenIdScope) {
+    public synchronized void setRequiredOpenIdScope(String requiredOpenIdScope) {
         this.requiredOpenIdScope = requiredOpenIdScope;
     }
 
@@ -268,7 +141,7 @@ public class OPConfig implements Serializable {
         return requiredClaim;
     }
 
-    public void setRequiredClaim(String requiredClaim) {
+    public synchronized void setRequiredClaim(String requiredClaim) {
         this.requiredClaim = requiredClaim;
     }
 
@@ -276,7 +149,7 @@ public class OPConfig implements Serializable {
         return requiredClaimValue;
     }
 
-    public void setRequiredClaimValue(String requiredClaimValue) {
+    public synchronized void setRequiredClaimValue(String requiredClaimValue) {
         this.requiredClaimValue = requiredClaimValue;
     }
 
@@ -284,7 +157,7 @@ public class OPConfig implements Serializable {
         return enablePasswordManagement;
     }
 
-    public void setEnablePasswordManagement(Boolean enablePasswordManagement) {
+    public synchronized void setEnablePasswordManagement(Boolean enablePasswordManagement) {
         this.enablePasswordManagement = enablePasswordManagement;
     }
 
@@ -292,7 +165,7 @@ public class OPConfig implements Serializable {
         return enableAdminPage;
     }
 
-    public void setEnableAdminPage(Boolean enableAdminPage) {
+    public synchronized void setEnableAdminPage(Boolean enableAdminPage) {
         this.enableAdminPage = enableAdminPage;
     }
 
@@ -300,7 +173,7 @@ public class OPConfig implements Serializable {
         return enableEmailManagement;
     }
 
-    public void setEnableEmailManagement(Boolean enableEmailManagement) {
+    public synchronized void setEnableEmailManagement(Boolean enableEmailManagement) {
         this.enableEmailManagement = enableEmailManagement;
     }
 
@@ -308,7 +181,7 @@ public class OPConfig implements Serializable {
         return enableMobileManagement;
     }
 
-    public void setEnableMobileManagement(Boolean enableMobileManagement) {
+    public synchronized void setEnableMobileManagement(Boolean enableMobileManagement) {
         this.enableMobileManagement = enableMobileManagement;
     }
 
@@ -316,7 +189,7 @@ public class OPConfig implements Serializable {
         return enableSocialManagement;
     }
 
-    public void setEnableSocialManagement(Boolean enableSocialManagement) {
+    public synchronized void setEnableSocialManagement(Boolean enableSocialManagement) {
         this.enableSocialManagement = enableSocialManagement;
     }
 
@@ -324,7 +197,7 @@ public class OPConfig implements Serializable {
         return enableU2FManagement;
     }
 
-    public void setEnableU2FManagement(Boolean enableU2FManagement) {
+    public synchronized void setEnableU2FManagement(Boolean enableU2FManagement) {
         this.enableU2FManagement = enableU2FManagement;
     }
 
@@ -332,7 +205,7 @@ public class OPConfig implements Serializable {
         return enableGoogleLogin;
     }
 
-    public void setEnableGoogleLogin(Boolean enableGoogleLogin) {
+    public synchronized void setEnableGoogleLogin(Boolean enableGoogleLogin) {
         this.enableGoogleLogin = enableGoogleLogin;
     }
 
@@ -340,7 +213,7 @@ public class OPConfig implements Serializable {
         return enableFacebookLogin;
     }
 
-    public void setEnableFacebookLogin(Boolean enableFacebookLogin) {
+    public synchronized void setEnableFacebookLogin(Boolean enableFacebookLogin) {
         this.enableFacebookLogin = enableFacebookLogin;
     }
 
@@ -348,7 +221,7 @@ public class OPConfig implements Serializable {
         return enableTwitterLogin;
     }
 
-    public void setEnableTwitterLogin(Boolean enableTwitterLogin) {
+    public synchronized void setEnableTwitterLogin(Boolean enableTwitterLogin) {
         this.enableTwitterLogin = enableTwitterLogin;
     }
 
@@ -356,7 +229,7 @@ public class OPConfig implements Serializable {
         return enableLinkedInLogin;
     }
 
-    public void setEnableLinkedInLogin(Boolean enableLinkedInLogin) {
+    public synchronized void setEnableLinkedInLogin(Boolean enableLinkedInLogin) {
         this.enableLinkedInLogin = enableLinkedInLogin;
     }
 
@@ -364,7 +237,7 @@ public class OPConfig implements Serializable {
         return enableWindowsLiveLogin;
     }
 
-    public void setEnableWindowsLiveLogin(Boolean enableWindowsLiveLogin) {
+    public synchronized void setEnableWindowsLiveLogin(Boolean enableWindowsLiveLogin) {
         this.enableWindowsLiveLogin = enableWindowsLiveLogin;
     }
 
@@ -372,7 +245,7 @@ public class OPConfig implements Serializable {
         return enableGithubLogin;
     }
 
-    public void setEnableGithubLogin(Boolean enableGithubLogin) {
+    public synchronized void setEnableGithubLogin(Boolean enableGithubLogin) {
         this.enableGithubLogin = enableGithubLogin;
     }
 
@@ -380,7 +253,7 @@ public class OPConfig implements Serializable {
         return enableDropboxLogin;
     }
 
-    public void setEnableDropboxLogin(Boolean enableDropboxLogin) {
+    public synchronized void setEnableDropboxLogin(Boolean enableDropboxLogin) {
         this.enableDropboxLogin = enableDropboxLogin;
     }
 
@@ -388,7 +261,7 @@ public class OPConfig implements Serializable {
         return enableYahooLogin;
     }
 
-    public void setEnableYahooLogin(Boolean enableYahooLogin) {
+    public synchronized void setEnableYahooLogin(Boolean enableYahooLogin) {
         this.enableYahooLogin = enableYahooLogin;
     }
 
@@ -396,7 +269,7 @@ public class OPConfig implements Serializable {
         return smtpHost;
     }
 
-    public void setSmtpHost(String smtpHost) {
+    public synchronized void setSmtpHost(String smtpHost) {
         this.smtpHost = smtpHost;
     }
 
@@ -404,7 +277,7 @@ public class OPConfig implements Serializable {
         return smtpPort;
     }
 
-    public void setSmtpPort(String smtpPort) {
+    public synchronized void setSmtpPort(String smtpPort) {
         this.smtpPort = smtpPort;
     }
 
@@ -412,7 +285,7 @@ public class OPConfig implements Serializable {
         return smtpUsername;
     }
 
-    public void setSmtpUsername(String smtpUsername) {
+    public synchronized void setSmtpUsername(String smtpUsername) {
         this.smtpUsername = smtpUsername;
     }
 
@@ -420,7 +293,7 @@ public class OPConfig implements Serializable {
         return smtpPassword;
     }
 
-    public void setSmtpPassword(String smtpPassword) {
+    public synchronized void setSmtpPassword(String smtpPassword) {
         this.smtpPassword = smtpPassword;
     }
 
@@ -428,7 +301,7 @@ public class OPConfig implements Serializable {
         return smtpUseSSL;
     }
 
-    public void setSmtpUseSSL(Boolean smtpUseSSL) {
+    public synchronized void setSmtpUseSSL(Boolean smtpUseSSL) {
         this.smtpUseSSL = smtpUseSSL;
     }
 
@@ -436,7 +309,7 @@ public class OPConfig implements Serializable {
         return twilioSID;
     }
 
-    public void setTwilioSID(String twilioSID) {
+    public synchronized void setTwilioSID(String twilioSID) {
         this.twilioSID = twilioSID;
     }
 
@@ -444,7 +317,7 @@ public class OPConfig implements Serializable {
         return twilioToken;
     }
 
-    public void setTwilioToken(String twilioToken) {
+    public synchronized void setTwilioToken(String twilioToken) {
         this.twilioToken = twilioToken;
     }
 
@@ -452,72 +325,45 @@ public class OPConfig implements Serializable {
         return twilioFromNumber;
     }
 
-    public void setTwilioFromNumber(String twilioFromNumber) {
+    public synchronized void setTwilioFromNumber(String twilioFromNumber) {
         this.twilioFromNumber = twilioFromNumber;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        OPConfig oPConfig = (OPConfig) o;
-        if (oPConfig.id == null || id == null) {
-            return false;
-        }
-        return Objects.equals(id, oPConfig.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
     }
 
     @Override
     public String toString() {
         return "OPConfig{" +
-            "id=" + id +
-            ", adminScimId='" + adminScimId + "'" +
-            ", companyName='" + companyName + "'" +
-            ", companyShortName='" + companyShortName + "'" +
-            ", email='" + email + "'" +
-            ", activated='" + activated + "'" +
-            ", activationKey='" + activationKey + "'" +
-            ", host='" + host + "'" +
-            ", clientId='" + clientId + "'" +
-            ", clientSecret='" + clientSecret + "'" +
-            ", umaAatClientId='" + umaAatClientId + "'" +
-            ", umaAatClientKeyId='" + umaAatClientKeyId + "'" +
-            ", clientJKS='" + clientJKS + "'" +
-            ", authenticationLevel='" + authenticationLevel + "'" +
-            ", requiredOpenIdScope='" + requiredOpenIdScope + "'" +
-            ", requiredClaim='" + requiredClaim + "'" +
-            ", requiredClaimValue='" + requiredClaimValue + "'" +
-            ", enablePasswordManagement='" + enablePasswordManagement + "'" +
-            ", enableAdminPage='" + enableAdminPage + "'" +
-            ", enableEmailManagement='" + enableEmailManagement + "'" +
-            ", enableMobileManagement='" + enableMobileManagement + "'" +
-            ", enableSocialManagement='" + enableSocialManagement + "'" +
-            ", enableU2FManagement='" + enableU2FManagement + "'" +
-            ", enableGoogleLogin='" + enableGoogleLogin + "'" +
-            ", enableFacebookLogin='" + enableFacebookLogin + "'" +
-            ", enableTwitterLogin='" + enableTwitterLogin + "'" +
-            ", enableLinkedInLogin='" + enableLinkedInLogin + "'" +
-            ", enableWindowsLiveLogin='" + enableWindowsLiveLogin + "'" +
-            ", enableGithubLogin='" + enableGithubLogin + "'" +
-            ", enableDropboxLogin='" + enableDropboxLogin + "'" +
-            ", enableYahooLogin='" + enableYahooLogin + "'" +
-            ", smtpHost='" + smtpHost + "'" +
-            ", smtpPort='" + smtpPort + "'" +
-            ", smtpUsername='" + smtpUsername + "'" +
-            ", smtpPassword='" + smtpPassword + "'" +
-            ", smtpUseSSL='" + smtpUseSSL + "'" +
-            ", twilioSID='" + twilioSID + "'" +
-            ", twilioToken='" + twilioToken + "'" +
-            ", twilioFromNumber='" + twilioFromNumber + "'" +
+            "host='" + host + '\'' +
+            ", clientId='" + clientId + '\'' +
+            ", clientSecret='" + clientSecret + '\'' +
+            ", umaAatClientId='" + umaAatClientId + '\'' +
+            ", umaAatClientKeyId='" + umaAatClientKeyId + '\'' +
+            ", clientJKS='" + clientJKS + '\'' +
+            ", authenticationLevel=" + authenticationLevel +
+            ", requiredOpenIdScope='" + requiredOpenIdScope + '\'' +
+            ", requiredClaim='" + requiredClaim + '\'' +
+            ", requiredClaimValue='" + requiredClaimValue + '\'' +
+            ", enablePasswordManagement=" + enablePasswordManagement +
+            ", enableAdminPage=" + enableAdminPage +
+            ", enableEmailManagement=" + enableEmailManagement +
+            ", enableMobileManagement=" + enableMobileManagement +
+            ", enableSocialManagement=" + enableSocialManagement +
+            ", enableU2FManagement=" + enableU2FManagement +
+            ", enableGoogleLogin=" + enableGoogleLogin +
+            ", enableFacebookLogin=" + enableFacebookLogin +
+            ", enableTwitterLogin=" + enableTwitterLogin +
+            ", enableLinkedInLogin=" + enableLinkedInLogin +
+            ", enableWindowsLiveLogin=" + enableWindowsLiveLogin +
+            ", enableGithubLogin=" + enableGithubLogin +
+            ", enableDropboxLogin=" + enableDropboxLogin +
+            ", enableYahooLogin=" + enableYahooLogin +
+            ", smtpHost='" + smtpHost + '\'' +
+            ", smtpPort='" + smtpPort + '\'' +
+            ", smtpUsername='" + smtpUsername + '\'' +
+            ", smtpPassword='" + smtpPassword + '\'' +
+            ", smtpUseSSL=" + smtpUseSSL +
+            ", twilioSID='" + twilioSID + '\'' +
+            ", twilioToken='" + twilioToken + '\'' +
+            ", twilioFromNumber='" + twilioFromNumber + '\'' +
             '}';
     }
 }

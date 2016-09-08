@@ -12,7 +12,7 @@
             parent: 'admin',
             url: '/configuration',
             data: {
-                authorities: ['OP_SUPER_ADMIN'],
+                authorities: ['OP_ADMIN'],
                 pageTitle: 'configuration.title'
             },
             views: {

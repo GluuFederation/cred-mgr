@@ -50,12 +50,6 @@ public class MailService {
     private SpringTemplateEngine templateEngine;
 
     @Async
-    public void sendEmail(String to, String subject, String content, boolean isMultipart, boolean isHtml) {
-        sendEmailWithCustomSMTP(javaMailSender, jHipsterProperties.getMail().getFrom(), to, subject, content, isMultipart, isHtml);
-    }
-
-
-    @Async
     public void sendEmailWithCustomSMTP(JavaMailSenderImpl mailSender, String from, String to, String subject, String content, boolean isMultipart, boolean isHtml) {
         log.debug("Send e-mail[multipart '{}' and html '{}'] to '{}' with subject '{}' and content={}",
             isMultipart, isHtml, to, subject, content);
@@ -75,36 +69,19 @@ public class MailService {
     }
 
     @Async
-    public void sendOPActivationEmail(OPConfig opConfig, String baseUrl) {
-        log.debug("Sending activation e-mail to '{}'", opConfig.getEmail());
-        Locale locale = Locale.forLanguageTag("en");
-        Context context = new Context(locale);
-        context.setVariable(OP_CONFIG, opConfig);
-        context.setVariable(BASE_URL, baseUrl);
-        String content = templateEngine.process("opActivationEmail", context);
-        String subject = messageSource.getMessage("email.activation.title", null, locale);
-        sendEmail(opConfig.getEmail(), subject, content, false, true);
-    }
-
-    @Async
     public void sendPasswordResetMail(User user, String baseUrl, OPConfig opConfig) {
         Locale locale = Locale.forLanguageTag("en");
         Context context = new Context(locale);
         context.setVariable("resetKey", user.getExtensions().get(Constants.USER_EXT_SCHEMA_ID).getField("resetKey", ExtensionFieldType.STRING));
         context.setVariable("username", user.getUserName());
-        context.setVariable("companyShortName", opConfig.getCompanyShortName());
 
         context.setVariable(BASE_URL, baseUrl);
         String content = templateEngine.process("passwordResetEmail", context);
         String subject = messageSource.getMessage("email.reset.title", null, locale);
         Email email = user.getEmails().get(0);
 
-        if (credmgrProperties.getGluuIdpOrg().getCompanyShortName().equals(opConfig.getCompanyShortName())) {
-            sendEmail(email.getValue(), subject, content, false, true);
-        } else {
-            JavaMailSenderImpl javaMailSenderImpl = createJavaMailSender(opConfig.getSmtpHost(), opConfig.getSmtpPort(), opConfig.getSmtpUsername(), opConfig.getSmtpPassword());
-            sendEmailWithCustomSMTP(javaMailSenderImpl, opConfig.getCompanyShortName(), email.getValue(), subject, content, false, true);
-        }
+        JavaMailSenderImpl javaMailSenderImpl = createJavaMailSender(opConfig.getSmtpHost(), opConfig.getSmtpPort(), opConfig.getSmtpUsername(), opConfig.getSmtpPassword());
+        sendEmailWithCustomSMTP(javaMailSenderImpl, opConfig.getSmtpUsername(), email.getValue(), subject, content, false, true);
     }
 
     private JavaMailSenderImpl createJavaMailSender(String smtpHost, String smtpPort, String smtpUsername, String smtpPassword) {

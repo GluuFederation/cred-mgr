@@ -1,9 +1,5 @@
 package org.gluu.credmgr.service;
 
-import gluu.scim2.client.Scim2Client;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.SerializationUtils;
-import org.gluu.credmgr.config.CredmgrProperties;
 import org.gluu.credmgr.domain.OPAuthority;
 import org.gluu.credmgr.domain.OPConfig;
 import org.gluu.credmgr.domain.OPUser;
@@ -11,16 +7,17 @@ import org.gluu.credmgr.repository.OPConfigRepository;
 import org.gluu.credmgr.service.error.OPException;
 import org.gluu.credmgr.service.util.RandomUtil;
 import org.gluu.credmgr.web.rest.dto.KeyAndPasswordDTO;
-import org.gluu.credmgr.web.rest.dto.RegistrationDTO;
 import org.gluu.credmgr.web.rest.dto.ResetPasswordDTO;
-import org.gluu.oxtrust.model.scim2.*;
+import org.gluu.oxtrust.model.scim2.Constants;
+import org.gluu.oxtrust.model.scim2.Extension;
+import org.gluu.oxtrust.model.scim2.ExtensionFieldType;
+import org.gluu.oxtrust.model.scim2.User;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.xdi.oxauth.client.TokenResponse;
 import org.xdi.oxauth.client.UserInfoResponse;
 import org.xdi.oxauth.model.common.AuthorizationMethod;
@@ -41,7 +38,6 @@ import java.util.stream.Collectors;
  * Created by eugeniuparvan on 6/3/16.
  */
 @Service
-@Transactional(rollbackFor = Exception.class)
 public class OPUserService {
 
     //TODO: HIGH. Why scim returns empty phone numbers list?
@@ -58,101 +54,24 @@ public class OPUserService {
     //TODO: LOW. reset.password.html phone number twilio validation(serverside)
 
     @Inject
-    private CredmgrProperties credmgrProperties;
-    @Inject
     private ScimService scimService;
+
     @Inject
     private OxauthService oxauthService;
+
     @Inject
     private OPConfigRepository opConfigRepository;
 
-    /**
-     * Registering new user with OP_ADMIN role
-     *
-     * @param registrationDTO
-     * @return
-     * @throws OPException: OPException.ERROR_CREATE_SCIM_USER
-     */
-    public OPConfig createOPAdminInformation(RegistrationDTO registrationDTO) throws OPException {
-        OPConfig defaultConfig = getDefaultConfig().orElseThrow(() -> new OPException(OPException.ERROR_CREATE_SCIM_USER));
-
-        User user = new User();
-        user.setUserName(registrationDTO.getCompanyShortName());
-        user.setPassword(registrationDTO.getPassword());
-        user.setDisplayName(registrationDTO.getCompanyName());
-        user.setNickName("");
-        user.setProfileUrl("");
-        user.setLocale("en");
-        user.setPreferredLanguage("US_en");
-        user.setTitle("");
-
-        Name name = new Name();
-        name.setGivenName(registrationDTO.getFirstName());
-        name.setFamilyName(registrationDTO.getLastName());
-        user.setName(name);
-
-        Email email = new Email();
-        email.setType(Email.Type.WORK);
-        email.setPrimary(true);
-        email.setValue(registrationDTO.getEmail());
-        email.setDisplay(registrationDTO.getEmail());
-        email.setOperation("CREATE");
-        email.setReference("");
-        user.setEmails(Arrays.asList(new Email[]{email}));
-
-        try {
-            Extension.Builder extensionBuilder = new Extension.Builder(Constants.USER_EXT_SCHEMA_ID);
-            extensionBuilder.setField(defaultConfig.getRequiredClaim(), defaultConfig.getRequiredClaimValue());
-            user.addExtension(extensionBuilder.build());
-        } catch (Exception e) {
-            throw new OPException(OPException.ERROR_CREATE_SCIM_USER);
-        }
-        user.setActive(false);
-
-        user = scimService.createPerson(user);
-
-        OPConfig opConfig = new OPConfig();
-        opConfig.setAdminScimId(user.getId());
-        opConfig.setActivated(false);
-        opConfig.setEmail(registrationDTO.getEmail());
-        opConfig.setActivationKey(RandomUtil.generateActivationKey());
-        opConfig.setCompanyName(registrationDTO.getCompanyName());
-        opConfig.setCompanyShortName(registrationDTO.getCompanyShortName());
-        return opConfigRepository.save(opConfig);
-    }
 
     /**
-     * @param key
-     * @throws OPException: OPException.ERROR_ACTIVATE_OP_ADMIN)
-     */
-    public void activateOPAdminRegistration(String key) throws OPException {
-        opConfigRepository.findOneByActivationKey(key).map(opConfig -> {
-            try {
-                User user = scimService.retrievePerson(opConfig.getAdminScimId());
-                user.setActive(true);
-                user.setPassword(null);
-                scimService.updatePerson(user, user.getId());
-
-                opConfig.setActivated(true);
-                opConfig.setActivationKey(null);
-                opConfigRepository.save(opConfig);
-                return opConfig;
-            } catch (OPException e) {
-                return null;
-            }
-        }).orElseThrow(() -> new OPException(OPException.ERROR_ACTIVATE_OP_ADMIN));
-    }
-
-    /**
-     * @param companyShortName
      * @param redirectUri
      * @return
      * @throws OPException: OPException.ERROR_RETRIEVE_LOGIN_URI
      *                      OPException.ERROR_RETRIEVE_OPEN_ID_CONFIGURATION
      *                      OPException.ERROR_RETRIEVE_OP_CONFIG
      */
-    public String getLoginUri(String companyShortName, String redirectUri) throws OPException {
-        OPConfig opConfig = opConfigRepository.findOneByCompanyShortName(companyShortName).orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_OP_CONFIG));
+    public String getLoginUri(String redirectUri) throws OPException {
+        OPConfig opConfig = opConfigRepository.get();
 
         String host = opConfig.getHost();
         String clientId = opConfig.getClientId();
@@ -162,7 +81,6 @@ public class OPUserService {
         OPUser opUser = new OPUser();
         opUser.getAuthorities().add(OPAuthority.OP_ANONYMOUS);
         opUser.setHost(host);
-        opUser.setLoginOpConfigId(opConfig.getId());
 
         SecurityContextHolder.getContext().setAuthentication(
             new UsernamePasswordAuthenticationToken(opUser, null, opUser.getAuthorities().stream()
@@ -207,8 +125,7 @@ public class OPUserService {
                 .filter(OPUser.class::isInstance)
                 .map(OPUser.class::cast);
 
-            Optional<OPConfig> opConfig = opUser.map(user -> opConfigRepository.findOne(opUser.get().getLoginOpConfigId()));
-            OPConfig config = opConfig.orElseThrow(() -> new OPException(OPException.ERROR_LOGIN));
+            OPConfig config = opConfigRepository.get();
             OPUser user = opUser.get();
 
             String host = config.getHost();
@@ -238,24 +155,9 @@ public class OPUserService {
             //Setting authorities
             List<SimpleGrantedAuthority> authorities = new ArrayList<>();
             user.getAuthorities().remove(OPAuthority.OP_ANONYMOUS);
-            if (credmgrProperties.getGluuIdpOrg().getRequiredOPSuperAdminClaimValue().equals(scimRole)) {
-                authorities.add(new SimpleGrantedAuthority(OPAuthority.OP_SUPER_ADMIN.toString()));
-                user.getAuthorities().add(OPAuthority.OP_SUPER_ADMIN);
-            } else if (config.getRequiredClaimValue() != null && config.getRequiredClaimValue().equals(scimRole)) {
+            if (config.getRequiredClaimValue() != null && config.getRequiredClaimValue().equals(scimRole)) {
                 authorities.add(new SimpleGrantedAuthority(OPAuthority.OP_ADMIN.toString()));
                 user.getAuthorities().add(OPAuthority.OP_ADMIN);
-
-                //Setting admin opConfigId
-                Optional<OPConfig> opAdminConfig = Optional.ofNullable(scimUser.getEmails())
-                    .map(emails -> {
-                        if (emails.size() > 0)
-                            return emails.get(0);
-                        else
-                            return null;
-                    })
-                    .map(email -> opConfigRepository.findOneByEmail(email.getValue()).orElse(null));
-                OPConfig adminConfig = opAdminConfig.orElseThrow(() -> new OPException(OPException.ERROR_LOGIN));
-                user.setOpConfigId(adminConfig.getId());
             } else {
                 authorities.add(new SimpleGrantedAuthority(OPAuthority.OP_USER.toString()));
                 user.getAuthorities().add(OPAuthority.OP_USER);
@@ -315,10 +217,8 @@ public class OPUserService {
      *                      OPException.ERROR_UPDATE_SCIM_USER
      */
     public User requestPasswordResetWithEmail(ResetPasswordDTO resetPasswordDTO) throws OPException {
-        OPConfig opConfig = opConfigRepository.findOneByCompanyShortName(resetPasswordDTO.getCompanyShortName()).filter(OPConfig::isActivated).orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_OP_CONFIG));
-
-        Scim2Client scimClient = getScimClient(opConfig);
-        User user = scimService.searchUsers("mail eq \"" + resetPasswordDTO.getEmail() + "\"", scimClient).stream().findFirst().orElseThrow(() -> new OPException(OPException.ERROR_FIND_SCIM_USER));
+        User user = scimService.searchUsers("mail eq \"" + resetPasswordDTO.getEmail() + "\"").stream().findFirst().orElseThrow(() -> new OPException(OPException.ERROR_FIND_SCIM_USER));
+        addUserExtensionIfNotExist(user);
         user.addExtension(Optional.of(user.getExtensions())
             .map(extensions -> extensions.get(Constants.USER_EXT_SCHEMA_ID))
             .map(extension -> new Extension.Builder(extension))
@@ -326,7 +226,7 @@ public class OPUserService {
             .orElse(null));
 
         user.setPassword(null);
-        user = scimService.updatePerson(user, user.getId(), scimClient);
+        user = scimService.updatePerson(user, user.getId());
         return user;
     }
 
@@ -338,10 +238,8 @@ public class OPUserService {
      *                      OPException.ERROR_UPDATE_SCIM_USER
      */
     public User requestPasswordResetWithMobile(ResetPasswordDTO resetPasswordDTO) throws OPException {
-        OPConfig opConfig = opConfigRepository.findOneByCompanyShortName(resetPasswordDTO.getCompanyShortName()).filter(OPConfig::isActivated).orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_OP_CONFIG));
-
-        Scim2Client scimClient = getScimClient(opConfig);
-        User user = scimService.searchUsers("phoneNumberVerified eq \"" + resetPasswordDTO.getMobile() + "\"", scimClient).stream().findFirst().orElseThrow(() -> new OPException(OPException.ERROR_FIND_SCIM_USER));
+        User user = scimService.searchUsers("resetPhoneNumber eq \"" + resetPasswordDTO.getMobile() + "\"").stream().findFirst().orElseThrow(() -> new OPException(OPException.ERROR_FIND_SCIM_USER));
+        addUserExtensionIfNotExist(user);
         user.addExtension(Optional.of(user.getExtensions())
             .map(extensions -> extensions.get(Constants.USER_EXT_SCHEMA_ID))
             .map(extension -> new Extension.Builder(extension))
@@ -349,7 +247,7 @@ public class OPUserService {
             .orElse(null));
 
         user.setPassword(null);
-        user = scimService.updatePerson(user, user.getId(), scimClient);
+        user = scimService.updatePerson(user, user.getId());
         return user;
     }
 
@@ -360,10 +258,7 @@ public class OPUserService {
      *                      OPException.ERROR_RETRIEVE_OP_CONFIG
      */
     public void completePasswordReset(KeyAndPasswordDTO keyAndPasswordDTO) throws OPException {
-        OPConfig opConfig = opConfigRepository.findOneByCompanyShortName(keyAndPasswordDTO.getCompanyShortName()).filter(OPConfig::isActivated).orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_OP_CONFIG));
-
-        Scim2Client scimClient = getScimClient(opConfig);
-        User scimUser = scimService.searchUsers("resetKey eq \"" + keyAndPasswordDTO.getKey() + "\"", scimClient).stream()
+        User scimUser = scimService.searchUsers("resetKey eq \"" + keyAndPasswordDTO.getKey() + "\"").stream()
             .filter(user -> {
                 ZonedDateTime oneDayAgo = ZonedDateTime.now().minusHours(24);
                 String resetDate = user.getExtension(Constants.USER_EXT_SCHEMA_ID).getField("resetDate", ExtensionFieldType.STRING);
@@ -371,7 +266,7 @@ public class OPUserService {
             }).findFirst().orElseThrow(() -> new OPException(OPException.ERROR_FIND_SCIM_USER));
         scimUser.setPassword(keyAndPasswordDTO.getNewPassword());
         scimUser.addExtension(new Extension.Builder(scimUser.getExtension(Constants.USER_EXT_SCHEMA_ID)).setField("resetKey", "empty").setField("resetDate", "empty").build());
-        scimService.updatePerson(scimUser, scimUser.getId(), scimClient);
+        scimService.updatePerson(scimUser, scimUser.getId());
     }
 
     public Optional<OPUser> getPrincipal() {
@@ -379,41 +274,19 @@ public class OPUserService {
             Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
                 .map(authentication -> authentication.getPrincipal())
                 .filter(OPUser.class::isInstance)
-                .map(OPUser.class::cast)
-                .map(opUser -> {
-                    if (StringUtils.isNotEmpty(opUser.getLogin())) {
-                        OPUser clonedOpUser = SerializationUtils.clone(opUser);
-                        clonedOpUser.setOpConfig(opConfigRepository.findOne(clonedOpUser.getLoginOpConfigId()));
-                        return clonedOpUser;
-                    } else {
-                        return null;
-                    }
-                });
-    }
-
-    public Optional<OPConfig> getAdminOpConfig(OPUser user) {
-        return Optional.ofNullable(opConfigRepository.findOne(user.getOpConfigId()));
+                .map(OPUser.class::cast);
     }
 
     public void unregisterFido() throws OPException {
         OPUser principal = getPrincipal().orElseThrow(() -> new OPException(OPException.ERROR_DELETE_FIDO_DEVICE));
-        Scim2Client scimClient = getScimClient(principal.getOpConfig());
-        scimService.unregisterFido(principal.getScimId(), scimClient);
+        scimService.unregisterFido(principal.getScimId());
     }
 
-    private Scim2Client getScimClient(OPConfig opConfig) {
-        if (credmgrProperties.getGluuIdpOrg().getCompanyShortName().equals(opConfig.getCompanyShortName())) {
-            return scimService.getScimClient();
-        } else {
-            String host = opConfig.getHost();
-            String umaAatClientId = opConfig.getUmaAatClientId();
-            String jksPath = credmgrProperties.getJksStorePath() + opConfig.getClientJKS();
-            String umaAatClientKeyId = opConfig.getUmaAatClientKeyId();
-            return scimService.getScimClient(host, umaAatClientId, jksPath, umaAatClientKeyId);
+
+    private void addUserExtensionIfNotExist(User user) {
+        if (user.getExtensions().size() == 0) {
+            Extension.Builder extensionBuilder = new Extension.Builder(Constants.USER_EXT_SCHEMA_ID);
+            user.addExtension(extensionBuilder.build());
         }
-    }
-
-    private Optional<OPConfig> getDefaultConfig() {
-        return opConfigRepository.findOneByCompanyShortName(credmgrProperties.getGluuIdpOrg().getCompanyShortName());
     }
 }

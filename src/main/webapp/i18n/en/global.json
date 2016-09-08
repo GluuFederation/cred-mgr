@@ -36,20 +36,12 @@
             "language": "Language"
         },
         "form": {
-            "firstname": "First name",
-            "firstname.placeholder": "Your first name",
-            "lastname": "Last name",
-            "lastname.placeholder": "Your last name",
             "newpassword": "New password",
             "newpassword.placeholder": "New password",
             "confirmpassword": "New password confirmation",
             "confirmpassword.placeholder": "Confirm the new password",
             "email": "E-mail",
-            "email.placeholder": "Your e-mail",
-            "companyName": "Company name",
-            "companyName.placeholder": "Your company name",
-            "companyShortName": "Company short name",
-            "companyShortName.placeholder": "Your company short name"
+            "email.placeholder": "Your e-mail"
         },
         "messages": {
             "info": {

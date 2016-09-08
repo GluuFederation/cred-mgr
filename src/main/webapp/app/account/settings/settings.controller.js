@@ -1,13 +1,13 @@
-(function() {
+(function () {
     'use strict';
 
     angular
         .module('credmgrApp')
         .controller('SettingsController', SettingsController);
 
-    SettingsController.$inject = ['Upload', '$scope', 'Principal', 'OPConfig', '$window'];
+    SettingsController.$inject = ['$scope', 'Principal', 'Settings', '$window'];
 
-    function SettingsController(Upload, $scope, Principal, OPConfig, $window) {
+    function SettingsController($scope, Principal, Settings, $window) {
         var vm = this;
 
         vm.error = null;
@@ -17,12 +17,15 @@
         vm.opConfig = {};
         vm.jks = {};
 
-        Principal.identity().then(function(account) {
-            OPConfig.get({id: account.opConfigId}, function (opConfig) {
-                vm.opConfig = opConfig;
-            }, function (error) {
-                vm.opConfig = {};
-            });
+        Principal.identity().then(function (account) {
+            Settings.get(
+                function (response) {
+                    vm.opConfig = response;
+                },
+                function (data) {
+                    vm.opConfig = {};
+                }
+            );
             vm.login = account.login;
         });
         $scope.$watch('vm.jks', function () {
@@ -30,24 +33,19 @@
                 vm.opConfig.clientJKS = vm.jks.name;
         });
 
-        function save () {
-            Upload.upload({
-                url: 'api/openid/settings-update',
-                data: JSON.parse(angular.toJson(vm.opConfig)),
-                file: vm.jks
-            }).progress(function (evt) {
-                var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                console.log('progress: ' + progressPercentage + '% ' + evt.config.file.name);
-            }).success(function (data, status, headers, config) {
-                vm.error = null;
-                vm.success = 'OK';
-                $window.scrollTo(0, 0);
-                console.log('file ' + config.file.name + 'uploaded. Response: ' + data);
-            }).error(function () {
-                vm.success = null;
-                vm.error = 'ERROR';
-                $window.scrollTo(0, 0);
-            });
+        function save() {
+            Settings.update(vm.opConfig,
+                function (response) {
+                    vm.error = null;
+                    vm.success = 'OK';
+                    $window.scrollTo(0, 0);
+                },
+                function (data) {
+                    vm.success = null;
+                    vm.error = 'ERROR';
+                    $window.scrollTo(0, 0);
+                }
+            );
         }
     }
 })();

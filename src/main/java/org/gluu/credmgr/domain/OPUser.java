@@ -9,21 +9,15 @@ import java.util.Set;
  */
 public class OPUser implements Serializable {
 
-    private static final long serialVersionUID = 1L;
     public static final int PASSWORD_MIN_LENGTH = 4;
     public static final int PASSWORD_MAX_LENGTH = 100;
-
+    private static final long serialVersionUID = 1L;
     private String scimId;
     private String login;
     private String host;
     private String idToken;
     private String langKey;
     private Set<OPAuthority> authorities = new HashSet<>();
-    private Long loginOpConfigId;
-    private Long opConfigId;
-
-    //Not stored in session
-    private OPConfig opConfig;
 
     public String getScimId() {
         return scimId;
@@ -71,29 +65,5 @@ public class OPUser implements Serializable {
 
     public void setAuthorities(Set<OPAuthority> authorities) {
         this.authorities = authorities;
-    }
-
-    public Long getOpConfigId() {
-        return opConfigId;
-    }
-
-    public void setOpConfigId(Long opConfigId) {
-        this.opConfigId = opConfigId;
-    }
-
-    public Long getLoginOpConfigId() {
-        return loginOpConfigId;
-    }
-
-    public void setLoginOpConfigId(Long loginOpConfigId) {
-        this.loginOpConfigId = loginOpConfigId;
-    }
-
-    public OPConfig getOpConfig() {
-        return opConfig;
-    }
-
-    public void setOpConfig(OPConfig opConfig) {
-        this.opConfig = opConfig;
     }
 }

@@ -3,14 +3,13 @@
 
     angular
         .module('credmgrApp', [
-            'ngStorage', 
+            'ngStorage',
             'tmh.dynamicLocale',
-            'pascalprecht.translate', 
+            'pascalprecht.translate',
             'ngResource',
             'ngCookies',
             'ngAria',
             'ngCacheBuster',
-            'ngFileUpload',
             'ui.bootstrap',
             'ui.bootstrap.datetimepicker',
             'ui.router',
