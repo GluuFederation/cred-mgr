@@ -115,7 +115,7 @@ public class OxauthService {
             U2fConfigurationService u2fConfigurationService = FidoU2fClientFactory.instance().createMetaDataConfigurationService(gluuHost + U2F_METADATA_URI);
             RegistrationRequestService requestService = FidoU2fClientFactory.instance().createRegistrationRequestService(u2fConfigurationService.getMetadataConfiguration());
             return requestService.startRegistration(userName, appId, sessionState);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new OPException(OPException.ERROR_REGISTER_FIDO_DEVICE);
         }
     }
