@@ -1,0 +1,15 @@
+{
+  "name": "u2f-api",
+  "homepage": "https://github.com/mastahyeti/u2f-api",
+  "version": "0.4.1",
+  "_release": "0.4.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.4.1",
+    "commit": "116892fa205fb11c8e480942c41a43f47223b94e"
+  },
+  "_source": "https://github.com/mastahyeti/u2f-api.git",
+  "_target": "^0.4.1",
+  "_originalSource": "u2f-api",
+  "_direct": true
+}

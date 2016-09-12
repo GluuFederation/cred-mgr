@@ -27,7 +27,8 @@
     "messageformat": "0.3.1",
     "modernizr": "3.3.1",
     "ngInfiniteScroll": "1.2.2",
-    "swagger-ui": "2.1.4"
+    "swagger-ui": "2.1.4",
+    "u2f-api": "^0.4.1"
   },
   "devDependencies": {
     "angular-mocks": "1.5.5"

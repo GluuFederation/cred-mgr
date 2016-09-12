@@ -12,6 +12,7 @@ import org.gluu.oxtrust.model.scim2.Constants;
 import org.gluu.oxtrust.model.scim2.Extension;
 import org.gluu.oxtrust.model.scim2.ExtensionFieldType;
 import org.gluu.oxtrust.model.scim2.User;
+import org.gluu.oxtrust.model.scim2.fido.FidoDevice;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -76,7 +77,7 @@ public class OPUserService {
         String host = opConfig.getHost();
         String clientId = opConfig.getClientId();
         List<ResponseType> responseTypes = Arrays.asList(new ResponseType[]{ResponseType.CODE});
-        List<String> scopes = Arrays.asList(new String[]{"openid", opConfig.getRequiredOpenIdScope()});
+        List<String> scopes = Arrays.asList(new String[]{"openid"});
 
         OPUser opUser = new OPUser();
         opUser.getAuthorities().add(OPAuthority.OP_ANONYMOUS);
@@ -118,7 +119,7 @@ public class OPUserService {
      *                      OPException.ERROR_RETRIEVE_USER_INFO
      *                      OPException.ERROR_FIND_SCIM_USER
      */
-    public OPUser login(String redirectUri, String code, HttpServletRequest request, HttpServletResponse response) throws OPException {
+    public OPUser login(String redirectUri, String sessionState, String code, HttpServletRequest request, HttpServletResponse response) throws OPException {
         try {
             Optional<OPUser> opUser = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
                 .map(authentication -> authentication.getPrincipal())
@@ -132,9 +133,8 @@ public class OPUserService {
             GrantType grantType = GrantType.AUTHORIZATION_CODE;
             String clientId = config.getClientId();
             String clientSecret = config.getClientSecret();
-            String requiredScope = config.getRequiredOpenIdScope();
 
-            TokenResponse tokenResponse = oxauthService.getToken(host, grantType, clientId, clientSecret, code, redirectUri, "openid" + " " + requiredScope);
+            TokenResponse tokenResponse = oxauthService.getToken(host, grantType, clientId, clientSecret, code, redirectUri, "openid");
             UserInfoResponse userInfoResponse = oxauthService.getUserInfo(host, tokenResponse.getAccessToken(), AuthorizationMethod.AUTHORIZATION_REQUEST_HEADER_FIELD);
 
             List<String> claimList = userInfoResponse.getClaim("inum");
@@ -163,6 +163,7 @@ public class OPUserService {
                 user.getAuthorities().add(OPAuthority.OP_USER);
             }
 
+            user.setSessionState(sessionState);
             user.setScimId(scimUser.getId());
             user.setLogin(scimUser.getUserName());
             user.setLangKey(scimUser.getLocale());
@@ -277,11 +278,10 @@ public class OPUserService {
                 .map(OPUser.class::cast);
     }
 
-    public void unregisterFido() throws OPException {
+    public List<FidoDevice> getAllFidoDevices() throws OPException {
         OPUser principal = getPrincipal().orElseThrow(() -> new OPException(OPException.ERROR_DELETE_FIDO_DEVICE));
-        scimService.unregisterFido(principal.getScimId());
+        return scimService.getAllFidoDevices(principal.getScimId());
     }
-
 
     private void addUserExtensionIfNotExist(User user) {
         if (user.getExtensions().size() == 0) {

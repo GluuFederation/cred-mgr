@@ -8,9 +8,9 @@
         .module('credmgrApp')
         .controller('ResetPasswordController', ResetPasswordController);
 
-    ResetPasswordController.$inject = ['Auth', 'Principal', 'LoginService', 'ResetOptions', '$scope', '$state'];
+    ResetPasswordController.$inject = ['Auth', 'Principal', 'LoginService', 'ResetOptions', 'Fido', '$scope', '$state', '$window'];
 
-    function ResetPasswordController(Auth, Principal, LoginService, ResetOptions, $scope, $state) {
+    function ResetPasswordController(Auth, Principal, LoginService, ResetOptions, Fido, $scope, $state, $window) {
         var vm = this;
 
         vm.account = null;
@@ -30,9 +30,12 @@
         vm.disableResetPasswordBtn = false;
         vm.onRequestResetSubmit = onRequestResetSubmit;
 
+        vm.fidoDevices = [];
         vm.unregisterFidoError = null;
         vm.unregisterFidoSuccess = null;
         vm.onUnregisterFidoSubmit = onUnregisterFidoSubmit;
+        vm.onUpdateFidoSubmit = onUpdateFidoSubmit;
+        vm.onRegisterFidoSubmit = onRegisterFidoSubmit;
 
         vm.updatePasswordError = null;
         vm.updatePasswordSuccess = null;
@@ -64,9 +67,10 @@
             }
         );
 
-        Principal.identity().then(function (account) {
-            vm.account = account;
-        });
+        if (Principal.isAuthenticated()) {
+            onFidoGetAllDevices();
+        }
+
 
         function onChangePasswordSubmit() {
             if (vm.password !== vm.confirmPassword) {
@@ -112,14 +116,59 @@
             });
         };
 
-        function onUnregisterFidoSubmit() {
-            Auth.unregisterFido().then(function () {
-                vm.unregisterFidoError = null;
-                vm.unregisterFidoSuccess = 'OK';
-            }).catch(function () {
-                vm.unregisterFidoError = 'ERROR';
-                vm.unregisterFidoSuccess = null;
-            });
+        function onFidoGetAllDevices() {
+            Fido.get(
+                function (response) {
+                    vm.fidoDevices = response;
+                },
+                function (data) {
+                    vm.fidoDevices = [];
+                }
+            );
+        }
+
+        function onUpdateFidoSubmit(device) {
+            Fido.update(device,
+                function (response) {
+                    onFidoGetAllDevices();
+                },
+                function (data) {
+                    onFidoGetAllDevices();
+                }
+            );
+        };
+
+        function onUnregisterFidoSubmit(id) {
+            Fido.delete({id: id},
+                function (response) {
+                    onFidoGetAllDevices();
+                }, function (data) {
+                    onFidoGetAllDevices();
+                }
+            );
+        };
+
+        function onRegisterFidoSubmit() {
+            var register_request = {
+                "authenticateRequests": [],
+                "registerRequests": [{
+                    "challenge": "HlgMCmVFx4DvQuL0GowUT1cScEka2AvOMtdX9kUgXtk",
+                    "appId": "https://gluu.localhost.info",
+                    "version": "U2F_V2"
+                }]
+            };
+            $window.u2f.register(register_request.registerRequests, register_request.authenticateRequests,
+                function (data) {
+                    if (data.errorCode) {
+                        alert("U2F failed with error: " + data.errorCode);
+                        return;
+                    }
+
+                    document.getElementById('tokenResponse').value = JSON.stringify(data);
+                    document.getElementById('authMethod').value = 'enroll';
+
+                    document.getElementById('u2f_form').submit();
+                });
         };
 
     }

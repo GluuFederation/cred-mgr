@@ -104,7 +104,7 @@ public class OPUserServiceIntTest extends OPCommonTest {
         Assert.assertTrue(user.getAuthorities().contains(OPAuthority.OP_USER));
 
         try {
-            opUserService.login(null, null, null, null);
+            opUserService.login(null, null, null, null, null);
         } catch (OPException e) {
             Assert.assertEquals(OPException.ERROR_LOGIN, e.getMessage());
         }
@@ -126,7 +126,7 @@ public class OPUserServiceIntTest extends OPCommonTest {
         Assert.assertTrue(user.getAuthorities().contains(OPAuthority.OP_ADMIN));
 
         try {
-            opUserService.login(null, null, null, null);
+            opUserService.login(null, null, null, null, null);
         } catch (OPException e) {
             Assert.assertEquals(OPException.ERROR_LOGIN, e.getMessage());
         }

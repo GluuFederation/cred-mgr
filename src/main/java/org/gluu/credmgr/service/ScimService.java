@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -106,21 +107,41 @@ public class ScimService {
         }
     }
 
-    public void unregisterFido(String userId) throws OPException {
+    public void unregisterFido(String id) throws OPException {
+        try {
+            Scim2Client scimClient = getScimClient();
+            scimClient.deleteFidoDevice(id);
+        } catch (Exception e) {
+            throw new OPException(OPException.ERROR_DELETE_FIDO_DEVICE);
+        }
+    }
+
+    public void updateFido(FidoDevice fidoDevice) throws OPException {
+        try {
+            Scim2Client scimClient = getScimClient();
+            scimClient.updateFidoDevice(fidoDevice, new String[]{});
+        } catch (Exception e) {
+            throw new OPException(OPException.ERROR_UPDATE_FIDO_DEVICE);
+        }
+    }
+
+    public List<FidoDevice> getAllFidoDevices(String userId) throws OPException {
+        List<FidoDevice> fidoDevices = new ArrayList<>();
         try {
             Scim2Client scimClient = getScimClient();
             ScimResponse response = scimClient.searchFidoDevices(userId, "id pr", 1, 20, "id", "ascending", null);
             ListResponse listResponse = Util.toListResponseFidoDevice(response);
             if (listResponse.getResources().size() > 0) {
                 for (Resource resource : listResponse.getResources()) {
-                    FidoDevice fidoDevice = (FidoDevice) resource;
-                    scimClient.deleteFidoDevice(fidoDevice.getId());
+                    fidoDevices.add((FidoDevice) resource);
                 }
             }
         } catch (Exception e) {
-            throw new OPException(OPException.ERROR_DELETE_FIDO_DEVICE);
+            throw new OPException(OPException.ERROR_RETRIEVE_FIDO_DEVICES);
         }
+        return fidoDevices;
     }
+
 
     public User retrievePerson(String uid) throws OPException {
         try {

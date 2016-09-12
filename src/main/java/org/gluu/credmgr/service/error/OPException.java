@@ -12,6 +12,9 @@ public class OPException extends Exception {
     public static final String ERROR_FIND_SCIM_USER = "error.findScimUser";
     public static final String ERROR_DELETE_SCIM_USER = "error.deleteScimUser";
     public static final String ERROR_DELETE_FIDO_DEVICE = "error.deleteFIDODevice";
+    public static final String ERROR_UPDATE_FIDO_DEVICE = "error.updateFIDODevice";
+    public static final String ERROR_REGISTER_FIDO_DEVICE = "error.registerFIDODevice";
+    public static final String ERROR_RETRIEVE_FIDO_DEVICES = "error.retrieveFIDODevices";
     public static final String ERROR_RETRIEVE_OP_CONFIG = "error.retrieveOPConfig";
     public static final String ERROR_UPDATE_OP_CONFIG = "error.updateOpConfig";
     public static final String ERROR_EMAIL_OR_LOGIN_ALREADY_EXISTS = "error.emailLoginAlreadyExists";

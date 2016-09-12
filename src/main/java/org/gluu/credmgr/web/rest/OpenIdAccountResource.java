@@ -10,12 +10,14 @@ import org.gluu.credmgr.repository.OPConfigRepository;
 import org.gluu.credmgr.service.MailService;
 import org.gluu.credmgr.service.MobileService;
 import org.gluu.credmgr.service.OPUserService;
+import org.gluu.credmgr.service.ScimService;
 import org.gluu.credmgr.service.error.OPException;
 import org.gluu.credmgr.web.rest.dto.KeyAndPasswordDTO;
 import org.gluu.credmgr.web.rest.dto.ResetOptionsDTO;
 import org.gluu.credmgr.web.rest.dto.ResetPasswordDTO;
 import org.gluu.credmgr.web.rest.dto.SingleValueDTO;
 import org.gluu.oxtrust.model.scim2.User;
+import org.gluu.oxtrust.model.scim2.fido.FidoDevice;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by eugeniuparvan on 5/30/16.
@@ -38,6 +41,8 @@ public class OpenidAccountResource implements ResourceLoaderAware {
     @Inject
     private CredmgrProperties credmgrProperties;
 
+    @Inject
+    private ScimService scimService;
 
     @Inject
     private OPUserService opUserService;
@@ -99,9 +104,11 @@ public class OpenidAccountResource implements ResourceLoaderAware {
 
 
     @RequestMapping("/openid/login-redirect")
-    public void loginRedirectionHandler(HttpServletResponse response, HttpServletRequest request, @RequestParam(value = "code") String code) throws IOException {
+    public void loginRedirectionHandler(HttpServletResponse response, HttpServletRequest request,
+                                        @RequestParam(name = "session_state", required = false) String sessionState,
+                                        @RequestParam(value = "code") String code) throws IOException {
         try {
-            OPUser user = opUserService.login(getBaseUrl(request) + "/#/reset-password/", code, request, response);
+            OPUser user = opUserService.login(getBaseUrl(request) + "/#/reset-password/", sessionState, code, request, response);
             if (user.getAuthorities().contains(OPAuthority.OP_ADMIN)) {
                 OPConfig adminOpConfig = opConfigRepository.get();
                 if (StringUtils.isEmpty(adminOpConfig.getClientJKS()))
@@ -143,13 +150,38 @@ public class OpenidAccountResource implements ResourceLoaderAware {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/openid/fido/unregister",
+    @RequestMapping(value = "/openid/fido/{id}",
+        method = RequestMethod.DELETE,
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Timed
+    public ResponseEntity<?> unregisterFIDO(@PathVariable String id) throws OPException {
+        scimService.unregisterFido(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/openid/fido",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Timed
+    public ResponseEntity<List<FidoDevice>> getAllFIDO() throws OPException {
+        return new ResponseEntity<>(opUserService.getAllFidoDevices(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/openid/fido",
+        method = RequestMethod.PUT,
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Timed
+    public ResponseEntity<?> updateFIDO(@RequestBody FidoDevice fidoDevice) throws OPException {
+        scimService.updateFido(fidoDevice);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/openid/fido",
         method = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @Timed
-    public ResponseEntity<?> unregisterFIDO() throws OPException {
-        opUserService.unregisterFido();
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<List<FidoDevice>> retisterFido(@RequestBody FidoDevice fidoDevice) throws OPException {
+        return new ResponseEntity<>(opUserService.getAllFidoDevices(), HttpStatus.OK);
     }
 
 

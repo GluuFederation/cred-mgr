@@ -139,7 +139,7 @@ public abstract class OPCommonTest {
 
         ReflectionTestUtils.setField(unwrapOPUserService(), "oxauthService", oxauthServiceMock);
 
-        getOPUserService().login(null, null, null, null);
+        getOPUserService().login(null, null, null, null, null);
         return opConfig;
     }
 }
