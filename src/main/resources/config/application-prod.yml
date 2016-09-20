@@ -80,4 +80,5 @@ jhipster:
 # cred-mgr specific properties
 # ===================================================================
 credmgr:
-    jksStorePath: /Users/eugeniuparvan/Desktop/credmgr_storage
+    jksFile: /Users/eugeniuparvan/Desktop/credmgr_storage/scim-rp.jks
+    configFile:  /Users/eugeniuparvan/Desktop/credmgr_config/config.json

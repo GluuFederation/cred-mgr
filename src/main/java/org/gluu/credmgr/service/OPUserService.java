@@ -24,6 +24,8 @@ import org.xdi.oxauth.client.UserInfoResponse;
 import org.xdi.oxauth.model.common.AuthorizationMethod;
 import org.xdi.oxauth.model.common.GrantType;
 import org.xdi.oxauth.model.common.ResponseType;
+import org.xdi.oxauth.model.fido.u2f.protocol.RegisterRequestMessage;
+import org.xdi.oxauth.model.fido.u2f.protocol.RegisterStatus;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -281,6 +283,16 @@ public class OPUserService {
     public List<FidoDevice> getAllFidoDevices() throws OPException {
         OPUser principal = getPrincipal().orElseThrow(() -> new OPException(OPException.ERROR_DELETE_FIDO_DEVICE));
         return scimService.getAllFidoDevices(principal.getScimId());
+    }
+
+    public RegisterRequestMessage getFidoRegisterRequestMessage() throws OPException {
+        OPUser principal = getPrincipal().orElseThrow(() -> new OPException(OPException.ERROR_REGISTER_FIDO_DEVICE));
+        return oxauthService.getFIDORegisterRequestMessage(principal.getLogin(), principal.getHost(), principal.getSessionState());
+    }
+
+    public RegisterStatus sendFIDOFinishRegistration(String s) throws OPException {
+        OPUser principal = getPrincipal().orElseThrow(() -> new OPException(OPException.ERROR_REGISTER_FIDO_DEVICE));
+        return oxauthService.sendFIDOFinishRegistration(principal.getHost(), principal.getLogin(), s);
     }
 
     private void addUserExtensionIfNotExist(User user) {

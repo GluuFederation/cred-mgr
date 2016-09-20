@@ -25,6 +25,22 @@
             'update': {
                 method: 'PUT'
             },
+            'getRegisterRequest': {
+                transformResponse: function (data) {
+                    if (data) {
+                        data = angular.fromJson(data);
+                    }
+                    return data;
+                },
+                isArray: false,
+                url: 'api/openid/fido/register-request',
+                method: 'GET'
+            },
+            'finishRegistration': {
+                isArray: false,
+                url: 'api/openid/fido/register-request',
+                method: 'POST'
+            },
             'delete': {
                 url: 'api/openid/fido/:id',
                 method: 'DELETE'

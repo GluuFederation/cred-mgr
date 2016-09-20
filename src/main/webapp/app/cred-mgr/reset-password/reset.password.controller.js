@@ -149,27 +149,39 @@
         };
 
         function onRegisterFidoSubmit() {
-            var register_request = {
-                "authenticateRequests": [],
-                "registerRequests": [{
-                    "challenge": "HlgMCmVFx4DvQuL0GowUT1cScEka2AvOMtdX9kUgXtk",
-                    "appId": "https://gluu.localhost.info",
-                    "version": "U2F_V2"
-                }]
-            };
-            $window.u2f.register(register_request.registerRequests, register_request.authenticateRequests,
-                function (data) {
-                    if (data.errorCode) {
-                        alert("U2F failed with error: " + data.errorCode);
-                        return;
-                    }
+            Fido.getRegisterRequest(
+                function (response) {
+                    setTimeout(startRegistration(response), 1000);
 
-                    document.getElementById('tokenResponse').value = JSON.stringify(data);
-                    document.getElementById('authMethod').value = 'enroll';
-
-                    document.getElementById('u2f_form').submit();
-                });
+                    onFidoGetAllDevices();
+                }, function (data) {
+                    onFidoGetAllDevices();
+                }
+            );
         };
 
+        function startRegistration(response) {
+            setTimeout(register(response), 1000);
+        }
+
+        function register(response) {
+            var appId = response.appId;
+            var registerRequests = [{version: response.version, challenge: response.challenge}];
+            u2f.register(appId, registerRequests, [], function (data) {
+                console.log("Register callback", data);
+                if (data.errorCode) {
+                    alert("U2F failed with error: " + data.errorCode);
+                    return;
+                }
+                Fido.finishRegistration({value: angular.toJson(data)},
+                    function () {
+                        console.log("Hello");
+                    },
+                    function () {
+                        console.log("Good bye");
+                    }
+                );
+            });
+        }
     }
 })();

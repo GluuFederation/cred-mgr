@@ -10,6 +10,7 @@ import org.xdi.oxauth.model.common.AuthorizationMethod;
 import org.xdi.oxauth.model.common.GrantType;
 import org.xdi.oxauth.model.common.ResponseType;
 import org.xdi.oxauth.model.fido.u2f.protocol.RegisterRequestMessage;
+import org.xdi.oxauth.model.fido.u2f.protocol.RegisterStatus;
 import org.xdi.oxauth.model.register.ApplicationType;
 
 import java.util.List;
@@ -63,8 +64,6 @@ public class OxauthService {
         OpenIdConfigurationResponse openIdConfiguration = getOpenIdConfiguration(gluuHost);
         AuthorizationRequest authorizationRequest = new AuthorizationRequest(responseTypes, clientId, scopes,
             redirectUri, null);
-        authorizationRequest.setAcrValues(openIdConfiguration.getAcrValuesSupported());
-        authorizationRequest.setRequestSessionState(true);
         return openIdConfiguration.getAuthorizationEndpoint() + "?" + authorizationRequest.getQueryString();
     }
 
@@ -110,11 +109,21 @@ public class OxauthService {
         return openIdConfiguration.getEndSessionEndpoint() + "?" + endSessionRequest.getQueryString();
     }
 
-    public RegisterRequestMessage getFidoRegisterRequestMessage(String gluuHost, String userName, String appId, String sessionState) throws OPException {
+    public RegisterRequestMessage getFIDORegisterRequestMessage(String userName, String host, String sessionState) throws OPException {
         try {
-            U2fConfigurationService u2fConfigurationService = FidoU2fClientFactory.instance().createMetaDataConfigurationService(gluuHost + U2F_METADATA_URI);
+            U2fConfigurationService u2fConfigurationService = FidoU2fClientFactory.instance().createMetaDataConfigurationService(host + U2F_METADATA_URI);
             RegistrationRequestService requestService = FidoU2fClientFactory.instance().createRegistrationRequestService(u2fConfigurationService.getMetadataConfiguration());
-            return requestService.startRegistration(userName, appId, sessionState);
+            return requestService.startRegistration(userName, host, sessionState);
+        } catch (Exception e) {
+            throw new OPException(OPException.ERROR_REGISTER_FIDO_DEVICE);
+        }
+    }
+
+    public RegisterStatus sendFIDOFinishRegistration(String host, String userName, String registerResponseString) throws OPException {
+        try {
+            U2fConfigurationService u2fConfigurationService = FidoU2fClientFactory.instance().createMetaDataConfigurationService(host + U2F_METADATA_URI);
+            RegistrationRequestService requestService = FidoU2fClientFactory.instance().createRegistrationRequestService(u2fConfigurationService.getMetadataConfiguration());
+            return requestService.finishRegistration(userName, registerResponseString);
         } catch (Exception e) {
             throw new OPException(OPException.ERROR_REGISTER_FIDO_DEVICE);
         }

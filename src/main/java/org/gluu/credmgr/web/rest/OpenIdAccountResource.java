@@ -2,7 +2,6 @@ package org.gluu.credmgr.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import org.apache.commons.lang.StringUtils;
-import org.gluu.credmgr.config.CredmgrProperties;
 import org.gluu.credmgr.domain.OPAuthority;
 import org.gluu.credmgr.domain.OPConfig;
 import org.gluu.credmgr.domain.OPUser;
@@ -12,18 +11,16 @@ import org.gluu.credmgr.service.MobileService;
 import org.gluu.credmgr.service.OPUserService;
 import org.gluu.credmgr.service.ScimService;
 import org.gluu.credmgr.service.error.OPException;
-import org.gluu.credmgr.web.rest.dto.KeyAndPasswordDTO;
-import org.gluu.credmgr.web.rest.dto.ResetOptionsDTO;
-import org.gluu.credmgr.web.rest.dto.ResetPasswordDTO;
-import org.gluu.credmgr.web.rest.dto.SingleValueDTO;
+import org.gluu.credmgr.web.rest.dto.*;
 import org.gluu.oxtrust.model.scim2.User;
 import org.gluu.oxtrust.model.scim2.fido.FidoDevice;
-import org.springframework.context.ResourceLoaderAware;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.xdi.oxauth.model.fido.u2f.U2fConstants;
+import org.xdi.oxauth.model.fido.u2f.protocol.RegisterRequestMessage;
+import org.xdi.oxauth.model.fido.u2f.protocol.RegisterStatus;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -36,10 +33,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api")
-public class OpenidAccountResource implements ResourceLoaderAware {
-
-    @Inject
-    private CredmgrProperties credmgrProperties;
+public class OpenidAccountResource {
 
     @Inject
     private ScimService scimService;
@@ -53,13 +47,9 @@ public class OpenidAccountResource implements ResourceLoaderAware {
     @Inject
     private MobileService mobileService;
 
-//    @Inject
-//    private OPConfigResource opConfigResource;
-
     @Inject
     private OPConfigRepository opConfigRepository;
 
-    private ResourceLoader resourceLoader;
 
     @RequestMapping(value = "/openid/settings",
         method = RequestMethod.PUT,
@@ -67,7 +57,7 @@ public class OpenidAccountResource implements ResourceLoaderAware {
     @Timed
     public ResponseEntity<OPConfig> updateSettings(@RequestBody final OPConfig opConfig) throws OPException {
         opConfigRepository.save(opConfig);
-        return new ResponseEntity<OPConfig>(opConfigRepository.get(), HttpStatus.OK);
+        return new ResponseEntity<>(opConfigRepository.get(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/openid/settings",
@@ -75,7 +65,7 @@ public class OpenidAccountResource implements ResourceLoaderAware {
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
     public ResponseEntity<OPConfig> getSettings() throws OPException {
-        return new ResponseEntity<OPConfig>(opConfigRepository.get(), HttpStatus.OK);
+        return new ResponseEntity<>(opConfigRepository.get(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/openid/reset/options",
@@ -87,19 +77,19 @@ public class OpenidAccountResource implements ResourceLoaderAware {
         ResetOptionsDTO resetOptionsDTO = new ResetOptionsDTO();
         resetOptionsDTO.setEmail(opConfig.isEnableEmailManagement());
         resetOptionsDTO.setMobile(opConfig.isEnableMobileManagement());
-        return new ResponseEntity<ResetOptionsDTO>(resetOptionsDTO, HttpStatus.OK);
+        return new ResponseEntity<>(resetOptionsDTO, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/openid/login-uri", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SingleValueDTO> getLoginUri(HttpServletRequest request) throws OPException {
         String loginUrl = opUserService.getLoginUri(getBaseUrl(request) + "/api/openid/login-redirect");
-        return new ResponseEntity<SingleValueDTO>(new SingleValueDTO(loginUrl), HttpStatus.OK);
+        return new ResponseEntity<>(new SingleValueDTO(loginUrl), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/openid/logout-uri", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SingleValueDTO> getLogoutUri(HttpServletRequest request) throws OPException {
         String logoutUrl = opUserService.getLogoutUri(getBaseUrl(request) + "/api/openid/logout-redirect");
-        return new ResponseEntity<SingleValueDTO>(new SingleValueDTO(logoutUrl), HttpStatus.OK);
+        return new ResponseEntity<>(new SingleValueDTO(logoutUrl), HttpStatus.OK);
     }
 
 
@@ -176,12 +166,31 @@ public class OpenidAccountResource implements ResourceLoaderAware {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/openid/fido",
+    @RequestMapping(value = "/openid/fido/register-request",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @Timed
+    public ResponseEntity<FIDORegistrationDTO> getFIDORegisterRequest(HttpServletRequest request) throws OPException {
+        RegisterRequestMessage requestMessage = opUserService.getFidoRegisterRequestMessage();
+        FIDORegistrationDTO fidoRegistrationDTO = new FIDORegistrationDTO();
+        fidoRegistrationDTO.setAppId(getBaseUrl(request));
+        fidoRegistrationDTO.setChallenge(requestMessage.getRegisterRequest().getChallenge());
+        fidoRegistrationDTO.setVersion(U2fConstants.U2F_PROTOCOL_VERSION);
+        try {
+            return new ResponseEntity<>(fidoRegistrationDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/openid/fido/register-request",
         method = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @Timed
-    public ResponseEntity<List<FidoDevice>> retisterFido(@RequestBody FidoDevice fidoDevice) throws OPException {
-        return new ResponseEntity<>(opUserService.getAllFidoDevices(), HttpStatus.OK);
+    public ResponseEntity<RegisterStatus> sendFIDOFinishRegistration(
+        @RequestBody SingleValueDTO registerResponseString) throws OPException {
+        RegisterStatus registerStatus = opUserService.sendFIDOFinishRegistration(registerResponseString.getValue());
+        return new ResponseEntity<>(registerStatus, HttpStatus.OK);
     }
 
 
@@ -227,10 +236,5 @@ public class OpenidAccountResource implements ResourceLoaderAware {
             ":" +
             request.getServerPort() +
             request.getContextPath();
-    }
-
-    @Override
-    public void setResourceLoader(ResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
     }
 }

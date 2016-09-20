@@ -69,6 +69,7 @@ public class ExceptionTranslator {
         BodyBuilder builder;
         switch (exception.getMessage()) {
             case OPException.ERROR_FIND_SCIM_USER:
+            case OPException.ERROR_RETRIEVE_FIDO_DEVICES:
                 builder = ResponseEntity.status(HttpStatus.NOT_FOUND);
                 break;
             case OPException.ERROR_RETRIEVE_OP_CONFIG:
@@ -80,7 +81,6 @@ public class ExceptionTranslator {
             case OPException.ERROR_UPDATE_SCIM_USER:
             case OPException.ERROR_DELETE_SCIM_USER:
             case OPException.ERROR_DELETE_FIDO_DEVICE:
-            case OPException.ERROR_RETRIEVE_FIDO_DEVICES:
             case OPException.ERROR_UPDATE_FIDO_DEVICE:
             case OPException.ERROR_REGISTER_FIDO_DEVICE:
             case OPException.ERROR_RETRIEVE_LOGOUT_URI:

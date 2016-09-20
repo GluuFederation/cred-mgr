@@ -6,6 +6,9 @@ package org.gluu.credmgr.web.rest.dto;
 public class SingleValueDTO {
     private String value;
 
+    public SingleValueDTO() {
+    }
+
     public SingleValueDTO(String value) {
         this.value = value;
     }
