@@ -78,7 +78,7 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
     @PostConstruct
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        OpenidAccountResource openidAccountResource = new OpenidAccountResource();
+        OpenIdAccountResource openidAccountResource = new OpenIdAccountResource();
         ReflectionTestUtils.setField(openidAccountResource, "opUserService", opUserService);
         ReflectionTestUtils.setField(openidAccountResource, "mailService", mailService);
         this.restOpenidAccountConfigMockMvc = MockMvcBuilders.standaloneSetup(openidAccountResource)

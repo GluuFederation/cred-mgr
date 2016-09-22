@@ -15,6 +15,10 @@
             .state('reset-password', {
                 parent: 'home',
                 url: 'reset-password/:host?',
+                params: {
+                    registerFidoError: null,
+                    registerFidoSuccess: null
+                },
                 data: {
                     authorities: [],
                     pageTitle: 'Reset Password'
@@ -30,8 +34,39 @@
                     translatePartialLoader: ['$translate', '$translatePartialLoader', function ($translate, $translatePartialLoader) {
                         $translatePartialLoader.addPart('reset-password');
                         return $translate.refresh();
+                    }],
+                    registerFidoError: ['$stateParams', function ($stateParams) {
+                        return $stateParams.registerFidoError;
+                    }],
+                    registerFidoSuccess: ['$stateParams', function ($stateParams) {
+                        return $stateParams.registerFidoSuccess;
                     }]
                 }
+            })
+            .state('reset-password.fido', {
+                parent: 'reset-password',
+                params: {
+                    fidoRegistrationResponse: null
+                },
+                data: {
+                    authorities: ['OP_USER', 'OP_ADMIN']
+                },
+                onEnter: ['$stateParams', '$state', '$uibModal', function ($stateParams, $state, $uibModal) {
+                    $uibModal.open({
+                        templateUrl: 'app/cred-mgr/reset-password/register.fido.device.html',
+                        controller: 'RegisterFIDOController',
+                        controllerAs: 'vm',
+                        backdrop: 'static',
+                        size: 'lg',
+                        resolve: {
+                            translatePartialLoader: ['$translate', '$translatePartialLoader', function ($translate, $translatePartialLoader) {
+                                $translatePartialLoader.addPart('reset-password');
+                                return $translate.refresh();
+                            }],
+                            fidoRegistrationResponse: $stateParams.fidoRegistrationResponse
+                        }
+                    });
+                }]
             });
     }
 

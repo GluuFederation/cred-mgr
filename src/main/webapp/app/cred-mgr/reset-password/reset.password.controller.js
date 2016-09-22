@@ -8,9 +8,9 @@
         .module('credmgrApp')
         .controller('ResetPasswordController', ResetPasswordController);
 
-    ResetPasswordController.$inject = ['Auth', 'Principal', 'LoginService', 'ResetOptions', 'Fido', '$scope', '$state', '$window'];
+    ResetPasswordController.$inject = ['Auth', 'Principal', 'LoginService', 'ResetOptions', 'Fido', '$scope', '$state', '$window', 'registerFidoSuccess', 'registerFidoError'];
 
-    function ResetPasswordController(Auth, Principal, LoginService, ResetOptions, Fido, $scope, $state, $window) {
+    function ResetPasswordController(Auth, Principal, LoginService, ResetOptions, Fido, $scope, $state, $window, registerFidoSuccess, registerFidoError) {
         var vm = this;
 
         vm.account = null;
@@ -33,6 +33,10 @@
         vm.fidoDevices = [];
         vm.unregisterFidoError = null;
         vm.unregisterFidoSuccess = null;
+        vm.updateFidoError = null;
+        vm.updateFidoSuccess = null;
+        vm.registerFidoError = registerFidoError;
+        vm.registerFidoSuccess = registerFidoSuccess;
         vm.onUnregisterFidoSubmit = onUnregisterFidoSubmit;
         vm.onUpdateFidoSubmit = onUpdateFidoSubmit;
         vm.onRegisterFidoSubmit = onRegisterFidoSubmit;
@@ -130,9 +134,13 @@
         function onUpdateFidoSubmit(device) {
             Fido.update(device,
                 function (response) {
+                    clearFlags();
+                    vm.updateFidoSuccess = "SUCCESS";
                     onFidoGetAllDevices();
                 },
                 function (data) {
+                    clearFlags();
+                    vm.updateFidoError = "ERROR";
                     onFidoGetAllDevices();
                 }
             );
@@ -141,8 +149,12 @@
         function onUnregisterFidoSubmit(id) {
             Fido.delete({id: id},
                 function (response) {
+                    clearFlags();
+                    vm.unregisterFidoSuccess = "SUCCESS";
                     onFidoGetAllDevices();
                 }, function (data) {
+                    clearFlags();
+                    vm.unregisterFidoError = "ERROR";
                     onFidoGetAllDevices();
                 }
             );
@@ -151,37 +163,20 @@
         function onRegisterFidoSubmit() {
             Fido.getRegisterRequest(
                 function (response) {
-                    setTimeout(startRegistration(response), 1000);
-
-                    onFidoGetAllDevices();
+                    $state.go('reset-password.fido', {fidoRegistrationResponse: response});
                 }, function (data) {
-                    onFidoGetAllDevices();
+                    vm.registerFidoError = "ERROR";
                 }
             );
         };
 
-        function startRegistration(response) {
-            setTimeout(register(response), 1000);
-        }
-
-        function register(response) {
-            var appId = response.appId;
-            var registerRequests = [{version: response.version, challenge: response.challenge}];
-            u2f.register(appId, registerRequests, [], function (data) {
-                console.log("Register callback", data);
-                if (data.errorCode) {
-                    alert("U2F failed with error: " + data.errorCode);
-                    return;
-                }
-                Fido.finishRegistration({value: angular.toJson(data)},
-                    function () {
-                        console.log("Hello");
-                    },
-                    function () {
-                        console.log("Good bye");
-                    }
-                );
-            });
+        function clearFlags() {
+            vm.unregisterFidoError = null;
+            vm.unregisterFidoSuccess = null;
+            vm.updateFidoError = null;
+            vm.updateFidoSuccess = null;
+            vm.registerFidoError = null;
+            vm.registerFidoSuccess = null;
         }
     }
 })();

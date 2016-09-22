@@ -33,7 +33,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api")
-public class OpenidAccountResource {
+public class OpenIdAccountResource {
 
     @Inject
     private ScimService scimService;
@@ -101,22 +101,22 @@ public class OpenidAccountResource {
             OPUser user = opUserService.login(getBaseUrl(request) + "/#/reset-password/", sessionState, code, request, response);
             if (user.getAuthorities().contains(OPAuthority.OP_ADMIN)) {
                 OPConfig adminOpConfig = opConfigRepository.get();
-                if (StringUtils.isEmpty(adminOpConfig.getClientJKS()))
-                    response.sendRedirect("/#/settings");
+                if (StringUtils.isEmpty(adminOpConfig.getSmtpHost()))
+                    response.sendRedirect(request.getContextPath() + "/#/settings");
                 else
-                    response.sendRedirect("/#/reset-password/");
+                    response.sendRedirect(request.getContextPath() + "/#/reset-password/");
             } else {
-                response.sendRedirect("/#/reset-password/");
+                response.sendRedirect(request.getContextPath() + "/#/reset-password/");
             }
         } catch (OPException e) {
-            response.sendRedirect("/#/error?detailMessage=" + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/#/error?detailMessage=" + e.getMessage());
         }
     }
 
     @RequestMapping("/openid/logout-redirect")
     public void logoutRedirectionHandler(HttpServletRequest request, HttpServletResponse response) throws IOException {
         opUserService.logout(request, response);
-        response.sendRedirect("/#/");
+        response.sendRedirect(request.getContextPath() + "/#/");
     }
 
     @RequestMapping(value = "/openid/account",
@@ -173,7 +173,7 @@ public class OpenidAccountResource {
     public ResponseEntity<FIDORegistrationDTO> getFIDORegisterRequest(HttpServletRequest request) throws OPException {
         RegisterRequestMessage requestMessage = opUserService.getFidoRegisterRequestMessage();
         FIDORegistrationDTO fidoRegistrationDTO = new FIDORegistrationDTO();
-        fidoRegistrationDTO.setAppId(getBaseUrl(request));
+        fidoRegistrationDTO.setAppId(request.getScheme() + "://" + request.getRequestURL().toString().split("/")[2]);
         fidoRegistrationDTO.setChallenge(requestMessage.getRegisterRequest().getChallenge());
         fidoRegistrationDTO.setVersion(U2fConstants.U2F_PROTOCOL_VERSION);
         try {

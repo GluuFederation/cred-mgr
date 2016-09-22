@@ -18,8 +18,8 @@ import java.util.List;
 @Service
 public class OxauthService {
 
-    private static final String OPEN_ID_CONFIGURATION_URI = "/.well-known/openid-configuration";
-    private static final String U2F_METADATA_URI = "/.well-known/fido-u2f-configuration";
+    private static final String OPEN_ID_CONFIGURATION_URI = "/oxauth/.well-known/openid-configuration";
+    private static final String U2F_METADATA_URI = "/oxauth/seam/resource/restv1/oxauth/fido-u2f-configuration";
 
     public OpenIdConfigurationResponse getOpenIdConfiguration(String gluuHost) throws OPException {
         try {
