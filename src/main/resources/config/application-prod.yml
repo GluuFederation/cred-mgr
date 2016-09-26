@@ -28,12 +28,14 @@ liquibase:
     contexts: prod
 
 server:
-    ssl:
-        key-store: classpath:server.p12
-        key-store-password: mypassword
-        key-store-type: PKCS12
-        key-alias: tomcat
-    port: 443
+#    ssl:
+#        key-store: classpath:server.p12
+#        key-store-password: mypassword
+#        key-store-type: PKCS12
+#        key-alias: tomcat
+#    port: 443
+    port: 9000
+    context-path: /cred-mgr
     compression:
         enabled: true
         mime-types: text/html,text/xml,text/plain,text/css, application/javascript, application/json

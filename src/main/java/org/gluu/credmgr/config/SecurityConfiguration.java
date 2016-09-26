@@ -4,18 +4,27 @@ import org.gluu.credmgr.domain.OPAuthority;
 import org.gluu.credmgr.security.CustomAccessDeniedHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
+
+import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.Collection;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+    @Inject
+    private Environment env;
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -31,7 +40,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
+        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry config = http
             .csrf().disable()
             .exceptionHandling()
             .accessDeniedHandler(new CustomAccessDeniedHandler())
@@ -60,10 +69,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers("/management/**").hasAuthority(OPAuthority.OP_ADMIN.toString())
             .antMatchers("/v2/api-docs/**").permitAll()
             .antMatchers("/configuration/ui").permitAll()
-            .antMatchers("/swagger-ui/index.html").hasAuthority(OPAuthority.OP_ADMIN.toString())
-            .and()
-            .requiresChannel().anyRequest().requiresSecure().and().portMapper().http(8080).mapsTo(8443).http(80).mapsTo(443);
+            .antMatchers("/swagger-ui/index.html").hasAuthority(OPAuthority.OP_ADMIN.toString());
 
+        Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
+        if (activeProfiles.contains(Constants.SPRING_PROFILE_DEVELOPMENT)) {
+            config.and().requiresChannel().anyRequest().requiresSecure().and().portMapper().http(8080).mapsTo(8443).http(80).mapsTo(443);
+        }
     }
 
     @Bean

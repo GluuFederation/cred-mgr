@@ -43,9 +43,6 @@ import java.util.stream.Collectors;
 @Service
 public class OPUserService {
 
-    //TODO: HIGH. Why scim returns empty phone numbers list?
-    //TODO: scheduler to delete op admins that are not presented in db
-
     //TODO: MEDIUM. reset-password error handling when jks path is invalid
     //TODO: MEDIUM. tests
     //TODO: MEDIUM. add unit tests for new java methods

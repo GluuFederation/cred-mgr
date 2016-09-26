@@ -95,6 +95,8 @@ public class OpenIdAccountResource {
 
     @RequestMapping("/openid/login-redirect")
     public void loginRedirectionHandler(HttpServletResponse response, HttpServletRequest request,
+                                        @RequestParam(name = "acr_values", required = false) String acrValues,
+                                        @RequestParam(name = "scope", required = false) String scope,
                                         @RequestParam(name = "session_state", required = false) String sessionState,
                                         @RequestParam(value = "code") String code) throws IOException {
         try {
@@ -173,7 +175,7 @@ public class OpenIdAccountResource {
     public ResponseEntity<FIDORegistrationDTO> getFIDORegisterRequest(HttpServletRequest request) throws OPException {
         RegisterRequestMessage requestMessage = opUserService.getFidoRegisterRequestMessage();
         FIDORegistrationDTO fidoRegistrationDTO = new FIDORegistrationDTO();
-        fidoRegistrationDTO.setAppId(request.getScheme() + "://" + request.getRequestURL().toString().split("/")[2]);
+        fidoRegistrationDTO.setAppId(opConfigRepository.get().getHost());
         fidoRegistrationDTO.setChallenge(requestMessage.getRegisterRequest().getChallenge());
         fidoRegistrationDTO.setVersion(U2fConstants.U2F_PROTOCOL_VERSION);
         try {
@@ -198,7 +200,7 @@ public class OpenIdAccountResource {
         method = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @Timed
-    public ResponseEntity<String> requestPasswordReset(@RequestBody ResetPasswordDTO resetPasswordDTO, HttpServletRequest request) throws OPException {
+    public ResponseEntity<String> requestPasswordReset(HttpServletRequest request, @RequestBody ResetPasswordDTO resetPasswordDTO) throws OPException {
         OPConfig opConfig = opConfigRepository.get();
         User user;
         String baseUrl = getBaseUrl(request);
@@ -209,7 +211,7 @@ public class OpenIdAccountResource {
             user = opUserService.requestPasswordResetWithMobile(resetPasswordDTO);
             mobileService.sendPasswordResetSMS(user, baseUrl, opConfig);
         }
-        return new ResponseEntity<String>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/openid/reset_password/finish",
@@ -229,12 +231,8 @@ public class OpenIdAccountResource {
             password.length() <= OPUser.PASSWORD_MAX_LENGTH);
     }
 
-    private String getBaseUrl(HttpServletRequest request) {
-        return request.getScheme() +
-            "://" +
-            request.getServerName() +
-            ":" +
-            request.getServerPort() +
-            request.getContextPath();
+    private String getBaseUrl(HttpServletRequest request) throws OPException {
+        OPConfig opConfig = opConfigRepository.get();
+        return opConfig.getHost() + request.getContextPath();
     }
 }
