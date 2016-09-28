@@ -2,6 +2,7 @@ package org.gluu.credmgr.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import org.apache.commons.lang.StringUtils;
+import org.gluu.credmgr.config.Constants;
 import org.gluu.credmgr.domain.OPAuthority;
 import org.gluu.credmgr.domain.OPConfig;
 import org.gluu.credmgr.domain.OPUser;
@@ -14,6 +15,7 @@ import org.gluu.credmgr.service.error.OPException;
 import org.gluu.credmgr.web.rest.dto.*;
 import org.gluu.oxtrust.model.scim2.User;
 import org.gluu.oxtrust.model.scim2.fido.FidoDevice;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,8 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -50,6 +54,8 @@ public class OpenIdAccountResource {
     @Inject
     private OPConfigRepository opConfigRepository;
 
+    @Inject
+    private Environment env;
 
     @RequestMapping(value = "/openid/settings",
         method = RequestMethod.PUT,
@@ -86,12 +92,18 @@ public class OpenIdAccountResource {
         return new ResponseEntity<>(new SingleValueDTO(loginUrl), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/openid/logout-uri", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SingleValueDTO> getLogoutUri(HttpServletRequest request) throws OPException {
-        String logoutUrl = opUserService.getLogoutUri(getBaseUrl(request) + "/api/openid/logout-redirect");
+    @RequestMapping(value = "/openid/logout-uri", method = RequestMethod.GET)
+    public ResponseEntity<SingleValueDTO> getLogoutUri(HttpServletRequest request, HttpServletResponse response) throws OPException, IOException {
+        String logoutUrl;
+        if (opUserService.isAccessTokenValid()) {
+            logoutUrl = opUserService.getLogoutUri(getBaseUrl(request) + "/api/openid/logout-redirect");
+
+        } else {
+            opUserService.logout(request, response);
+            logoutUrl = request.getContextPath() + "/#/";
+        }
         return new ResponseEntity<>(new SingleValueDTO(logoutUrl), HttpStatus.OK);
     }
-
 
     @RequestMapping("/openid/login-redirect")
     public void loginRedirectionHandler(HttpServletResponse response, HttpServletRequest request,
@@ -127,7 +139,19 @@ public class OpenIdAccountResource {
     @Timed
     public ResponseEntity<OPUser> getAccount() {
         return opUserService.getPrincipal()
-            .map(user -> new ResponseEntity<>(user, HttpStatus.OK))
+            .map(user -> {
+                try {
+                    if (opUserService.isAccessTokenValid()) {
+                        return new ResponseEntity<>(user, HttpStatus.OK);
+                    } else {
+                        opUserService.logout(null, null);
+                        return null;
+                    }
+                } catch (OPException e) {
+                    opUserService.logout(null, null);
+                    return null;
+                }
+            })
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
@@ -232,7 +256,17 @@ public class OpenIdAccountResource {
     }
 
     private String getBaseUrl(HttpServletRequest request) throws OPException {
-        OPConfig opConfig = opConfigRepository.get();
-        return opConfig.getHost() + request.getContextPath();
+        Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
+        if (activeProfiles.contains(Constants.SPRING_PROFILE_PRODUCTION)) {
+            OPConfig opConfig = opConfigRepository.get();
+            return opConfig.getHost() + request.getContextPath();
+        } else {
+            return request.getScheme() +
+                "://" +
+                request.getServerName() +
+                ":" +
+                request.getServerPort() +
+                request.getContextPath();
+        }
     }
 }

@@ -12,6 +12,7 @@ import org.gluu.credmgr.service.OPUserService;
 import org.gluu.credmgr.service.OxauthService;
 import org.gluu.credmgr.service.ScimService;
 import org.gluu.credmgr.web.rest.dto.ResetPasswordDTO;
+import org.gluu.oxtrust.model.scim2.User;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -21,6 +22,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.core.env.Environment;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -36,6 +38,10 @@ import org.xdi.oxauth.client.UserInfoResponse;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -63,6 +69,8 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
     @Inject
     private OPUserService opUserService;
 
+    @Inject
+    private Environment env;
 
     @Inject
     private MailService mailService;
@@ -79,8 +87,12 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         OpenIdAccountResource openidAccountResource = new OpenIdAccountResource();
+
         ReflectionTestUtils.setField(openidAccountResource, "opUserService", opUserService);
         ReflectionTestUtils.setField(openidAccountResource, "mailService", mailService);
+        ReflectionTestUtils.setField(openidAccountResource, "env", env);
+        ReflectionTestUtils.setField(openidAccountResource, "opConfigRepository", opConfigRepository);
+
         this.restOpenidAccountConfigMockMvc = MockMvcBuilders.standaloneSetup(openidAccountResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setMessageConverters(jacksonMessageConverter).build();
@@ -101,21 +113,12 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
 
     @Test
     public void getLoginUri() throws Exception {
-        OPConfig opConfig = opConfigRepository.get();
         String loginUri = opUserService.getLoginUri(null);
 
         restOpenidAccountConfigMockMvc.perform(get("/api/openid/login-uri"))
             .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.value").value(Matchers.startsWith(loginUri)));
-
-
-        try {
-            restOpenidAccountConfigMockMvc.perform(get("/api/openid/login-uri").param("companyShortName", "not_existed_company_short_name"))
-                .andExpect(status().isInternalServerError());
-        } catch (NestedServletException e) {
-            assertThat(e).isNotNull();
-        }
     }
 
     @Test
@@ -125,7 +128,7 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
         restOpenidAccountConfigMockMvc.perform(get("/api/openid/logout-uri"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.value").value(Matchers.startsWith(logoutUri)));
+            .andExpect(jsonPath("$.value").value(Matchers.startsWith("/#/")));
 
         SecurityContextHolder.getContext().setAuthentication(null);
         try {
@@ -139,7 +142,8 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
 
     @Test
     public void loginUserRedirectionHandler() throws Exception {
-        OPConfig opConfig = registerAndPreLoginUser();
+        User scimUser = registerAndPreLoginUser();
+
         //mocking oxauthService
         OxauthService oxauthServiceMock = Mockito.mock(OxauthService.class);
         TokenResponse tokenResponse = new TokenResponse();
@@ -147,6 +151,10 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
         Mockito.when(oxauthServiceMock.getToken(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(tokenResponse);
 
         UserInfoResponse userInfoResponse = new UserInfoResponse(200);
+        Map<String, List<String>> claims = new HashMap<>();
+        claims.put("inum", Arrays.asList(new String[]{scimUser.getId()}));
+        userInfoResponse.setClaims(claims);
+
         Mockito.when(oxauthServiceMock.getUserInfo(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(userInfoResponse);
 
         ReflectionTestUtils.setField(unwrapOPUserService(), "oxauthService", oxauthServiceMock);
@@ -161,7 +169,8 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
 
     @Test
     public void loginAdminRedirectionHandler() throws Exception {
-        OPConfig opConfig = registerAndPreLoginAdmin();
+        User scimUser = registerAndPreLoginAdmin();
+
         //mocking oxauthService
         OxauthService oxauthServiceMock = Mockito.mock(OxauthService.class);
         TokenResponse tokenResponse = new TokenResponse();
@@ -169,12 +178,18 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
         Mockito.when(oxauthServiceMock.getToken(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(tokenResponse);
 
         UserInfoResponse userInfoResponse = new UserInfoResponse(200);
+        Map<String, List<String>> claims = new HashMap<>();
+        claims.put("inum", Arrays.asList(new String[]{scimUser.getId()}));
+        userInfoResponse.setClaims(claims);
         Mockito.when(oxauthServiceMock.getUserInfo(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(userInfoResponse);
 
         ReflectionTestUtils.setField(unwrapOPUserService(), "oxauthService", oxauthServiceMock);
 
         OPUser user = (OPUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         assertThat(user.getAuthorities()).doesNotContain(OPAuthority.OP_ADMIN, OPAuthority.OP_USER);
+
+        OPConfig config = opConfigRepository.get();
+        config.setSmtpHost(null);
 
         restOpenidAccountConfigMockMvc.perform(get("/api/openid/login-redirect").param("code", "code")).andExpect(redirectedUrl("/#/settings"));
         user = (OPUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -193,6 +208,11 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
     public void getUserAccount() throws Exception {
         registerAndLoginUser();
         OPUser opUser = opUserService.getPrincipal().get();
+
+        OxauthService oxauthServiceMock = Mockito.mock(OxauthService.class);
+        Mockito.when(oxauthServiceMock.isTokenValid(Mockito.any(), Mockito.any())).thenReturn(true);
+        ReflectionTestUtils.setField(unwrapOPUserService(), "oxauthService", oxauthServiceMock);
+
         restOpenidAccountConfigMockMvc.perform(get("/api/openid/account"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
@@ -208,6 +228,11 @@ public class OpenidAccountResourceIntTest extends OPCommonTest {
     public void getAdminAccount() throws Exception {
         registerAndLoginAdmin();
         OPUser opUser = opUserService.getPrincipal().get();
+
+        OxauthService oxauthServiceMock = Mockito.mock(OxauthService.class);
+        Mockito.when(oxauthServiceMock.isTokenValid(Mockito.any(), Mockito.any())).thenReturn(true);
+        ReflectionTestUtils.setField(unwrapOPUserService(), "oxauthService", oxauthServiceMock);
+
         restOpenidAccountConfigMockMvc.perform(get("/api/openid/account"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))

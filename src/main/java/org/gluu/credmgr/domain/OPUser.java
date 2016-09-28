@@ -16,6 +16,7 @@ public class OPUser implements Serializable {
     private String login;
     private String host;
     private String idToken;
+    private String accessToken;
     private String sessionState;
     private String langKey;
     private Set<OPAuthority> authorities = new HashSet<>();
@@ -50,6 +51,14 @@ public class OPUser implements Serializable {
 
     public void setIdToken(String idToken) {
         this.idToken = idToken;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
     public String getSessionState() {

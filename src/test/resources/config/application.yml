@@ -1,7 +1,7 @@
 # ===================================================================
-# Spring Boot configuration.
+# Spring Boot configuration for the "dev" profile.
 #
-# This configuration is used for unit/integration tests.
+# This configuration overrides the application.yml file.
 # ===================================================================
 
 # ===================================================================
@@ -10,56 +10,70 @@
 # http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
 # ===================================================================
 
+
 spring:
-    application:
-        name: credmgr
+    devtools:
+        restart:
+            enabled: true
+        livereload:
+            enabled: false # we use gulp + BrowserSync for livereload
     mail:
-        host: localhost
-    mvc:
-        favicon:
-            enabled: false
+        host: mailtrap.io
+        port: 25
+        username: 20458ad4e9e79d
+        password: d682e712c13411
+    messages:
+        cache-seconds: 1
     thymeleaf:
-        mode: XHTML
+        cache: false
 
 liquibase:
-    contexts: test
-
-security:
-    basic:
-        enabled: false
+    contexts: dev
 
 server:
-    port: 10344
-    address: localhost
-
+    ssl:
+        key-store: classpath:server.p12
+        key-store-password: mypassword
+        key-store-type: PKCS12
+        key-alias: tomcat
+    port: 8443
 # ===================================================================
 # JHipster specific properties
 # ===================================================================
 
 jhipster:
-    async:
-        corePoolSize: 2
-        maxPoolSize: 50
-        queueCapacity: 10000
     security:
         rememberMe:
             # security key (this key should be unique for your application, and kept secret)
             key: 24f59ab43edf21672b8f6f6e8a9d4bea7f99cee8
+    mail: # specific JHipster mail property, for standard properties see MailProperties
+        from: credmgr@localhost
     metrics: # DropWizard Metrics configuration, used by MetricsConfiguration
         jmx.enabled: true
-    swagger:
-        title: credmgr API
-        description: credmgr API documentation
-        version: 0.0.1
-        termsOfServiceUrl:
-        contactName:
-        contactUrl:
-        contactEmail:
-        license:
-        licenseUrl:
-        enabled: false
+        spark:
+            enabled: false
+            host: localhost
+            port: 9999
+        graphite:
+            enabled: false
+            host: localhost
+            port: 2003
+            prefix: credmgr
+        logs: # Reports Dropwizard metrics in the logs
+            enabled: false
+            reportFrequency: 60 # in seconds
+    logging:
+        logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration
+            enabled: false
+            host: localhost
+            port: 5000
+            queueSize: 512
+    swagger: # swagger is enabled. It can be disabled by pasing 'no-swagger' profile at run time as well
+        enabled: true
+
 # ===================================================================
 # cred-mgr specific properties
 # ===================================================================
 credmgr:
-    jksStorePath: /Users/eugeniuparvan/Desktop/credmgr_storage
+    jksFile: /Users/eugeniuparvan/Desktop/credmgr_storage/scim-rp.jks
+    configFile:  /Users/eugeniuparvan/Desktop/credmgr_config/config.json

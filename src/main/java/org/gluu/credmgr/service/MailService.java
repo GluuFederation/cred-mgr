@@ -21,6 +21,7 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 import javax.inject.Inject;
 import javax.mail.internet.MimeMessage;
 import java.util.Locale;
+import java.util.Properties;
 
 /**
  * Service for sending e-mails.
@@ -80,17 +81,22 @@ public class MailService {
         String subject = messageSource.getMessage("email.reset.title", null, locale);
         Email email = user.getEmails().get(0);
 
-        JavaMailSenderImpl javaMailSenderImpl = createJavaMailSender(opConfig.getSmtpHost(), opConfig.getSmtpPort(), opConfig.getSmtpUsername(), opConfig.getSmtpPassword());
+        JavaMailSenderImpl javaMailSenderImpl = createJavaMailSender(opConfig.getSmtpHost(), opConfig.getSmtpPort(), opConfig.getSmtpUsername(), opConfig.getSmtpPassword(), opConfig.isSmtpUseSSL());
         sendEmailWithCustomSMTP(javaMailSenderImpl, opConfig.getSmtpUsername(), email.getValue(), subject, content, false, true);
     }
 
-    private JavaMailSenderImpl createJavaMailSender(String smtpHost, String smtpPort, String smtpUsername, String smtpPassword) {
+    private JavaMailSenderImpl createJavaMailSender(String smtpHost, String smtpPort, String smtpUsername, String smtpPassword, Boolean smtpUseSSL) {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setHost(smtpHost);
         javaMailSender.setPort(Integer.parseInt(smtpPort));
         javaMailSender.setUsername(smtpUsername);
         javaMailSender.setPassword(smtpPassword);
         javaMailSender.setProtocol("smtp");
+        if (smtpUseSSL) {
+            Properties javaMailProperties = new Properties();
+            javaMailProperties.setProperty("mail.smtp.starttls.enable", "true");
+            javaMailSender.setJavaMailProperties(javaMailProperties);
+        }
         return javaMailSender;
     }
 }

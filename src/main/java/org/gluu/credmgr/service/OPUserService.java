@@ -92,6 +92,19 @@ public class OPUserService {
     }
 
     /**
+     * @return true if current access token is valid
+     * @throws OPException
+     */
+    public boolean isAccessTokenValid() throws OPException {
+        Optional<OPUser> opUser = Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+            .map(authentication -> authentication.getPrincipal())
+            .filter(OPUser.class::isInstance)
+            .map(OPUser.class::cast);
+        OPUser user = opUser.orElseThrow(() -> new OPException(OPException.ERROR_RETRIEVE_LOGOUT_URI));
+        return oxauthService.isTokenValid(user.getHost(), user.getAccessToken());
+    }
+
+    /**
      * @param redirectUri
      * @return
      * @throws OPException: OPException.ERROR_RETRIEVE_LOGOUT_URI
@@ -167,6 +180,7 @@ public class OPUserService {
             user.setLogin(scimUser.getUserName());
             user.setLangKey(scimUser.getLocale());
             user.setIdToken(tokenResponse.getIdToken());
+            user.setAccessToken(tokenResponse.getAccessToken());
 
             SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(user,
                 null, user.getAuthorities().stream().map(role -> new SimpleGrantedAuthority(role.toString()))
@@ -287,9 +301,9 @@ public class OPUserService {
         return oxauthService.getFIDORegisterRequestMessage(principal.getLogin(), principal.getHost(), principal.getSessionState());
     }
 
-    public RegisterStatus sendFIDOFinishRegistration(String s) throws OPException {
+    public RegisterStatus sendFIDOFinishRegistration(String registerResponseString) throws OPException {
         OPUser principal = getPrincipal().orElseThrow(() -> new OPException(OPException.ERROR_REGISTER_FIDO_DEVICE));
-        return oxauthService.sendFIDOFinishRegistration(principal.getHost(), principal.getLogin(), s);
+        return oxauthService.sendFIDOFinishRegistration(principal.getHost(), principal.getLogin(), registerResponseString);
     }
 
     private void addUserExtensionIfNotExist(User user) {

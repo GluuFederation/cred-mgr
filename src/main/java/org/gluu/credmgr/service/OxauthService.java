@@ -64,7 +64,6 @@ public class OxauthService {
         OpenIdConfigurationResponse openIdConfiguration = getOpenIdConfiguration(gluuHost);
         AuthorizationRequest authorizationRequest = new AuthorizationRequest(responseTypes, clientId, scopes,
             redirectUri, null);
-        authorizationRequest.setAcrValues(openIdConfiguration.getAcrValuesSupported());
         return openIdConfiguration.getAuthorizationEndpoint() + "?" + authorizationRequest.getQueryString();
     }
 
@@ -87,6 +86,13 @@ public class OxauthService {
         else
             throw new OPException(OPException.ERROR_RETRIEVE_TOKEN);
 
+    }
+
+    public boolean isTokenValid(String gluuHost, String accessToken) throws OPException {
+        OpenIdConfigurationResponse openIdConfiguration = getOpenIdConfiguration(gluuHost);
+        ValidateTokenClient validateTokenClient = new ValidateTokenClient(openIdConfiguration.getValidateTokenEndpoint());
+        ValidateTokenResponse validateTokenResponse = validateTokenClient.execValidateToken(accessToken);
+        return validateTokenResponse.isValid();
     }
 
     public UserInfoResponse getUserInfo(String gluuHost, String accessToken, AuthorizationMethod authorizationMethod) throws OPException {

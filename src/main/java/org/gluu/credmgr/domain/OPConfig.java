@@ -23,6 +23,7 @@ public class OPConfig implements Serializable {
 
     private volatile Integer authenticationLevel;
 
+    @Deprecated
     private volatile String requiredOpenIdScope;
 
     private volatile String requiredClaim;
@@ -129,10 +130,12 @@ public class OPConfig implements Serializable {
         this.authenticationLevel = authenticationLevel;
     }
 
+    @Deprecated
     public String getRequiredOpenIdScope() {
         return requiredOpenIdScope;
     }
 
+    @Deprecated
     public synchronized void setRequiredOpenIdScope(String requiredOpenIdScope) {
         this.requiredOpenIdScope = requiredOpenIdScope;
     }

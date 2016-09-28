@@ -17,7 +17,9 @@ import org.xdi.oxauth.client.TokenResponse;
 import org.xdi.oxauth.client.UserInfoResponse;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by eugeniuparvan on 6/13/16.
@@ -32,7 +34,7 @@ public abstract class OPCommonTest {
 
     public abstract ScimService getScimService();
 
-    protected OPConfig register() throws OPException {
+    protected User register(boolean isAdmin) throws OPException {
         OPConfig opConfig = getOPConfigRepository().get();
 
         RegistrationDTO registrationDTO = new RegistrationDTO();
@@ -68,36 +70,44 @@ public abstract class OPCommonTest {
 
         try {
             Extension.Builder extensionBuilder = new Extension.Builder(Constants.USER_EXT_SCHEMA_ID);
-            extensionBuilder.setField(opConfig.getRequiredClaim(), opConfig.getRequiredClaimValue());
+            if (isAdmin)
+                extensionBuilder.setField(opConfig.getRequiredClaim(), opConfig.getRequiredClaimValue());
+            else
+                extensionBuilder.setField(opConfig.getRequiredClaim(), "OP_USER");
+            extensionBuilder.setField("resetPhoneNumber", "111111");
             user.addExtension(extensionBuilder.build());
         } catch (Exception e) {
             throw new OPException(OPException.ERROR_CREATE_SCIM_USER);
         }
-        user.setActive(false);
+        user.setActive(true);
 
-        getScimService().createPerson(user);
+        User scimUser = getScimService().createPerson(user);
 
-        return opConfig;
+        return scimUser;
     }
 
-    protected OPConfig registerAndPreLoginUser() throws OPException {
-        OPConfig opConfig = getOPConfigRepository().get();
+    protected User registerAndPreLoginUser() throws OPException {
+        User user = register(false);
         getOPUserService().getLoginUri(null);
-        return opConfig;
+        return user;
     }
 
-    protected OPConfig registerAndPreLoginAdmin() throws OPException {
-        OPConfig opConfig = getOPConfigRepository().get();
+    protected User registerAndPreLoginAdmin() throws OPException {
+        User user = register(true);
         getOPUserService().getLoginUri(null);
-        return opConfig;
+        return user;
     }
 
-    protected OPConfig registerAndLoginUser() throws Exception {
-        return loginCommon(registerAndPreLoginUser());
+    protected User registerAndLoginUser() throws Exception {
+        User user = registerAndPreLoginUser();
+        loginCommon(user);
+        return user;
     }
 
-    protected OPConfig registerAndLoginAdmin() throws Exception {
-        return loginCommon(registerAndPreLoginAdmin());
+    protected User registerAndLoginAdmin() throws Exception {
+        User user = registerAndPreLoginAdmin();
+        loginCommon(user);
+        return user;
     }
 
     protected void cleanUp() throws OPException {
@@ -124,7 +134,7 @@ public abstract class OPCommonTest {
         return getOPUserService();
     }
 
-    private OPConfig loginCommon(OPConfig opConfig) throws Exception {
+    private void loginCommon(User scimUser) throws Exception {
         //mocking oxauthService
         OxauthService oxauthServiceMock = Mockito.mock(OxauthService.class);
         TokenResponse tokenResponse = new TokenResponse();
@@ -132,14 +142,13 @@ public abstract class OPCommonTest {
         Mockito.when(oxauthServiceMock.getToken(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(tokenResponse);
 
         UserInfoResponse userInfoResponse = new UserInfoResponse(200);
-//        Map<String, List<String>> claims = new HashMap<>();
-//        claims.put("inum", Arrays.asList(opConfig.getAdminScimId()));
-//        userInfoResponse.setClaims(claims);
+        Map<String, List<String>> claims = new HashMap<>();
+        claims.put("inum", Arrays.asList(scimUser.getId()));
+        userInfoResponse.setClaims(claims);
         Mockito.when(oxauthServiceMock.getUserInfo(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(userInfoResponse);
 
         ReflectionTestUtils.setField(unwrapOPUserService(), "oxauthService", oxauthServiceMock);
 
         getOPUserService().login(null, null, null, null, null);
-        return opConfig;
     }
 }

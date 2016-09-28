@@ -4,11 +4,11 @@ import org.gluu.credmgr.config.Constants;
 import org.gluu.credmgr.config.CredmgrProperties;
 import org.gluu.credmgr.config.DefaultProfileUtil;
 import org.gluu.credmgr.config.JHipsterProperties;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.*;
+import org.springframework.boot.actuate.autoconfigure.MetricFilterAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.MetricRepositoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -33,6 +33,27 @@ public class CredmgrApp {
     private Environment env;
 
     /**
+     * Main method, used to run the application.
+     *
+     * @param args the command line arguments
+     * @throws UnknownHostException if the local host name could not be resolved into an address
+     */
+    public static void main(String[] args) throws UnknownHostException {
+        SpringApplication app = new SpringApplication(CredmgrApp.class);
+        DefaultProfileUtil.addDefaultProfile(app);
+        Environment env = app.run(args).getEnvironment();
+        log.info("\n----------------------------------------------------------\n\t" +
+                "Application '{}' is running! Access URLs:\n\t" +
+                "Local: \t\thttps://127.0.0.1:{}\n\t" +
+                "External: \thttps://{}:{}\n----------------------------------------------------------",
+            env.getProperty("spring.application.name"),
+            env.getProperty("server.port"),
+            InetAddress.getLocalHost().getHostAddress(),
+            env.getProperty("server.port"));
+
+    }
+
+    /**
      * Initializes credmgr.
      * <p>
      * Spring profiles can be configured with a program arguments --spring.profiles.active=your-active-profile
@@ -51,27 +72,6 @@ public class CredmgrApp {
             log.error("You have misconfigured your application! It should not" +
                 "run with both the 'dev' and 'cloud' profiles at the same time.");
         }
-    }
-
-    /**
-     * Main method, used to run the application.
-     *
-     * @param args the command line arguments
-     * @throws UnknownHostException if the local host name could not be resolved into an address
-     */
-    public static void main(String[] args) throws UnknownHostException {
-        SpringApplication app = new SpringApplication(CredmgrApp.class);
-        DefaultProfileUtil.addDefaultProfile(app);
-        Environment env = app.run(args).getEnvironment();
-        log.info("\n----------------------------------------------------------\n\t" +
-                "Application '{}' is running! Access URLs:\n\t" +
-                "Local: \t\thttp://127.0.0.1:{}\n\t" +
-                "External: \thttp://{}:{}\n----------------------------------------------------------",
-            env.getProperty("spring.application.name"),
-            env.getProperty("server.port"),
-            InetAddress.getLocalHost().getHostAddress(),
-            env.getProperty("server.port"));
-
     }
 
 }

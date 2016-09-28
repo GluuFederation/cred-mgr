@@ -7,11 +7,17 @@ import org.gluu.credmgr.domain.OPAuthority;
 import org.gluu.credmgr.domain.OPUser;
 import org.gluu.credmgr.repository.OPConfigRepository;
 import org.gluu.credmgr.service.error.OPException;
+import org.gluu.credmgr.web.rest.dto.KeyAndPasswordDTO;
+import org.gluu.credmgr.web.rest.dto.ResetPasswordDTO;
+import org.gluu.oxtrust.model.scim2.Constants;
+import org.gluu.oxtrust.model.scim2.ExtensionFieldType;
+import org.gluu.oxtrust.model.scim2.User;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,14 +62,8 @@ public class OPUserServiceIntTest extends OPCommonTest {
         cleanUp();
     }
 
-
     @Test
     public void getLoginUriTest() throws OPException {
-        try {
-            opUserService.getLoginUri(null);
-        } catch (OPException e) {
-            Assert.assertEquals(OPException.ERROR_RETRIEVE_OPEN_ID_CONFIGURATION, e.getMessage());
-        }
         String loginUri = opUserService.getLoginUri(null);
         Assert.assertNotNull(loginUri);
 
@@ -72,6 +72,17 @@ public class OPUserServiceIntTest extends OPCommonTest {
         Assert.assertNotNull(principal.getHost());
         Assert.assertEquals(1, principal.getAuthorities().size());
         Assert.assertTrue(principal.getAuthorities().contains(OPAuthority.OP_ANONYMOUS));
+    }
+
+    @Test
+    public void isAccessTokenValid() throws Exception {
+        registerAndLoginUser();
+
+        OxauthService oxauthServiceMock = Mockito.mock(OxauthService.class);
+        Mockito.when(oxauthServiceMock.isTokenValid(Mockito.any(), Mockito.any())).thenReturn(true);
+        ReflectionTestUtils.setField(unwrapOPUserService(), "oxauthService", oxauthServiceMock);
+
+        Assert.assertTrue(opUserService.isAccessTokenValid());
     }
 
     @Test
@@ -153,6 +164,50 @@ public class OPUserServiceIntTest extends OPCommonTest {
         } catch (OPException e) {
             Assert.assertEquals(OPException.ERROR_PASSWORD_CHANGE, e.getMessage());
         }
+    }
+
+    @Test
+    public void requestPasswordResetWithEmail() throws OPException {
+        User user = register(false);
+        ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO();
+        resetPasswordDTO.setEmail("company@mail.com");
+
+        opUserService.requestPasswordResetWithEmail(resetPasswordDTO);
+        user = scimService.findOneByUsername(user.getUserName());
+
+        Assert.assertNotNull(user.getExtension(Constants.USER_EXT_SCHEMA_ID).getField("resetDate", ExtensionFieldType.STRING));
+        Assert.assertNotNull(user.getExtension(Constants.USER_EXT_SCHEMA_ID).getField("resetKey", ExtensionFieldType.STRING));
+    }
+
+    @Test
+    public void requestPasswordResetWithMobile() throws OPException {
+        User user = register(false);
+        ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO();
+        resetPasswordDTO.setMobile("111111");
+
+        opUserService.requestPasswordResetWithMobile(resetPasswordDTO);
+        user = scimService.findOneByUsername(user.getUserName());
+
+        Assert.assertNotNull(user.getExtension(Constants.USER_EXT_SCHEMA_ID).getField("resetDate", ExtensionFieldType.STRING));
+        Assert.assertNotNull(user.getExtension(Constants.USER_EXT_SCHEMA_ID).getField("resetKey", ExtensionFieldType.STRING));
+    }
+
+    @Test
+    public void completePasswordReset() throws OPException {
+        User user = register(false);
+        ResetPasswordDTO resetPasswordDTO = new ResetPasswordDTO();
+        resetPasswordDTO.setMobile("111111");
+
+        opUserService.requestPasswordResetWithMobile(resetPasswordDTO);
+        user = scimService.findOneByUsername(user.getUserName());
+
+        String resetKey = user.getExtension(Constants.USER_EXT_SCHEMA_ID).getField("resetKey", ExtensionFieldType.STRING);
+
+        KeyAndPasswordDTO keyAndPasswordDTO = new KeyAndPasswordDTO();
+        keyAndPasswordDTO.setKey(resetKey);
+        keyAndPasswordDTO.setNewPassword("new_password");
+
+        opUserService.completePasswordReset(keyAndPasswordDTO);
     }
 
     @Test

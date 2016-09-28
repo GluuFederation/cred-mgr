@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.inject.Inject;
 
@@ -20,6 +21,7 @@ import javax.inject.Inject;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = CredmgrApp.class)
 @IntegrationTest
+@WebAppConfiguration
 public class OxauthServiceIntTest {
 
     private final Logger log = LoggerFactory.getLogger(OxauthServiceIntTest.class);
@@ -39,7 +41,7 @@ public class OxauthServiceIntTest {
             Assert.fail();
         }
         try {
-            oxauthService.getOpenIdConfiguration(host + ".com");
+            oxauthService.getOpenIdConfiguration("somhost.com");
             Assert.fail();
         } catch (OPException e) {
             log.info("passed");
