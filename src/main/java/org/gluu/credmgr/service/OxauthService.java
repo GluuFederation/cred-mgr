@@ -64,6 +64,7 @@ public class OxauthService {
         OpenIdConfigurationResponse openIdConfiguration = getOpenIdConfiguration(gluuHost);
         AuthorizationRequest authorizationRequest = new AuthorizationRequest(responseTypes, clientId, scopes,
             redirectUri, null);
+
         return openIdConfiguration.getAuthorizationEndpoint() + "?" + authorizationRequest.getQueryString();
     }
 

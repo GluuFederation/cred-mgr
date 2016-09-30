@@ -165,6 +165,7 @@
                 function (response) {
                     $state.go('reset-password.fido', {fidoRegistrationResponse: response});
                 }, function (data) {
+                    clearFlags();
                     vm.registerFidoError = "ERROR";
                 }
             );
