@@ -6,6 +6,7 @@ var gulp = require('gulp'),
     templateCache = require('gulp-angular-templatecache'),
     htmlmin = require('gulp-htmlmin'),
     imagemin = require('gulp-imagemin'),
+    debug = require('gulp-debug'),
     ngConstant = require('gulp-ng-constant'),
     rename = require('gulp-rename'),
     eslint = require('gulp-eslint'),
@@ -73,8 +74,9 @@ gulp.task('copy', function () {
 gulp.task('images', function () {
     return gulp.src(config.app + 'content/images/**')
         .pipe(plumber({errorHandler: handleErrors}))
-        //.pipe(changed(config.dist + 'content/images'))
-        .pipe(imagemin({optimizationLevel: 5, progressive: true, interlaced: true}))
+        .pipe(changed(config.dist + 'content/images'))
+        .pipe(imagemin({optimizationLevel: 5, progressive: true, interlaced: true, verbose: true}))
+        .pipe(debug({title: 'imagemin:'}))
         .pipe(rev())
         .pipe(gulp.dest(config.dist + 'content/images'))
         .pipe(rev.manifest(config.revManifest, {
