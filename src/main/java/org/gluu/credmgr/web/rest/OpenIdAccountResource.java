@@ -15,6 +15,7 @@ import org.gluu.credmgr.service.error.OPException;
 import org.gluu.credmgr.web.rest.dto.*;
 import org.gluu.oxtrust.model.scim2.User;
 import org.gluu.oxtrust.model.scim2.fido.FidoDevice;
+import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -53,6 +54,9 @@ public class OpenIdAccountResource {
 
     @Inject
     private OPConfigRepository opConfigRepository;
+
+    @Inject
+    private EmbeddedWebApplicationContext appContext;
 
     @Inject
     private Environment env;
